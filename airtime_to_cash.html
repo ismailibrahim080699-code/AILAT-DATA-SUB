@@ -194,14 +194,15 @@ function submitRequest(event){
   return;
  }
 
- const params=new URLSearchParams({
-  network:network,
-  phone:phone,
-  amount:String(amount)
- });
-
- window.location.href=
- "airtime_to_cash_summary.html?"+params.toString();
+ try{
+  sessionStorage.setItem("ailat_airtime_to_cash_review",JSON.stringify({
+   network,phone,amount:String(amount)
+  }));
+ }catch(error){
+  alert("This browser cannot keep the review details in this tab. Please try again.");
+  return;
+ }
+ window.location.href="airtime_to_cash_summary.html";
 }
 </script>
 

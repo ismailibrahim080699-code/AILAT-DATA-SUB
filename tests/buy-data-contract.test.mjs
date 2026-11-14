@@ -96,3 +96,10 @@ test("Airtime UI does not offer Vitel without a documented supplier network ID",
   assert.ok(airtime.includes("Not available yet"));
   assert.ok(!airtime.includes("chooseNetwork(this,'Vitel')"));
 });
+
+test("Airtime receipt distinguishes AILAT request recording from supplier fulfilment", () => {
+  assert.ok(airtimeSummary.includes("Request recording only"));
+  assert.ok(airtimeSummary.includes("does not mean Legitdataway has accepted or delivered airtime"));
+  assert.ok(backend.includes('status: "received"'));
+  assert.ok(backend.includes("Request record only. No payment was taken and no service was delivered."));
+});

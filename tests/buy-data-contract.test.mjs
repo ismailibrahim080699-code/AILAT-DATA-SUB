@@ -70,7 +70,7 @@ test("Airtime request remains clearly request-only and requires verified email",
   assert.ok(airtimeSummary.includes("!user.emailVerified"));
   assert.ok(airtimeSummary.includes('service_key:"airtime"'));
   assert.ok(airtimeSummary.includes("No payment was taken and no airtime was sent."));
-  assert.ok(airtime.includes("Supplier integration pending"));
+  assert.ok(airtime.includes("Supplier dispatch disabled"));
 });
 
 test("Airtime provider preview uses documented Legitdataway VTU contract in safe mode", () => {

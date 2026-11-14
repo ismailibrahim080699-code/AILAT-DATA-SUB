@@ -38,7 +38,9 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>Meter Number</span><strong id="meter">-</strong></div>
 <div class="total"><span>Requested Amount</span><strong id="amount">₦0.00</strong></div>
 <div class="notice"><strong>Not accepting orders yet:</strong> AILAT DATA has not connected a verified electricity provider and payment flow. This page is for reviewing entered details only. No provider request is sent, no payment is collected and no electricity token or receipt is issued. Do not use this page as proof of payment.</div>
-<button type="button" disabled aria-disabled="true">Electricity Payment Not Enabled</button>
+<button type="button" id="submitRequest" disabled>Submit Electricity Request</button>
+<button type="button" id="newRequest" class="secondary" hidden>Record a New Request</button>
+<p id="requestStatus" role="status" aria-live="polite">Sign in with a verified email to record this request.</p>
 <a href="electricity.html" class="cancel">← Go Back and Edit</a>
 </section>
 </main>

@@ -41,7 +41,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 <select id="provider" required>
 <option value="">Select electricity company</option>
 <option value="8">Abuja Electricity</option>
-<option value="10">Benin Electricity</option>
+<option value="9">Benin Electricity</option>
 <option value="2">Eko Electricity</option>
 <option value="6">Ibadan Electricity</option>
 <option value="1">Ikeja Electricity</option>
@@ -49,7 +49,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 <option value="7">Kaduna Electric</option>
 <option value="3">Kano Electricity</option>
 <option value="4">Port Harcourt Electricity</option>
-<option value="9">Yola Electricity</option>
+<option value="10">Yola Electricity</option>
 </select>
 <label for="meterType">Meter Type</label>
 <select id="meterType" required>
@@ -60,11 +60,11 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 <label for="meterNumber">Meter Number</label>
 <input id="meterNumber" type="text" inputmode="numeric" autocomplete="off" maxlength="20" pattern="[0-9]{6,20}" placeholder="Enter 6–20 digit meter number" aria-describedby="meterHelp" required>
 <p id="meterHelp" class="note">Enter the digits printed on your electricity meter. Use 6–20 digits.</p>
-<label for="amount">Amount (₦)</label>
-<input id="amount" type="number" inputmode="numeric" min="100" max="1000000" step="1" placeholder="Enter amount" required>
+<label for="amount">Amount (₦) — minimum ₦500</label>
+<input id="amount" type="number" inputmode="numeric" min="500" max="500000" step="1" placeholder="Enter ₦500–₦500,000" required>
 <button id="continueButton" type="submit" disabled>Review Order Details</button>
 </form>
-<p class="note"><strong>Notice:</strong> This page only validates details and opens a review summary. Electricity payment is not activated: no provider is contacted, no money is charged and no token is issued.</p>
+<p class="note"><strong>Notice:</strong> This page checks the entered details and opens a review summary. Provider meter validation and live payment are not enabled; no money is charged and no token is issued.</p>
 </div>
 </div>
 </div>
@@ -81,7 +81,7 @@ function electricityDetailsValid(){
  const amount=Number(amountInput.value);
  return validDiscos.has(providerInput.value) && ["prepaid","postpaid"].includes(meterTypeInput.value) &&
   /^[0-9]{6,20}$/.test(meter) && amountInput.value.trim()!=="" &&
-  Number.isSafeInteger(amount) && amount>=100 && amount<=1000000;
+  Number.isSafeInteger(amount) && amount>=500 && amount<=500000;
 }
 [providerInput,meterTypeInput,meterNumberInput,amountInput].forEach(input=>{
  input.addEventListener("input",()=>continueButton.disabled=!electricityDetailsValid());

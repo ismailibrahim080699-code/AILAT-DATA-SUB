@@ -42,10 +42,11 @@ button:disabled{opacity:.65;cursor:wait}
 <h3>Recharge Details</h3>
 <p class="subtitle">Please check that everything is correct.</p>
 <div class="item"><span>Network</span><strong id="network">-</strong></div>
+<div class="item"><span>Airtime Type</span><strong id="airtimeType">VTU</strong></div>
 <div class="item"><span>Phone Number</span><strong id="phone">-</strong></div>
 <div class="total"><span>Requested Airtime Value</span><strong id="amount">₦0.00</strong></div>
 <div class="notice">
-<strong>Request recording only:</strong> This is the airtime value you requested, not a confirmed final charge or service fee. Submitting records your request with AILAT DATA; it does not mean Legitdataway has accepted or delivered airtime. No payment will be taken, no wallet balance will be deducted, and no airtime will be sent.
+<strong>Request recording only:</strong> This is the airtime value you requested, not a confirmed final charge or service fee. Submitting records your request with AILAT DATA; it does not mean Bilalsadasub has accepted or delivered airtime. No payment will be taken, no wallet balance will be deducted, and no airtime will be sent.
 </div>
 <button id="confirmButton" type="button">Submit Airtime Request</button>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
@@ -70,14 +71,15 @@ try{
 const network = typeof airtimeDraft?.network === "string" ? airtimeDraft.network : "";
 const phone = typeof airtimeDraft?.phone === "string" ? airtimeDraft.phone : "";
 const amount = Number(airtimeDraft?.amount);
-const validNetworks = ["MTN","Airtel","Glo","9mobile","Vitel"];
+const planType = airtimeDraft?.plan_type === "SNS" ? "SNS" : "VTU";
+const validNetworks = ["MTN","Airtel","Glo","T2","Vitel"];
 const validPhone = /^0[789][01]\d{8}$/;
-const validAmount = Number.isSafeInteger(amount) && amount >= 50 && amount <= 100000;
+const validAmount = Number.isSafeInteger(amount) && amount >= 50 && amount <= 50000;
 const button = document.getElementById("confirmButton");
 const statusBox = document.getElementById("requestStatus");
 // Keep the same request identifier across refreshes for this exact draft.
 // This prevents a refresh/retry from creating a second request record.
-const orderFingerprint = [network.toLowerCase(), phone, String(amount)].join("|");
+const orderFingerprint = [network.toLowerCase(), phone, String(amount), planType].join("|");
 const requestStorageKey = "ailat_airtime_request:" + encodeURIComponent(orderFingerprint);
 function getOrCreateRequestKey(){
  try{
@@ -107,6 +109,7 @@ if(!validNetworks.includes(network) || !validPhone.test(phone) || !validAmount){
 }else{
  document.getElementById("network").textContent = network;
  document.getElementById("phone").textContent = phone;
+ document.getElementById("airtimeType").textContent = planType === "SNS" ? "Share & Sell (SNS)" : "VTU";
  document.getElementById("amount").textContent = "₦" + amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
@@ -140,7 +143,7 @@ button.addEventListener("click",async()=>{
    body:JSON.stringify({
     service_key:"airtime",
     idempotency_key:requestKey,
-    customer_data:{network,phone,amount}
+    customer_data:{network,phone,amount,plan_type:planType}
    })
   });
   const result = await response.json().catch(()=>({}));

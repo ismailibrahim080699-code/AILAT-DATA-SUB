@@ -55,3 +55,19 @@ test("Buy Data request endpoint remains request-only", () => {
   assert.ok(backend.includes("Request record only. No payment was taken and no service was delivered."));
   assert.ok(!backend.includes('fetch("https://legitdataway.com/api/data"'));
 });
+
+const airtime = readFileSync(new URL("../airtime.html", import.meta.url), "utf8");
+const airtimeSummary = readFileSync(new URL("../airtime_order_summary.html", import.meta.url), "utf8");
+test("Airtime customer details are handed off through session storage, not URL parameters", () => {
+  assert.ok(airtime.includes('sessionStorage.setItem("ailat_airtime_draft_v1"'));
+  assert.ok(airtime.includes("window.location.href='airtime_order_summary.html'"));
+  assert.ok(!airtime.includes("airtime_order_summary.html?"));
+  assert.ok(airtimeSummary.includes('sessionStorage.getItem("ailat_airtime_draft_v1")'));
+  assert.ok(!airtimeSummary.includes("new URLSearchParams(window.location.search)"));
+});
+test("Airtime request remains clearly request-only and requires verified email", () => {
+  assert.ok(airtimeSummary.includes("!user.emailVerified"));
+  assert.ok(airtimeSummary.includes('service_key:"airtime"'));
+  assert.ok(airtimeSummary.includes("No payment was taken and no airtime was sent."));
+  assert.ok(airtime.includes("Supplier integration pending"));
+});

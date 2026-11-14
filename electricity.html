@@ -136,7 +136,7 @@ onAuthStateChanged(auth, async (user) => {
   providerSelect.innerHTML='<option value="">Select electricity company</option>';
   result.discos.forEach(item=>{
    const id=String(item.disco);
-   if(!/^\\d+$/.test(id)||!item.name) return;
+   if(!/^\d+$/.test(id)||!item.name) return;
    validDiscos.add(id);
    const option=document.createElement("option");option.value=id;option.textContent=item.name;providerSelect.appendChild(option);
   });
@@ -154,7 +154,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 validateButton.addEventListener("click",async()=>{
  const disco=providerField.value,meter=meterField.value.trim(),meter_type=typeField.value;
- if(!/^\\d+$/.test(disco)||!["prepaid","postpaid"].includes(meter_type)||!/^\\d{6,20}$/.test(meter)){validationResult.textContent="Zaɓi kamfani da meter type, sannan shigar da meter number mai lamba 6–20.";return;}
+ if(!/^\d+$/.test(disco)||!["prepaid","postpaid"].includes(meter_type)||!/^\d{6,20}$/.test(meter)){validationResult.textContent="Zaɓi kamfani da meter type, sannan shigar da meter number mai lamba 6–20.";return;}
  validateButton.disabled=true;validateButton.textContent="Verifying...";validationResult.textContent="Ana tabbatar da meter...";reviewButton.disabled=true;
  try{
   const user=auth.currentUser;if(!user)throw new Error("Please sign in again.");const token=await user.getIdToken(true);

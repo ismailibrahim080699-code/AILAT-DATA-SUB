@@ -5,6 +5,26 @@
 <meta name="theme-color" content="#101b2d"><title>Transaction Security - AILAT DATA</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=2">
 <style>
+/* Premium PIN setup presentation */
+.pin-intro{display:flex;align-items:flex-start;gap:12px;padding:15px;background:linear-gradient(135deg,#f0f8f8,#f7fafc);border:1px solid #e4eeee;border-radius:14px;margin:0 0 17px}
+.pin-intro-icon{width:42px;height:42px;display:grid;place-items:center;flex:0 0 42px;border-radius:12px;background:#dff2ef;color:#087f76}
+.pin-intro-icon svg,.pin-step-icon svg,.symbol svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pin-intro strong{display:block;font-size:13px;color:#172b3a;margin:1px 0 5px}
+.pin-intro p{font-size:11px;line-height:1.6;color:#647784;margin:0}
+.pin-steps{display:grid;gap:0;margin:0 0 18px}
+.pin-step{display:flex;gap:12px;align-items:flex-start;position:relative;padding:0 0 15px}
+.pin-step:not(:last-child):after{content:"";position:absolute;left:17px;top:37px;bottom:0;width:1px;background:#dce8e8}
+.pin-step-icon{z-index:1;width:35px;height:35px;display:grid;place-items:center;flex:0 0 35px;border:1px solid #dcebe9;border-radius:11px;background:#fff;color:#0b897f}
+.pin-step-copy{padding-top:2px}
+.pin-step-copy strong{display:block;font-size:12px;color:#233746;margin-bottom:4px}
+.pin-step-copy span{display:block;font-size:11px;line-height:1.55;color:#71818c}
+.pin-form-title{font-size:13px!important;font-weight:750;color:#263b49;margin:14px 0 7px!important}
+.pin-primary{min-height:47px;letter-spacing:.15px;box-shadow:0 5px 12px rgba(14,148,136,.15)}
+.pin-digit{box-shadow:inset 0 1px 2px rgba(16,27,45,.025)}
+.pin-digit:focus{box-shadow:0 0 0 3px rgba(14,148,136,.12)}
+.pin-status-icon{display:inline-flex;align-items:center;gap:7px}
+.pin-status-icon svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6f8;color:#172b3a}
 header{padding:24px 20px 30px;color:#fff;background:linear-gradient(135deg,#101b2d,#17263b);border-radius:0 0 26px 26px}
 header h1{font-size:22px;margin:0 0 7px}header p{font-size:12px;line-height:1.5;margin:0;opacity:.88}
@@ -50,13 +70,19 @@ main>.card:last-of-type .row{padding:14px 2px}
 <header><h1>Transaction Security</h1><p>Protect your AILAT DATA account with a private 4-digit PIN.</p></header>
 <main>
 <section class="card">
-<button class="section-toggle" type="button" aria-expanded="false" aria-controls="pinPanel" id="pinSectionToggle"><span class="section-toggle-main"><span class="symbol">🔢</span><span><h2>Transaction PIN</h2><span class="sub">Create and manage your separate 4-digit security PIN.</span></span></span><span class="section-chevron">⌄</span></button>
+<button class="section-toggle" type="button" aria-expanded="false" aria-controls="pinPanel" id="pinSectionToggle"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8"/></svg></span><span><h2>Transaction PIN</h2><span class="sub">Create and manage your separate 4-digit security PIN.</span></span></span><span class="section-chevron">⌄</span></button>
 <div class="status" id="pinStatus">Checking PIN status…</div>
 <div class="section-panel" id="pinPanel" hidden>
 <div id="setupBox" hidden>
-<h2>Create your PIN</h2>
+<div class="pin-intro"><span class="pin-intro-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Set up your Transaction PIN</strong><p>Create a private 4-digit PIN to add an extra layer of account security. Keep it confidential.</p></div></div>
+<div class="pin-steps">
+<div class="pin-step"><span class="pin-step-icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01"/></svg></span><div class="pin-step-copy"><strong>Step 1 · Choose your PIN</strong><span>Enter a private 4-digit number that is difficult for others to guess.</span></div></div>
+<div class="pin-step"><span class="pin-step-icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><div class="pin-step-copy"><strong>Step 2 · Confirm your PIN</strong><span>Enter the same 4 digits again to make sure there is no mistake.</span></div></div>
+<div class="pin-step"><span class="pin-step-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><div class="pin-step-copy"><strong>Step 3 · Activate securely</strong><span>Tap the button below. Your PIN is saved only after the server confirms it.</span></div></div>
+</div>
+<h2 class="pin-form-title">Create your 4-digit PIN</h2>
 <p class="sub">New 4-digit PIN</p><div class="pin-boxes" data-pin-group="newPin" role="group" aria-label="New PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 4" autocomplete="off"></div><p class="sub">Confirm your PIN</p><div class="pin-boxes" data-pin-group="confirmPin" role="group" aria-label="Confirm PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 4" autocomplete="off"></div>
-<button class="action" id="createBtn" type="button">Create PIN</button>
+<button class="action pin-primary" id="createBtn" type="button">Create &amp; Activate PIN</button>
 </div>
 <div id="manageBox" hidden>
 <h2>Change your PIN</h2>
@@ -68,7 +94,7 @@ main>.card:last-of-type .row{padding:14px 2px}
 </div>
 </div>
 <p class="message" id="pinMessage" role="status" aria-live="polite"></p>
-<div class="note">Never share your PIN with anyone. Five incorrect attempts temporarily lock PIN verification for 15 minutes. This PIN settings page is not yet connected to authorize purchases, wallet transfers, or payments.</div>
+<div class="note">Never share your PIN with anyone. Five incorrect attempts temporarily lock PIN verification for 15 minutes. PIN setup here does not authorize purchases, wallet transfers, or payments.</div>
 </section>
 <section class="card">
 <button class="section-toggle" type="button" aria-expanded="false" aria-controls="resetPanel" id="resetSectionToggle"><span class="section-toggle-main"><span class="symbol">🔄</span><span><h2>Forgot / Reset PIN</h2><span class="sub">Reset your PIN after verifying your account password.</span></span></span><span class="section-chevron">⌄</span></button>

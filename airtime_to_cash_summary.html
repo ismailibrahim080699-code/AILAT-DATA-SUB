@@ -51,10 +51,13 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#ddd6e9;co
 </main>
 </div>
 <script>
-const params=new URLSearchParams(window.location.search);
-const network=params.get("network")||"";
-const phone=params.get("phone")||"";
-const amount=Number(params.get("amount"));
+let reviewData={};
+try{
+ reviewData=JSON.parse(sessionStorage.getItem("ailat_airtime_to_cash_review")||"{}");
+}catch(error){ reviewData={}; }
+const network=typeof reviewData.network==="string"?reviewData.network:"";
+const phone=typeof reviewData.phone==="string"?reviewData.phone:"";
+const amount=Number(reviewData.amount);
 const validNetworks=["MTN","Airtel","Glo","9mobile"];
 const validPhone=/^0[789][01]\d{8}$/;
 const validAmount=Number.isSafeInteger(amount)&&amount>=100&&amount<=1000000;

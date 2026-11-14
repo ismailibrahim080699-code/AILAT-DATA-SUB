@@ -50,11 +50,13 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 <label for="meterNumber">Meter Number</label>
 <input id="meterNumber" type="text" inputmode="numeric" autocomplete="off" maxlength="20" pattern="[0-9]{6,20}" placeholder="Enter 6–20 digit meter number" aria-describedby="meterHelp" required>
 <p id="meterHelp" class="note">Enter the digits printed on your electricity meter. Use 6–20 digits.</p>
+<button id="validateMeterButton" type="button" disabled>Verify Meter (Free)</button>
+<div id="meterValidationResult" class="note" role="status" aria-live="polite"></div>
 <label for="amount">Amount (₦) — minimum ₦500</label>
 <input id="amount" type="number" inputmode="numeric" min="500" max="500000" step="1" placeholder="Enter ₦500–₦500,000" required>
 <button id="continueButton" type="submit" disabled>Review Order Details</button>
 </form>
-<p class="note"><strong>Notice:</strong> This page checks the entered details and opens a review summary. Provider meter validation and live payment are not enabled; no money is charged and no token is issued.</p>
+<p class="note"><strong>Notice:</strong> Meter validation is free. This page only verifies the meter and opens a review summary. Live bill payment is not enabled; no money is charged and no token is issued.</p>
 </div>
 </div>
 </div>
@@ -66,16 +68,19 @@ const validDiscos=new Set();
 const meterTypeInput=document.getElementById("meterType");
 const meterNumberInput=document.getElementById("meterNumber");
 const amountInput=document.getElementById("amount");
+const validateMeterButton=document.getElementById("validateMeterButton");
+const meterValidationResult=document.getElementById("meterValidationResult");
+let verifiedMeter=null;
 function electricityDetailsValid(){
  const meter=meterNumberInput.value.trim();
  const amount=Number(amountInput.value);
- return validDiscos.has(providerInput.value) && ["prepaid","postpaid"].includes(meterTypeInput.value) &&
+ return !!verifiedMeter && verifiedMeter.disco===providerInput.value && verifiedMeter.type===meterTypeInput.value && verifiedMeter.meter===meter && validDiscos.has(providerInput.value) && ["prepaid","postpaid"].includes(meterTypeInput.value) &&
   /^[0-9]{6,20}$/.test(meter) && amountInput.value.trim()!=="" &&
   Number.isSafeInteger(amount) && amount>=500 && amount<=500000;
 }
 [providerInput,meterTypeInput,meterNumberInput,amountInput].forEach(input=>{
- input.addEventListener("input",()=>continueButton.disabled=!electricityDetailsValid());
- input.addEventListener("change",()=>continueButton.disabled=!electricityDetailsValid());
+ input.addEventListener("input",()=>{verifiedMeter=null;meterValidationResult.textContent="";continueButton.disabled=true;});
+ input.addEventListener("change",()=>{verifiedMeter=null;meterValidationResult.textContent="";continueButton.disabled=true;});
 });
 electricityForm.addEventListener("submit",function(event){
  event.preventDefault();
@@ -91,7 +96,7 @@ electricityForm.addEventListener("submit",function(event){
  try{
   sessionStorage.setItem("ailat_electricity_review",JSON.stringify({
    provider:provider.options[provider.selectedIndex].text,
-   disco:provider.value,type,meter,amount:String(amount)
+   disco:provider.value,type,meter,amount:String(amount),customer_name:verifiedMeter.name,customer_address:verifiedMeter.address
   }));
  }catch(error){
   alert("This browser cannot keep the review details in this tab. Please try again.");
@@ -108,6 +113,9 @@ const providerSelect=document.getElementById("provider");
 const continueBtn=document.getElementById("continueButton");
 const SUPABASE_URL="https://bdogulpsybiggpgipdbt.supabase.co";
 const SUPABASE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const validateButton=document.getElementById("validateMeterButton");
+const validationResult=document.getElementById("meterValidationResult");
+const providerField=document.getElementById("provider"),typeField=document.getElementById("meterType"),meterField=document.getElementById("meterNumber"),reviewButton=document.getElementById("continueButton");
 onAuthStateChanged(auth, async (user) => {
  if (!user) {
   window.location.replace("login.html");
@@ -135,12 +143,27 @@ onAuthStateChanged(auth, async (user) => {
   providerSelect.disabled=validDiscos.size===0;
   if(validDiscos.size===0) throw new Error("No electricity companies returned");
   providerSelect.dispatchEvent(new Event("change"));
+  validateButton.disabled=false;
  } catch (error) {
   console.error("Electricity catalogue load failed:", error);
   providerSelect.innerHTML='<option value="">Could not load companies — refresh page</option>';
   providerSelect.disabled=true;
   continueBtn.disabled=true;
+  validateButton.disabled=true;
  }
+});
+validateButton.addEventListener("click",async()=>{
+ const disco=providerField.value,meter=meterField.value.trim(),meter_type=typeField.value;
+ if(!/^\\d+$/.test(disco)||!["prepaid","postpaid"].includes(meter_type)||!/^\\d{6,20}$/.test(meter)){validationResult.textContent="Zaɓi kamfani da meter type, sannan shigar da meter number mai lamba 6–20.";return;}
+ validateButton.disabled=true;validateButton.textContent="Verifying...";validationResult.textContent="Ana tabbatar da meter...";reviewButton.disabled=true;
+ try{
+  const user=auth.currentUser;if(!user)throw new Error("Please sign in again.");const token=await user.getIdToken(true);
+  const q=new URLSearchParams({action:"validate",disco,meter,meter_type});const response=await fetch(SUPABASE_URL+"/functions/v1/ailat-electricity-orders?"+q.toString(),{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+token}});
+  const result=await response.json().catch(()=>({}));if(!response.ok||!result.success||!result.customer)throw new Error(result.error||"Meter could not be verified.");
+  const customer=result.customer;verifiedMeter={disco,meter,type:meter_type,name:customer.name,address:customer.address||""};
+  validationResult.textContent="Verified ✓ Customer: "+customer.name+(customer.address?" | Address: "+customer.address:"")+(customer.outstanding_balance!=null?" | Outstanding balance: ₦"+Number(customer.outstanding_balance).toLocaleString("en-NG"):"");reviewButton.disabled=!electricityDetailsValid();
+ }catch(e){verifiedMeter=null;validationResult.textContent=e.message||"Meter validation failed. Try again.";reviewButton.disabled=true;}
+ finally{validateButton.disabled=false;validateButton.textContent="Verify Meter (Free)";}
 });
 </script>
 </body>

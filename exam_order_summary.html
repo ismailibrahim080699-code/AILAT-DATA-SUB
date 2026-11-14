@@ -1,35 +1,25 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#4c1d95"><link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><title>AILAT DATA | Exam PIN / Result Checker Summary</title>
-<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;padding:18px}.container{width:min(100%,520px);margin:28px auto;background:#fff;padding:24px;border-radius:20px;box-shadow:0 8px 25px #24134d18}header a{color:#6425c5;text-decoration:none;font-size:14px;font-weight:bold}h1{font-size:22px;color:#5425a8;margin:24px 0 10px}.status{display:inline-block;background:#fff0c2;color:#795600;padding:8px 13px;border-radius:20px;font-size:12px;font-weight:bold;margin:10px 0}p{font-size:14px;line-height:1.7;color:#686078}.details{margin:18px 0;padding:16px;background:#faf8ff;border:1px solid #eee7ff;border-radius:14px}.item{padding:10px 0;border-bottom:1px solid #eee7ff}.item:last-child{border-bottom:0}.label{display:block;font-size:12px;color:#796b91;margin-bottom:5px}.value{font-size:14px;font-weight:bold;overflow-wrap:anywhere}.notice{background:#f3efff;color:#5b21b6;padding:14px;border-radius:12px;font-size:12px;line-height:1.7;margin:18px 0}button{width:100%;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#702bd1,#4520a0);color:white;font-size:15px;font-weight:bold;cursor:pointer}.error{padding:15px;background:#fff1f0;color:#912018;border-radius:12px;line-height:1.6}</style></head><body>
-<main class="container"><header><a href="exam_result.html">← Back to Service</a></header><h1>Exam PIN / Result Checker Summary</h1><span class="status">LOCAL REVIEW · API NOT CONNECTED</span><p>Please check the information below. This screen does not submit an order.</p>
-<section class="details" id="details">
-<div class="item"><span class="label">Exam body</span><span class="value" id="v0">—</span></div>
-<div class="item"><span class="label">Candidate / registration number</span><span class="value" id="v1">—</span></div>
-<div class="item"><span class="label">Requested service</span><span class="value" id="v2">—</span></div>
-</section><div class="notice">Official product availability, eligibility, final pricing and secure provider integration are not connected. This is a local review only; no PIN has been issued and no result has been checked.</div><button type="button" onclick="location.href='exam_result.html'">Back to Service</button></main>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#4c1d95"><link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><title>AILAT DATA | Exam Request Summary</title>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;padding:18px}.container{width:min(100%,520px);margin:28px auto;background:#fff;padding:24px;border-radius:20px;box-shadow:0 8px 25px #24134d18}header a{color:#6425c5;text-decoration:none;font-size:14px;font-weight:bold}h1{font-size:22px;color:#5425a8;margin:24px 0 10px}.status{display:inline-block;background:#fff0c2;color:#795600;padding:8px 13px;border-radius:20px;font-size:12px;font-weight:bold;margin:10px 0}p{font-size:14px;line-height:1.7;color:#686078}.details{margin:18px 0;padding:16px;background:#faf8ff;border:1px solid #eee7ff;border-radius:14px}.item{padding:10px 0;border-bottom:1px solid #eee7ff}.item:last-child{border:0}.label{display:block;font-size:12px;color:#796b91;margin-bottom:5px}.value{font-size:14px;font-weight:bold;overflow-wrap:anywhere}.notice{background:#f3efff;color:#5b21b6;padding:14px;border-radius:12px;font-size:12px;line-height:1.7;margin:18px 0}button{width:100%;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#702bd1,#4520a0);color:white;font-size:15px;font-weight:bold;cursor:pointer}.error{padding:15px;background:#fff1f0;color:#912018;border-radius:12px;line-height:1.6}</style></head><body>
+<main class="container"><header><a href="exam_result.html">← Back to Exam Service</a></header><h1>Exam PIN Request Summary</h1><span class="status">REVIEW ONLY · NO PURCHASE</span><p>Review the selected examination product and request details.</p>
+<section class="details" id="details"><div class="item"><span class="label">Exam product</span><span class="value" id="exam">—</span></div><div class="item"><span class="label">Quantity</span><span class="value" id="quantity">—</span></div><div class="item" id="profileRow" hidden><span class="label">JAMB profile ID (not verified)</span><span class="value" id="profile">—</span></div><div class="item" id="typeRow" hidden><span class="label">JAMB type</span><span class="value" id="type">—</span></div><div class="item"><span class="label">Phone (optional)</span><span class="value" id="phone">—</span></div><div class="item"><span class="label">Catalogue price per PIN</span><span class="value" id="unit">—</span></div><div class="item"><span class="label">Estimated total</span><span class="value" id="total">—</span></div></section>
+<div class="notice"><strong>Safe preview only:</strong> This is the current Bilalsadasub catalogue price, not a confirmed final selling price. No payment is taken, no order is sent to Bilalsadasub, and no PIN is issued. JAMB profile verification is not enabled; the entered profile ID is not verified.</div><button type="button" onclick="location.href='exam_result.html'">Back to Exam Service</button></main>
 <script>
-let reviewData={};
-try{reviewData=JSON.parse(sessionStorage.getItem("ailat_exam_review")||"{}");}catch(error){}
-const allowed=["WAEC","NECO","NABTEB","JAMB"];
-const keys=["provider","account","item"];
-const labels=["Exam body","Candidate / registration number","Requested service"];
-const values=keys.map(k=>String(reviewData[k]||"").trim());
-const valid=allowed.includes(values[0]) && values[2].length>=2 && (values[1]==="" || values[1].length>=5);
-if(!valid){
- const box=document.createElement("div");box.className="error";
- const title=document.createElement("strong");title.textContent="Invalid or incomplete request details.";
- const msg=document.createElement("p");msg.textContent="Return to the service page and enter valid details again.";
- box.append(title,msg);document.getElementById("details").replaceChildren(box);
-}else{
- values.forEach((value,i)=>document.getElementById("v"+i).textContent=value||"Not provided");
+let d={};try{d=JSON.parse(sessionStorage.getItem("ailat_exam_review")||"{}");}catch(e){}
+const valid=Number.isSafeInteger(Number(d.exam_id))&&String(d.exam_name||"").length>0&&Number(d.amount)>0&&Number.isInteger(Number(d.quantity))&&Number(d.quantity)>=1&&Number(d.quantity)<=10&&Number(d.total)>0;
+if(!valid){const box=document.createElement("div");box.className="error";box.textContent="No valid exam review was found. Return to the exam page and select a product.";document.getElementById("details").replaceChildren(box);}
+else{
+ const money=n=>"₦"+Number(n).toLocaleString("en-NG");
+ document.getElementById("exam").textContent=d.exam_name;
+ document.getElementById("quantity").textContent=String(d.quantity);
+ document.getElementById("phone").textContent=d.phone||"Not provided";
+ document.getElementById("unit").textContent=money(d.amount);
+ document.getElementById("total").textContent=money(d.total);
+ if(d.mode==="profile_code"){document.getElementById("profileRow").hidden=false;document.getElementById("typeRow").hidden=false;document.getElementById("profile").textContent=d.profile_code||"Not provided";document.getElementById("type").textContent=d.jamb_type||"—";}
 }
 </script>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
-onAuthStateChanged(auth,async user=>{
- if(!user){location.replace("login.html");return;}
- try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html");}}
- catch(error){console.error("Access check failed:",error);location.replace("login.html");}
-});
+onAuthStateChanged(auth,async user=>{if(!user){location.replace("login.html");return;}try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html");}}catch(e){console.error("Access check failed:",e);location.replace("login.html");}});
 </script></body></html>

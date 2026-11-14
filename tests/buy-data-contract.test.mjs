@@ -53,5 +53,5 @@ test("authenticated order path rejects invalid provider IDs and prices", () => {
 test("Buy Data request endpoint remains request-only", () => {
   assert.ok(backend.includes('provider_dispatch_status: serviceKey === "data" ? "disabled_safe_mode"'));
   assert.ok(backend.includes("Request record only. No payment was taken and no service was delivered."));
-  assert.ok(!backend.includes("fetch("https://legitdataway.com/api/data""));
+  assert.ok(!backend.includes('fetch("https://legitdataway.com/api/data"'));
 });

@@ -86,6 +86,7 @@ main>.card:last-of-type .row{padding:14px 2px}
 <div class="status" id="bioStatus">Checking device support…</div>
 <p id="deviceCheck">Register this phone using its built-in fingerprint, face unlock, or device screen lock.</p>
 <button class="action" id="registerBiometricBtn" type="button" disabled>Register this device</button>
+<button class="action secondary" id="testBiometricBtn" type="button" disabled>Test fingerprint / device unlock</button>
 <div id="passkeyList" style="margin-top:12px"></div>
 <p class="message" id="bioMessage" role="status" aria-live="polite"></p>
 <div class="note">Your fingerprint or face template must remain on your device. AILAT DATA must never collect biometric images or templates. Passkey enrollment will be added separately after its server-side challenge verification is implemented.</div>
@@ -102,7 +103,7 @@ main>.card:last-of-type .row{padding:14px 2px}
 </main><footer>AILAT DATA © 2026 · Account Security</footer>
 <script type="module">
 import { app } from "./firebase.js";
-import { startRegistration } from "https://esm.sh/@simplewebauthn/browser@14.1.0";
+import { startRegistration, startAuthentication } from "https://esm.sh/@simplewebauthn/browser@14.1.0";
 import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
@@ -216,8 +217,20 @@ onAuthStateChanged(auth,async user=>{
    detail.textContent=available?"You can register this phone. Your device will ask for fingerprint, face unlock, or its screen lock. AILAT DATA will not receive your biometric data.":"This browser did not detect a built-in authenticator. Check your phone's screen lock and browser support.";
    registerBtn.disabled=!available;
    await loadPasskeys();
+   $("testBiometricBtn").disabled=!available;
   }catch(e){status.textContent="Support could not be confirmed";detail.textContent=e.message;registerBtn.disabled=true;}
  }
+ $("testBiometricBtn").addEventListener("click",async()=>{
+  const testBtn=$("testBiometricBtn");testBtn.disabled=true;$("bioMessage").textContent="Waiting for device verification…";
+  try{
+   const begin=await passkeyRequest("POST",{action:"start_authentication"});
+   const response=await startAuthentication({optionsJSON:begin.options});
+   const result=await passkeyRequest("POST",{action:"finish_authentication",response});
+   $("bioMessage").textContent=result.message||"Device verified successfully.";
+  }catch(e){
+   $("bioMessage").textContent=e.name==="NotAllowedError"?"Device verification was cancelled or timed out. Try again.":e.message;
+  }finally{testBtn.disabled=false;}
+ });
  registerBtn.addEventListener("click",async()=>{
   registerBtn.disabled=true;$("bioMessage").textContent="Preparing secure device registration…";
   try{

@@ -112,3 +112,10 @@ This document does not enable supplier dispatch, payment collection, wallet debi
 - Forty Vitel rows have no supplier network mapping. The other networks' rows are not currently verified for supplier mapping, so they remain excluded from the verified plan list.
 - Security Advisor reports RLS enabled with no policies on several public tables. A separate grants check found only `service_role` table grants (no `anon` or `authenticated` grants) on the inspected catalogue, order-request, transaction, wallet, and referral tables. This is a deny-by-default configuration for direct client table access; Edge Functions using privileged service credentials still require careful authorization checks.
 - These checks were read-only. No catalogue rows, policies, credentials, wallet balances, or order dispatch settings were changed.
+
+## 10. Defensive provider mapping validation (2026-11-14)
+
+- Deployed `ailat-order-requests` Edge Function version 22 as a fail-closed validation hardening change. The plan-list response now omits rows unless the supplier plan ID is a positive safe integer, the supplier network ID is a positive safe integer matching the documented provider network ID, the network is one of the four documented networks (Vitel remains excluded), and the supplier amount is finite and greater than zero.
+- The authenticated request path now rejects non-positive supplier plan/network IDs and non-positive or invalid supplier amounts. This closes a JavaScript coercion edge case where `Number(null)` becomes `0` and can pass `Number.isSafeInteger`.
+- This deployment does not add provider calls, payment handling, wallet debits, or fulfilment. Existing request-only behavior remains unchanged.
+- Post-deployment metadata check confirmed function version 22 is ACTIVE. A live browser/GET endpoint smoke test and the GitHub contract workflow were not run in this step; do not treat deployment metadata as proof of end-to-end behavior.

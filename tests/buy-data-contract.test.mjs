@@ -103,3 +103,12 @@ test("Airtime receipt distinguishes AILAT request recording from supplier fulfil
   assert.ok(backend.includes('status: "received"'));
   assert.ok(backend.includes("Request record only. No payment was taken and no service was delivered."));
 });
+
+test("Idempotency key cannot be reused for different Airtime or Data details", () => {
+  assert.ok(backend.includes("const sameRequest ="));
+  assert.ok(backend.includes("existing.service_key === serviceKey"));
+  assert.ok(backend.includes("existingData.phone === phone"));
+  assert.ok(backend.includes("Number(existing.requested_amount) === Number(requestedAmount)"));
+  assert.ok(backend.includes("This request key was already used for different order details"));
+  assert.ok(backend.includes("}, 409);"));
+});

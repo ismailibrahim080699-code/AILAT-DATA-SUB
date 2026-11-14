@@ -4,54 +4,92 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#4c1d95">
-<meta name="description" content="AILAT DATA Recharge Card Printing service request preparation.">
+<meta name="description" content="AILAT DATA recharge card catalogue and printable request preview.">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <title>AILAT DATA | Recharge Card Printing</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;display:flex;flex-direction:column}header{padding:20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}header a{color:white;text-decoration:none;font-weight:bold;font-size:14px}main{width:min(92%,560px);margin:28px auto;flex:1}.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:25px 22px;box-shadow:0 10px 28px #35106f12}.hero{text-align:center}.icon{width:68px;height:68px;margin:0 auto 15px;border-radius:20px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:29px}h1{font-size:24px;margin:0 0 8px}p{font-size:14px;line-height:1.7;color:#75658f}.status{display:inline-block;margin:10px 0;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:12px;font-weight:800}.form-section{margin-top:20px;padding:18px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}label{display:block;margin:15px 0 7px;font-size:13px;font-weight:700;color:#44345f}input,select,textarea{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}textarea{resize:vertical;min-height:95px}input:focus,select:focus,textarea:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}button{border:0;border-radius:11px;padding:14px;font-size:14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}.notice{margin-top:16px;padding:14px;border-radius:12px;background:#f3efff;color:#5b21b6;font-size:12px;line-height:1.7}.preview{display:none;margin-top:16px;padding:15px;border:1px solid #ddd1fa;border-radius:12px;background:#fff}.preview h2{font-size:15px;margin:0 0 10px}.preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Arial;color:#51446b;margin:0}.error{color:#b42318;font-size:12px;margin-top:10px;min-height:16px}footer{text-align:center;padding:20px;color:#9589ac;font-size:11px}@media(max-width:380px){.actions{grid-template-columns:1fr}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}
+header{padding:20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}
+header a{color:white;text-decoration:none;font-weight:bold;font-size:14px}
+main{width:min(94%,680px);margin:24px auto}
+.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:22px;box-shadow:0 10px 28px #35106f12}
+.hero{text-align:center}.icon{width:64px;height:64px;margin:0 auto 13px;border-radius:19px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:28px}
+h1{font-size:24px;margin:0 0 8px}p{font-size:13px;line-height:1.6;color:#75658f}
+.status{display:inline-block;margin:8px 0 14px;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:11px;font-weight:800}
+.catalogue{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px;margin:18px 0}
+.plan{border:1px solid #e8defb;border-radius:14px;padding:14px;background:#fcfbff}
+.plan strong{display:block;color:#4c1d95;font-size:14px}.plan small{display:block;color:#85759e;font-size:11px;margin-top:5px;line-height:1.5}.plan b{display:block;margin-top:9px;font-size:16px}
+.form-section{margin-top:18px;padding:17px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}
+label{display:block;margin:13px 0 7px;font-size:13px;font-weight:700;color:#44345f}
+select,input{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}
+select:focus,input:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}
+.summary{margin-top:14px;padding:13px;border-radius:12px;background:#f1ebff;font-size:13px;line-height:1.7}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+button{border:0;border-radius:11px;padding:14px;font-size:13px;font-weight:700;cursor:pointer}
+.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}
+.notice{margin-top:16px;padding:14px;border-radius:12px;background:#fff7e6;color:#79530b;font-size:12px;line-height:1.7}
+.error{color:#b42318;font-size:12px;margin-top:9px;min-height:16px}
+.preview{display:none;margin-top:16px;padding:16px;border:1px dashed #a78bfa;border-radius:12px;background:white}
+.preview h2{font-size:16px;margin:0 0 10px;color:#4c1d95}.preview p{margin:5px 0;color:#51446b}
+footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
+@media(max-width:380px){.actions{grid-template-columns:1fr}.card{padding:17px}}
+@media print{header,.hero,.catalogue,.form-section,.notice,footer,.no-print{display:none!important}body{background:white}main{width:100%;margin:0}.card{box-shadow:none;border:0}.preview{display:block!important;border:1px solid #aaa}}
 </style>
 </head>
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Prepare a voucher-printing request</p><span class="status">PRE-API SETUP</span></div>
+<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a provider recharge-card plan and prepare a printable request summary.</p><span class="status">CATALOGUE PREVIEW · PIN GENERATION NOT ENABLED</span></div>
+<h2 style="font-size:16px;margin:14px 0 8px">Available provider plans</h2>
+<div class="catalogue">
+<div class="plan"><strong>MTN · Plan ID 1</strong><small>Load *556# · Check balance *556#</small><b>Provider charge: ₦97.00</b></div>
+<div class="plan"><strong>MTN · Plan ID 3</strong><small>Load *555*PIN# · Check balance *556#</small><b>Provider charge: ₦485.00</b></div>
+<div class="plan"><strong>Glo · Plan ID 5</strong><small>Load *777# · Check balance *777#</small><b>Provider charge: ₦196.00</b></div>
+<div class="plan"><strong>Glo · Plan ID 6</strong><small>Load *777# · Check balance *777#</small><b>Provider charge: ₦490.00</b></div>
+<div class="plan"><strong>Airtel · Plan ID 8</strong><small>Load *126*PIN# · Check balance *126*PIN#</small><b>Provider charge: ₦196.00</b></div>
+</div>
 <form id="serviceForm" novalidate><div class="form-section">
-<label for="network">Network</label><select id="network" required><option value="">Choose network</option><option>MTN</option><option>Airtel</option><option>Glo</option><option>9mobile</option></select>
-<label for="denomination">Requested denomination (₦)</label><input id="denomination" type="number" required min="1" step="1" placeholder="Enter provider-supported value">
-<label for="quantity">Quantity</label><input id="quantity" type="number" required min="1" step="1" placeholder="Enter quantity">
+<label for="plan">Select recharge card plan</label>
+<select id="plan" required>
+<option value="">Choose a plan</option>
+<option value="1" data-network="MTN" data-price="97" data-load="*556#" data-check="*556#">MTN · Plan ID 1 — ₦97.00 provider charge</option>
+<option value="3" data-network="MTN" data-price="485" data-load="*555*PIN#" data-check="*556#">MTN · Plan ID 3 — ₦485.00 provider charge</option>
+<option value="5" data-network="Glo" data-price="196" data-load="*777#" data-check="*777#">Glo · Plan ID 5 — ₦196.00 provider charge</option>
+<option value="6" data-network="Glo" data-price="490" data-load="*777#" data-check="*777#">Glo · Plan ID 6 — ₦490.00 provider charge</option>
+<option value="8" data-network="Airtel" data-price="196" data-load="*126*PIN#" data-check="*126*PIN#">Airtel · Plan ID 8 — ₦196.00 provider charge</option>
+</select>
+<label for="quantity">Number of pins (1–100)</label><input id="quantity" type="number" min="1" max="100" step="1" value="1" required>
+<div class="summary" id="estimate">Choose a plan to view its details and estimated provider charge.</div>
 <div class="error" id="formError" role="alert" aria-live="polite"></div>
-<div class="actions"><button class="primary" type="submit">Preview Request</button><button class="secondary" type="reset">Clear Form</button></div>
+<div class="actions no-print"><button class="primary" type="submit">Prepare Print Preview</button><button class="secondary" type="reset">Clear</button></div>
 </div></form>
-<section class="preview" id="preview" aria-live="polite"><h2>Local Request Preview</h2><pre id="previewText"></pre></section>
-<div class="notice"><strong>Integration status:</strong> No PINs or serial numbers are generated or displayed here. Provider denominations, stock, secure voucher handling and pricing must be confirmed before production. This preview stays on this device and is not sent to AILAT DATA, a provider or another person.</div>
-</section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
+<section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Recharge Card Request Summary</h2><div id="previewText"></div><p><strong>Recharge PINs:</strong> Not generated. This is only a local request/print preview.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
+<div class="notice"><strong>Important:</strong> The provider documentation shows five plans and their provider charges, but does not state the voucher face denominations in the supplied table. Therefore this page does not guess or label a face value. The provider's recharge-card endpoint is a paid POST operation that can debit the supplier wallet. No order, payment request or PIN-generation request is sent from this page. The listed provider charges are catalogue figures and must be confirmed before any future production integration.</div>
+</section></main>
+<footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
-const form=document.getElementById("serviceForm");
-const errorBox=document.getElementById("formError");
-const preview=document.getElementById("preview");
-const previewText=document.getElementById("previewText");
-const fields=[["network","Network"],["denomination","Requested denomination (₦)"],["quantity","Quantity"]];
-form.addEventListener("submit",event=>{
- event.preventDefault(); errorBox.textContent="";
- const values=[];
- for(const [id,label] of fields){
-  const el=document.getElementById(id); const value=el.value.trim();
-  if(el.required && !value){errorBox.textContent="Please complete: "+label;el.focus();return;}
-  if(el.type==="number" && value && (!Number.isSafeInteger(Number(value)) || Number(value)<1)){errorBox.textContent=label+" must be a whole number greater than zero.";el.focus();return;}
-  if(["phone","sender","recipient"].includes(id) && value && !/^0[789][01]\d{8}$/.test(value)){errorBox.textContent=label+" must be a valid 11-digit Nigerian mobile number.";el.focus();return;}
-  values.push(label+": "+(value||"Not provided"));
- }
- if(document.getElementById("sender") && document.getElementById("recipients")){
-  const raw=document.getElementById("recipients").value.trim();
-  const numbers=raw.split(/[\s,;]+/).filter(Boolean);
-  if(numbers.some(n=>!/^0[789][01]\d{8}$/.test(n))){errorBox.textContent="Check recipient numbers. Use valid 11-digit Nigerian mobile numbers.";return;}
-  values.push("Recipient count: "+numbers.length);
-  values.push("Message characters: "+document.getElementById("message").value.length);
- }
- previewText.textContent=values.join("\n");
- preview.style.display="block";
+const form=document.getElementById("serviceForm"),plan=document.getElementById("plan"),quantity=document.getElementById("quantity"),estimate=document.getElementById("estimate"),errorBox=document.getElementById("formError"),preview=document.getElementById("preview"),previewText=document.getElementById("previewText");
+const naira=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+function updateEstimate(){
+ const o=plan.selectedOptions[0],q=Number(quantity.value);
+ if(!plan.value){estimate.textContent="Choose a plan to view its details and estimated provider charge.";return;}
+ if(!Number.isInteger(q)||q<1||q>100){estimate.textContent="Quantity must be between 1 and 100.";return;}
+ const p=Number(o.dataset.price);
+ estimate.innerHTML="<strong>"+o.dataset.network+" recharge card · Plan ID "+plan.value+"</strong><br>Provider charge per PIN: "+naira(p)+"<br><strong>Estimated provider charge for "+q+" PIN(s): "+naira(p*q)+"</strong>";
+}
+plan.addEventListener("change",updateEstimate);quantity.addEventListener("input",updateEstimate);
+form.addEventListener("submit",e=>{
+ e.preventDefault();errorBox.textContent="";
+ if(!plan.value){errorBox.textContent="Please select a recharge card plan.";plan.focus();return;}
+ const q=Number(quantity.value);
+ if(!Number.isInteger(q)||q<1||q>100){errorBox.textContent="Quantity must be a whole number from 1 to 100.";quantity.focus();return;}
+ const o=plan.selectedOptions[0],p=Number(o.dataset.price);
+ const rows=[["Network",o.dataset.network],["Provider Plan ID",plan.value],["Quantity",q],["Provider charge per PIN",naira(p)],["Estimated provider charge",naira(p*q)],["Load code",o.dataset.load],["Balance check code",o.dataset.check],["Face denomination","Not specified in supplied provider table"]];
+ previewText.replaceChildren();
+ rows.forEach(([k,v])=>{const line=document.createElement("p"),strong=document.createElement("strong");strong.textContent=k+": ";line.append(strong,document.createTextNode(String(v)));previewText.append(line);});
+ preview.style.display="block";preview.scrollIntoView({behavior:"smooth",block:"nearest"});
 });
-form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";previewText.textContent="";});
+form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";previewText.replaceChildren();setTimeout(updateEstimate,0);});
 </script>
 <script type="module">
 import { app } from "./firebase.js";

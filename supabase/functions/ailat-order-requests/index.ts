@@ -318,7 +318,8 @@ Deno.serve(async (req: Request) => {
     } else if (serviceKey === "airtime" && supplierNetworkId !== null) {
       providerRequestPreview = {
         network: supplierNetworkId,
-        phone: `234${phone.slice(1)}`,
+        // Legitdataway Airtime documentation uses the local 11-digit phone format.
+        phone,
         plan_type: "VTU",
         amount: requestedAmount,
         bypass: false,

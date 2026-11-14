@@ -150,3 +150,21 @@ test("Electricity supplier adapter matches documented Legitdataway bill contract
   assert.ok(!electricityBackend.includes("LEGITDATAWAY_USERNAME"));
   assert.ok(!electricityBackend.includes("getLegitAccessToken"));
 });
+
+test("Electricity summary submits an authenticated request-only record", () => {
+  assert.ok(electricitySummary.includes("ailat-electricity-orders"));
+  assert.ok(electricitySummary.includes("idempotency_key:key"));
+  assert.ok(electricitySummary.includes("meter_number:meter"));
+  assert.ok(electricitySummary.includes("!user.emailVerified"));
+  assert.ok(electricitySummary.includes("No payment was taken"));
+  assert.ok(electricitySummary.includes("no provider was contacted"));
+});
+test("Electricity backend records requests only and never calls the supplier", () => {
+  assert.ok(electricityBackend.includes('status:"received"'));
+  assert.ok(electricityBackend.includes('provider_dispatch_status:"disabled_safe_mode"'));
+  assert.ok(electricityBackend.includes("idempotency_key:key"));
+  assert.ok(electricityBackend.includes("This request key was already used for different electricity details"));
+  assert.ok(!electricityBackend.includes("LEGITDATAWAY_API_KEY"));
+  assert.ok(!electricityBackend.includes("legitdataway.com/api/bill"));
+  assert.ok(!electricityBackend.includes("fetch("));
+});

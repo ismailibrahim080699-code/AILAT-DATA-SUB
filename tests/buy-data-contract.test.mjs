@@ -112,3 +112,13 @@ test("Idempotency key cannot be reused for different Airtime or Data details", (
   assert.ok(backend.includes("This request key was already used for different order details"));
   assert.ok(backend.includes("}, 409);"));
 });
+
+const airtimeToCash = readFileSync(new URL("../airtime_to_cash.html", import.meta.url), "utf8");
+const airtimeToCashSummary = readFileSync(new URL("../airtime_to_cash_summary.html", import.meta.url), "utf8");
+test("Airtime-to-Cash customer details stay in session storage, not URL parameters", () => {
+  assert.ok(airtimeToCash.includes('sessionStorage.setItem("ailat_airtime_to_cash_review"'));
+  assert.ok(airtimeToCash.includes('window.location.href="airtime_to_cash_summary.html"'));
+  assert.ok(!airtimeToCash.includes("airtime_to_cash_summary.html?"));
+  assert.ok(airtimeToCashSummary.includes('sessionStorage.getItem("ailat_airtime_to_cash_review")'));
+  assert.ok(!airtimeToCashSummary.includes("new URLSearchParams(window.location.search)"));
+});

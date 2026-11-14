@@ -43,57 +43,66 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 </section>
 </main>
 </div>
-<script>
-import { app } from "./firebase.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-const FUNCTION_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-electricity-orders";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-const auth=getAuth(app);let draft={};
-try{draft=JSON.parse(sessionStorage.getItem("ailat_electricity_review")||"{}");}catch(error){}
-const providers={"1":"Ikeja Electricity","2":"Eko Electricity","3":"Kano Electricity","4":"Port Harcourt Electricity","5":"Jos Electricity","6":"Ibadan Electricity","7":"Kaduna Electric","8":"Abuja Electricity","9":"Yola Electricity","10":"Benin Electricity"};
-const disco=String(draft.disco||""),type=String(draft.type||""),meter=String(draft.meter||""),amountRaw=String(draft.amount||""),amount=Number(amountRaw);
-const valid=Object.prototype.hasOwnProperty.call(providers,disco)&&["prepaid","postpaid"].includes(type)&&/^\\d{6,20}$/.test(meter)&&/^\\d{1,7}$/.test(amountRaw)&&Number.isSafeInteger(amount)&&amount>=100&&amount<=1000000;
-const button=document.getElementById("submitRequest"),newButton=document.getElementById("newRequest"),statusBox=document.getElementById("requestStatus");
-const storageKey="ailat_electricity_request:"+encodeURIComponent([disco,type,meter,String(amount)].join("|"));
-function requestId(){try{const old=sessionStorage.getItem(storageKey);if(old&&/^[0-9a-f-]{36}$/i.test(old))return old;const id=crypto.randomUUID();sessionStorage.setItem(storageKey,id);return id;}catch(error){return crypto.randomUUID();}}
-let key=requestId(),saved=false;
-function signedInUser(){return new Promise((resolve,reject)=>{const off=onAuthStateChanged(auth,user=>{off();if(user)resolve(user);else reject(new Error("Please log in first."));},error=>{off();reject(error);});});}
-if(!valid){const card=document.getElementById("summaryCard"),err=document.createElement("div"),back=document.createElement("a");err.className="error";err.textContent="Invalid electricity details. Return to the form and check the meter number, company and amount.";back.className="cancel";back.href="electricity.html";back.textContent="← Back to Electricity";card.replaceChildren(err,back);}
-else{
- document.getElementById("provider").textContent=providers[disco];document.getElementById("type").textContent=type==="prepaid"?"Prepaid":"Postpaid";document.getElementById("meter").textContent=meter;document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-newButton.addEventListener("click",()=>{key=crypto.randomUUID();try{sessionStorage.setItem(storageKey,key);}catch(error){}saved=false;button.disabled=false;button.textContent="Submit Electricity Request";newButton.hidden=true;statusBox.textContent="A new request is ready. Review the details before submitting.";});
-button.addEventListener("click",async()=>{
- if(!valid||saved)return;button.disabled=true;button.textContent="Recording request...";statusBox.textContent="Please wait while your request is securely recorded.";
- try{
-  const user=await signedInUser();await user.reload();if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
-  const idToken=await user.getIdToken(true);
-  const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify({idempotency_key:key,customer_data:{disco:Number(disco),meter_type:type,meter_number:meter,amount}})});
-  const result=await response.json().catch(()=>({}));if(!response.ok||!result.success)throw new Error(result.error||"Could not record this request.");
-  saved=true;button.textContent="Request Recorded";newButton.hidden=false;const order=result.order_request||{};
-  statusBox.textContent="Your request is recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". No payment was taken, no provider was contacted and no token was issued.";
- }catch(error){button.disabled=false;button.textContent="Try Again";statusBox.textContent=error.message||"Could not record the request. Please try again.";}
-});</script>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-const auth = getAuth(app);
-onAuthStateChanged(auth, async (user) => {
- if (!user) {
-  window.location.replace("login.html");
-  return;
- }
- try {
+
+const FUNCTION_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-electricity-orders";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const auth=getAuth(app);
+const providers={"1":"Ikeja Electricity","2":"Eko Electricity","3":"Kano Electricity","4":"Port Harcourt Electricity","5":"Jos Electricity","6":"Ibadan Electricity","7":"Kaduna Electric","8":"Abuja Electricity","9":"Yola Electricity","10":"Benin Electricity"};
+const card=document.getElementById("summaryCard");
+const statusBox=document.getElementById("requestStatus");
+const button=document.getElementById("submitRequest");
+const newButton=document.getElementById("newRequest");
+let user=null,draft={},requestKey="",saved=false;
+
+try{draft=JSON.parse(sessionStorage.getItem("ailat_electricity_review")||"{}");}catch(error){}
+const disco=String(draft.disco||""),type=String(draft.type||""),meter=String(draft.meter||""),amountRaw=String(draft.amount||""),amount=Number(amountRaw);
+const valid=Object.prototype.hasOwnProperty.call(providers,disco)&&["prepaid","postpaid"].includes(type)&&/^\d{6,20}$/.test(meter)&&/^\d{1,7}$/.test(amountRaw)&&Number.isSafeInteger(amount)&&amount>=100&&amount<=1000000;
+
+function makeKey(){return crypto.randomUUID();}
+function showError(message){
+ const err=document.createElement("div");err.className="error";err.textContent=message;
+ card.replaceChildren(err);
+ const back=document.createElement("a");back.className="cancel";back.href="electricity.html";back.textContent="← Back to Electricity";card.appendChild(back);
+}
+function updateStatus(message,isError=false){statusBox.textContent=message;statusBox.style.color=isError?"#a52222":"#4c1d95";}
+
+onAuthStateChanged(auth,async currentUser=>{
+ if(!currentUser){window.location.replace("login.html");return;}
+ try{
+  await currentUser.reload();
+  if(!currentUser.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");window.location.replace("login.html");return;}
+  user=currentUser;
+  if(!valid){showError("Invalid electricity details. Return to the form and check the meter number, company and amount.");return;}
+  document.getElementById("provider").textContent=providers[disco];
+  document.getElementById("type").textContent=type==="prepaid"?"Prepaid":"Postpaid";
+  document.getElementById("meter").textContent=meter;
+  document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+  requestKey=makeKey();
+  button.disabled=false;
+ }catch(error){showError("Could not verify your account. Please log in again.");window.location.replace("login.html");}
+});
+
+button.addEventListener("click",async()=>{
+ if(!valid||!user||saved||button.disabled)return;
+ button.disabled=true;button.textContent="Recording request...";updateStatus("Please wait while AILAT DATA records your request.");
+ try{
   await user.reload();
-  if (!user.emailVerified) {
-   await signOut(auth);
-   alert("Please verify your email before using this service.");
-   window.location.replace("login.html");
-  }
- } catch (error) {
-  console.error("Service access check failed:", error);
-  window.location.replace("login.html");
- }
+  if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
+  const idToken=await user.getIdToken(true);
+  const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify({idempotency_key:requestKey,customer_data:{disco:Number(disco),meter_type:type,meter_number:meter,amount}})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.success)throw new Error(result.error||"Could not record this request.");
+  saved=true;button.textContent="Request Recorded";newButton.hidden=false;
+  const order=result.order_request||{};
+  updateStatus("Request recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". No payment was taken, no electricity provider was contacted and no token was issued.");
+ }catch(error){button.disabled=false;button.textContent="Try Again";updateStatus(error.message||"Could not record the request. Please try again.",true);}
+});
+newButton.addEventListener("click",()=>{
+ requestKey=makeKey();saved=false;button.disabled=false;button.textContent="Submit Electricity Request";newButton.hidden=true;
+ updateStatus("A new request is ready. Review the details before submitting.");
 });
 </script>
 </body>

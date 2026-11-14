@@ -129,7 +129,6 @@ main>.card:last-of-type .row{padding:14px 2px}
 </main><footer>AILAT DATA © 2026 · Account Security</footer>
 <script type="module">
 import { app } from "./firebase.js";
-import { startRegistration, startAuthentication } from "https://esm.sh/@simplewebauthn/browser@14.1.0";
 import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
@@ -200,7 +199,7 @@ onAuthStateChanged(auth,async user=>{
  catch(e){console.error("Security page account check failed:",e);say("Could not verify your account session. Refresh and try again.");}
 });
 (async()=>{
- const authReady=new Promise(resolve=>{if(currentUser){resolve(currentUser);return;}const unsubscribe=onAuthStateChanged(auth,user=>{unsubscribe();resolve(user);});});
+ const authReady=new Promise(resolve=>{if(currentUser){resolve(currentUser);return;}let unsubscribe=()=>{};unsubscribe=onAuthStateChanged(auth,user=>{unsubscribe();resolve(user);});});
  const signedInUser=await authReady;if(!signedInUser)return;
  const status=$("bioStatus"),detail=$("deviceCheck"),registerBtn=$("registerBiometricBtn");
  async function passkeyRequest(method="GET",body=null){
@@ -250,6 +249,7 @@ onAuthStateChanged(auth,async user=>{
   const testBtn=$("testBiometricBtn");testBtn.disabled=true;$("bioMessage").textContent="Waiting for device verification…";
   try{
    const begin=await passkeyRequest("POST",{action:"start_authentication"});
+   const { startAuthentication } = await import("https://esm.sh/@simplewebauthn/browser@14.1.0");
    const response=await startAuthentication({optionsJSON:begin.options});
    const result=await passkeyRequest("POST",{action:"finish_authentication",response});
    $("bioMessage").textContent=result.message||"Device verified successfully.";
@@ -261,6 +261,7 @@ onAuthStateChanged(auth,async user=>{
   registerBtn.disabled=true;$("bioMessage").textContent="Preparing secure device registration…";
   try{
    const begin=await passkeyRequest("POST",{action:"start_registration"});
+   const { startRegistration } = await import("https://esm.sh/@simplewebauthn/browser@14.1.0");
    const response=await startRegistration({optionsJSON:begin.options});
    const result=await passkeyRequest("POST",{action:"finish_registration",response,friendly_name:"My phone"});
    $("bioMessage").textContent=result.message||"Device registered.";

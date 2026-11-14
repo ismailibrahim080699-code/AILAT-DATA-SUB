@@ -4,21 +4,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#4c1d95">
+<meta name="theme-color" content="#102a43">
 <title>AILAT DATA | Dashboard</title>
 
 <style>
 *{box-sizing:border-box}
 body{
  margin:0;font-family:Arial,sans-serif;
- background:#f5f3ff;color:#24134d;
+ background:#edf2f5;color:#172b3a;
 }
 button,a{-webkit-tap-highlight-color:transparent}
 header{
- background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);
+ background:linear-gradient(135deg,#102a43,#0f766e,#155e75);
  color:white;padding:23px 19px 38px;
  border-radius:0 0 30px 30px;
- box-shadow:0 10px 30px #4c1d9530;
+ box-shadow:0 10px 30px #0f766e30;
  position:relative;overflow:hidden;
 }
 header:before,header:after{
@@ -33,7 +33,7 @@ header:after{width:130px;height:130px;right:95px;bottom:-95px}
 }
 .profile-button{
  width:52px;height:52px;border:2px solid #ffffffcc;
- border-radius:50%;background:#ede9fe;color:#5b21b6;
+ border-radius:50%;background:#e1f0ef;color:#0f766e;
  font-size:24px;display:flex;align-items:center;
  justify-content:center;cursor:pointer;overflow:hidden;
  padding:0;flex-shrink:0;
@@ -53,10 +53,10 @@ header:after{width:130px;height:130px;right:95px;bottom:-95px}
 .container{padding:19px 16px;max-width:680px;margin:auto}
 
 .wallet{
- background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);
+ background:linear-gradient(135deg,#102a43,#0f766e,#155e75);
  color:white;padding:22px;border-radius:23px;
  margin-top:-3px;position:relative;overflow:hidden;
- box-shadow:0 12px 28px #4c1d9528;
+ box-shadow:0 12px 28px #0f766e28;
 }
 .wallet:after{
  content:"";position:absolute;width:155px;height:155px;
@@ -85,7 +85,7 @@ header:after{width:130px;height:130px;right:95px;bottom:-95px}
 }
 .wallet-bottom small{font-size:10px;opacity:.8}
 .fund-button{
- background:white;color:#5b21b6;border:0;
+ background:white;color:#0f766e;border:0;
  padding:12px 17px;border-radius:11px;
  font-size:12px;font-weight:800;cursor:pointer;
 }
@@ -96,42 +96,42 @@ header:after{width:130px;height:130px;right:95px;bottom:-95px}
  align-items:center;margin:28px 1px 15px;
 }
 .section-heading h3{margin:0;font-size:17px;font-weight:900}
-.section-heading span{font-size:11px;color:#8b75b3}
+.section-heading span{font-size:11px;color:#6b8795}
 
 .services{
  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
  gap:12px;
 }
 .service{
- background:linear-gradient(145deg,#fff,#fbfaff);
- border:1px solid #eee7ff;border-radius:18px;
+ background:linear-gradient(145deg,#fff,#f8fafb);
+ border:1px solid #dce7ec;border-radius:18px;
  min-height:112px;padding:17px 5px 14px;
  display:flex;flex-direction:column;align-items:center;
  justify-content:center;text-align:center;
  color:#35146c;text-decoration:none;
- box-shadow:0 5px 15px #35106f0b;
+ box-shadow:0 5px 15px #102a430b;
  transition:transform .2s,box-shadow .2s;
 }
 .service:active{transform:scale(.96)}
 .service .icon{
  width:48px;height:48px;border-radius:15px;
- background:linear-gradient(135deg,#f0eaff,#ddd6fe);
+ background:linear-gradient(135deg,#e5f2f1,#c8e5e2);
  display:flex;align-items:center;justify-content:center;
- color:#6d28d9;margin-bottom:10px;
+ color:#0f766e;margin-bottom:10px;
 }
 .service .icon svg{width:25px;height:25px;stroke-width:2}
 .service p{
  margin:0;font-size:11px;font-weight:800;line-height:1.4;
 }
 .info-card{
- background:white;border:1px solid #eee7ff;
+ background:white;border:1px solid #dce7ec;
  border-radius:17px;padding:17px;margin-top:23px;
- box-shadow:0 5px 15px #35106f08;
+ box-shadow:0 5px 15px #102a4308;
 }
 .info-card h3{font-size:14px;margin:0 0 8px}
-.info-card p{font-size:12px;color:#8879a4;line-height:1.6;margin:0}
+.info-card p{font-size:12px;color:#708391;line-height:1.6;margin:0}
 footer{
- text-align:center;color:#9589ac;font-size:11px;
+ text-align:center;color:#7c8f9b;font-size:11px;
  padding:30px 10px;line-height:1.8;
 }
 .menu-overlay{
@@ -149,24 +149,24 @@ footer{
 .account-menu.open{transform:translateX(0)}
 .close-menu{
  position:absolute;top:15px;right:15px;
- border:0;background:#f1ebff;color:#5b21b6;
+ border:0;background:#e5f2f1;color:#0f766e;
  padding:9px 12px;border-radius:9px;font-size:17px;
 }
 .menu-profile{
  text-align:center;padding:38px 0 21px;
- border-bottom:1px solid #eee8fa;
+ border-bottom:1px solid #dce7ec;
 }
 .menu-avatar{
  width:88px;height:88px;margin:auto;border-radius:50%;
- background:linear-gradient(135deg,#ede9fe,#ddd0ff);
- color:#5b21b6;display:flex;align-items:center;
+ background:linear-gradient(135deg,#e1f0ef,#c8e5e2);
+ color:#0f766e;display:flex;align-items:center;
  justify-content:center;font-size:40px;overflow:hidden;
- border:3px solid white;box-shadow:0 3px 15px #5b21b625;
+ border:3px solid white;box-shadow:0 3px 15px #0f766e25;
 }
 .menu-profile h3{margin:14px 0 5px;font-size:18px}
-.menu-profile small{font-size:11px;color:#998bad}
+.menu-profile small{font-size:11px;color:#7c8f9b}
 .change-photo{
- border:0;background:#ede9fe;color:#5b21b6;
+ border:0;background:#e1f0ef;color:#0f766e;
  padding:11px 15px;border-radius:10px;
  margin-top:13px;font-weight:bold;font-size:12px;
 }
@@ -177,12 +177,12 @@ footer{
 .menu-links{padding-top:12px}
 .menu-links a{
  display:flex;align-items:center;gap:12px;
- padding:15px 11px;color:#4c1d95;
+ padding:15px 11px;color:#0f766e;
  text-decoration:none;border-bottom:1px solid #f0ebf7;
  font-size:13px;font-weight:700;border-radius:9px;
 }
 .menu-links a svg{width:19px;height:19px}
-.menu-links a:active{background:#f0eaff}
+.menu-links a:active{background:#e5f2f1}
 .logout{
  display:flex;align-items:center;justify-content:center;
  gap:9px;width:100%;padding:14px;margin-top:22px;
@@ -299,51 +299,51 @@ footer{
   </a>
   <a class="service" href="bulk_sms.html">
    <div class="icon"><i data-lucide="message-square-text"></i></div>
-   <p>Bulk SMS <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Bulk SMS <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="data_card_printing.html">
    <div class="icon"><i data-lucide="printer"></i></div>
-   <p>Data Card Printing <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Data Card Printing <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="recharge_card_printing.html">
    <div class="icon"><i data-lucide="ticket"></i></div>
-   <p>Recharge Card Printing <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Recharge Card Printing <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="smile.html">
    <div class="icon"><i data-lucide="wifi"></i></div>
-   <p>Buy Smile <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Buy Smile <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="alpha.html">
    <div class="icon"><i data-lucide="signal"></i></div>
-   <p>Buy Alpha <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Buy Alpha <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="kirani.html">
    <div class="icon"><i data-lucide="radio-tower"></i></div>
-   <p>Buy Kirani <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Buy Kirani <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="gift_card.html">
    <div class="icon"><i data-lucide="gift"></i></div>
-   <p>Buy GiftCard <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Buy GiftCard <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
   <a class="service" href="esim.html">
    <div class="icon"><i data-lucide="globe"></i></div>
-   <p>International eSIM <small style="display:block;color:#9a7bbd;margin-top:4px">Catalogue</small></p>
+   <p>International eSIM <small style="display:block;color:#6b8795;margin-top:4px">Catalogue</small></p>
   </a>
 
   <a class="service" href="dollar_card.html">
    <div class="icon"><i data-lucide="credit-card"></i></div>
-   <p>Dollar Card <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Dollar Card <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
   <a class="service" href="bonus_transfer.html">
    <div class="icon"><i data-lucide="gift"></i></div>
-   <p>Bonus Transfer <small style="display:block;color:#9a7bbd;margin-top:4px">Pre-API Setup</small></p>
+   <p>Bonus Transfer <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
  </div>
 

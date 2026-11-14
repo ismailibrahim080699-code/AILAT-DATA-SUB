@@ -67,3 +67,22 @@ Verified schema result:
 The security advisor reports an informational `rls_enabled_no_policy` finding for this table (and other existing tables). For this table, no client policy is intentional at this stage; it keeps the supplier catalogue unavailable to browser clients.
 
 This migration is database preparation only. The Edge Function has not yet been updated to handle Cable TV, IUC verification is not implemented, and no supplier request, payment, or fulfilment has occurred.
+
+
+## Backend request-only implementation deployed (2026-11-14)
+
+Supabase Edge Function `ailat-order-requests` is now ACTIVE at version 28.
+
+Implemented:
+- `GET ?action=cable_plans` returns only active, mapping-verified Cable TV catalogue rows (ID, provider, display name, supplier amount).
+- `POST` accepts `service_key: "cable_tv"` only when a matching active, mapping-verified server-side catalogue row exists.
+- Validates provider, smartcard/IUC digit length, catalogue ID, provider-to-supplier cable ID, and supplier plan code/amount.
+- Stores a request-only provider payload preview with a unique AIL reference.
+- Uses idempotency comparison for provider, smartcard number, and selected catalogue plan.
+- Marks provider dispatch as disabled; it does not call Legitdataway and does not take payment.
+
+Important current limitations:
+- Catalogue contains zero rows, so Cable TV plans endpoint currently returns an empty list and order requests cannot pass package validation.
+- IUC validation is explicitly recorded as `not_performed`; no supplier verification request was sent.
+- The existing `tv.html` / `tv_order_summary.html` frontend has not yet been wired to these new endpoints.
+- No live fulfilment or payment was enabled.

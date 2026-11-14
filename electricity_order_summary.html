@@ -39,7 +39,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>Verified Customer</span><strong id="customerName">-</strong></div>
 <div class="item" id="customerAddressRow" hidden><span>Customer Address</span><strong id="customerAddress">-</strong></div>
 <div class="total"><span>Requested Amount</span><strong id="amount">₦0.00</strong></div>
-<div class="notice"><strong>Not accepting orders yet:</strong> AILAT DATA has not connected a verified electricity provider and payment flow. This page records a safe request preview only. Bilalsadasub meter validation and live bill payment are not enabled. No payment is collected and no electricity token or receipt is issued. Do not use this page as proof of payment.</div>
+<div class="notice"><strong>Not accepting orders yet:</strong> AILAT DATA has not connected a verified electricity provider and payment flow. Meter validation is active through Bilalsadasub. This page records a safe request only; live bill payment is not enabled. No payment is collected and no electricity token or receipt is issued. Do not use this page as proof of payment.</div>
 <button type="button" id="submitRequest" disabled>Submit Electricity Request</button>
 <button type="button" id="newRequest" class="secondary" hidden>Record a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite">Sign in with a verified email to record this request.</p>
@@ -103,7 +103,7 @@ button.addEventListener("click",async()=>{
   if(!response.ok||!result.success)throw new Error(result.error||"Could not record this request.");
   saved=true;button.textContent="Request Recorded";newButton.hidden=false;
   const order=result.order_request||{};
-  updateStatus("Request recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". No payment was taken, no electricity provider was contacted and no token was issued.");
+  updateStatus("Request recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". Verified customer: "+customerName+". No payment was taken, no bill was paid and no token was issued.");
  }catch(error){button.disabled=false;button.textContent="Try Again";updateStatus(error.message||"Could not record the request. Please try again.",true);}
 });
 newButton.addEventListener("click",()=>{

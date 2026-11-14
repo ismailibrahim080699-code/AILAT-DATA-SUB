@@ -18,3 +18,21 @@ a{color:var(--ailat-teal)}
 .code,.link,.message-icon,.result,.notice,.reply,.wallet-stat{background:var(--ailat-soft);color:#345b57;border-color:#c8e2df}
 .status.request-recorded,.pill{background:var(--ailat-soft);color:var(--ailat-teal)}
 footer{color:#81939e}
+
+
+/* AILAT DATA shared premium theme */
+:root{--ailat-navy:#101b2d;--ailat-navy-2:#17263b;--ailat-teal:#13b8a6;--ailat-teal-dark:#0e9488;--ailat-bg:#f3f6f8;--ailat-card:#fff;--ailat-text:#172b3a;--ailat-muted:#718096;--ailat-border:#e2e9ee;--ailat-soft:#e7f7f5}
+*{box-sizing:border-box}
+body{background:var(--ailat-bg)!important;color:var(--ailat-text)!important}
+header{background:linear-gradient(135deg,var(--ailat-navy),var(--ailat-navy-2))!important;color:#fff!important}
+.card,.security-card,.settings-card,.panel{background:var(--ailat-card)!important;border-color:var(--ailat-border)!important;color:var(--ailat-text)!important}
+h1,h2,h3,h4,strong,label{color:inherit}
+.sub,.muted,.description,footer{color:var(--ailat-muted)!important}
+.symbol,.icon-box,.service-icon{background:var(--ailat-soft)!important;color:var(--ailat-teal-dark)!important}
+button,.action,.back{background:var(--ailat-teal-dark)!important;color:#fff!important;border-color:transparent!important}
+button.secondary,.action.secondary,.back.secondary{background:#e7f7f5!important;color:#087f76!important}
+input,select,textarea,.field{background:#fff!important;color:var(--ailat-text)!important;border:1px solid var(--ailat-border)!important}
+.status{background:#e7f7f5!important;color:#087f76!important}
+.note{background:#f0f7f8!important;color:#536777!important}
+.row{border-color:var(--ailat-border)!important}
+a{color:var(--ailat-teal-dark)}

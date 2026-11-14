@@ -38,18 +38,8 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 <div class="card">
 <form id="electricityForm">
 <label for="provider">Electricity Distribution Company</label>
-<select id="provider" required>
-<option value="">Select electricity company</option>
-<option value="8">Abuja Electricity</option>
-<option value="9">Benin Electricity</option>
-<option value="2">Eko Electricity</option>
-<option value="6">Ibadan Electricity</option>
-<option value="1">Ikeja Electricity</option>
-<option value="5">Jos Electricity</option>
-<option value="7">Kaduna Electric</option>
-<option value="3">Kano Electricity</option>
-<option value="4">Port Harcourt Electricity</option>
-<option value="10">Yola Electricity</option>
+<select id="provider" required disabled>
+<option value="">Loading electricity companies...</option>
 </select>
 <label for="meterType">Meter Type</label>
 <select id="meterType" required>
@@ -72,7 +62,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 const electricityForm=document.getElementById("electricityForm");
 const continueButton=document.getElementById("continueButton");
 const providerInput=document.getElementById("provider");
-const validDiscos=new Set(["1","2","3","4","5","6","7","8","9","10"]);
+const validDiscos=new Set();
 const meterTypeInput=document.getElementById("meterType");
 const meterNumberInput=document.getElementById("meterNumber");
 const amountInput=document.getElementById("amount");
@@ -114,6 +104,10 @@ electricityForm.addEventListener("submit",function(event){
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth = getAuth(app);
+const providerSelect=document.getElementById("provider");
+const continueBtn=document.getElementById("continueButton");
+const SUPABASE_URL="https://bdogulpsybiggpgipdbt.supabase.co";
+const SUPABASE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 onAuthStateChanged(auth, async (user) => {
  if (!user) {
   window.location.replace("login.html");
@@ -125,10 +119,27 @@ onAuthStateChanged(auth, async (user) => {
    await signOut(auth);
    alert("Please verify your email before using this service.");
    window.location.replace("login.html");
+   return;
   }
+  const token=await user.getIdToken(true);
+  const response=await fetch(SUPABASE_URL+"/functions/v1/ailat-electricity-orders?action=discos",{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+token}});
+  const result=await response.json();
+  if(!response.ok||!result.success||!Array.isArray(result.discos)) throw new Error(result.error||"Could not load electricity companies");
+  providerSelect.innerHTML='<option value="">Select electricity company</option>';
+  result.discos.forEach(item=>{
+   const id=String(item.disco);
+   if(!/^\\d+$/.test(id)||!item.name) return;
+   validDiscos.add(id);
+   const option=document.createElement("option");option.value=id;option.textContent=item.name;providerSelect.appendChild(option);
+  });
+  providerSelect.disabled=validDiscos.size===0;
+  if(validDiscos.size===0) throw new Error("No electricity companies returned");
+  providerSelect.dispatchEvent(new Event("change"));
  } catch (error) {
-  console.error("Service access check failed:", error);
-  window.location.replace("login.html");
+  console.error("Electricity catalogue load failed:", error);
+  providerSelect.innerHTML='<option value="">Could not load companies — refresh page</option>';
+  providerSelect.disabled=true;
+  continueBtn.disabled=true;
  }
 });
 </script>

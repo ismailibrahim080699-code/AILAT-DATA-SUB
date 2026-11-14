@@ -36,6 +36,8 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>Provider</span><strong id="provider">-</strong></div>
 <div class="item"><span>Meter Type</span><strong id="type">-</strong></div>
 <div class="item"><span>Meter Number</span><strong id="meter">-</strong></div>
+<div class="item"><span>Verified Customer</span><strong id="customerName">-</strong></div>
+<div class="item" id="customerAddressRow" hidden><span>Customer Address</span><strong id="customerAddress">-</strong></div>
 <div class="total"><span>Requested Amount</span><strong id="amount">₦0.00</strong></div>
 <div class="notice"><strong>Not accepting orders yet:</strong> AILAT DATA has not connected a verified electricity provider and payment flow. This page records a safe request preview only. Bilalsadasub meter validation and live bill payment are not enabled. No payment is collected and no electricity token or receipt is issued. Do not use this page as proof of payment.</div>
 <button type="button" id="submitRequest" disabled>Submit Electricity Request</button>
@@ -60,8 +62,8 @@ const newButton=document.getElementById("newRequest");
 let user=null,draft={},requestKey="",saved=false;
 
 try{draft=JSON.parse(sessionStorage.getItem("ailat_electricity_review")||"{}");}catch(error){}
-const disco=String(draft.disco||""),type=String(draft.type||""),meter=String(draft.meter||""),amountRaw=String(draft.amount||""),amount=Number(amountRaw);
-const valid=Object.prototype.hasOwnProperty.call(providers,disco)&&["prepaid","postpaid"].includes(type)&&/^\d{6,20}$/.test(meter)&&/^\d{1,7}$/.test(amountRaw)&&Number.isSafeInteger(amount)&&amount>=500&&amount<=500000;
+const disco=String(draft.disco||""),type=String(draft.type||""),meter=String(draft.meter||""),amountRaw=String(draft.amount||""),amount=Number(amountRaw),customerName=String(draft.customer_name||"").trim(),customerAddress=String(draft.customer_address||"").trim();
+const valid=Object.prototype.hasOwnProperty.call(providers,disco)&&["prepaid","postpaid"].includes(type)&&/^\d{6,20}$/.test(meter)&&customerName.length>0&&/^\d{1,7}$/.test(amountRaw)&&Number.isSafeInteger(amount)&&amount>=500&&amount<=500000;
 
 function makeKey(){return crypto.randomUUID();}
 function showError(message){
@@ -81,6 +83,8 @@ onAuthStateChanged(auth,async currentUser=>{
   document.getElementById("provider").textContent=providers[disco];
   document.getElementById("type").textContent=type==="prepaid"?"Prepaid":"Postpaid";
   document.getElementById("meter").textContent=meter;
+  document.getElementById("customerName").textContent=customerName;
+  if(customerAddress){document.getElementById("customerAddress").textContent=customerAddress;document.getElementById("customerAddressRow").hidden=false;}
   document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
   requestKey=makeKey();
   button.disabled=false;

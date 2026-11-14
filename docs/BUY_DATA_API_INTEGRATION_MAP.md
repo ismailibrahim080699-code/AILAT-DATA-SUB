@@ -1,14 +1,14 @@
 # AILAT DATA — Buy Data API Contract & Integration Readiness
 
-Date: 2026-11-13
+Date: 2026-11-14
 Status: Read-only review and integration preparation. No live supplier calls, payments, wallet changes, or database changes are enabled by this document.
 
 ## 1. Current request path
 
 1. `data.html` requests `GET /functions/v1/ailat-order-requests?action=plans` with the Supabase publishable key.
 2. The Edge Function returns active catalogue entries only when `supplier_mapping_status = verified` and both supplier IDs are present.
-3. The customer selects a plan and is sent to `order_summary.html` with `network`, `internal_network_id`, `phone`, `plan_id`, and `type`.
-4. `order_summary.html` reloads the plan catalogue, validates the query values, checks Firebase sign-in and verified email, then sends an authenticated POST.
+3. The customer selects a plan and its details are handed to `order_summary.html` through tab-scoped `sessionStorage`, not URL query parameters.
+4. `order_summary.html` reloads the plan catalogue, validates the stored draft identifiers, checks Firebase sign-in and verified email, then sends an authenticated POST.
 5. The Edge Function verifies the Firebase ID token, validates the customer details, loads the plan and price from the server-side catalogue, and records an order-request row.
 6. The current function explicitly does not contact a supplier and does not charge a wallet.
 
@@ -99,10 +99,16 @@ Never place provider secrets, Supabase service-role keys, or Firebase Admin cred
 
 This document does not enable supplier dispatch, payment collection, wallet debit/credit, withdrawals, or live fulfilment. Existing request-only behavior remains unchanged.
 
+## 8. Supplier catalogue provenance audit (2026-11-13)
 
-## 8. Follow-up audit: current frontend handoff and source import gap (2026-11-13)
-
-- The current Buy Data frontend handoff uses tab-scoped sessionStorage for the selected order details; the earlier query-parameter description in section 1 is historical and should not be used as the current implementation description. The order summary should fail closed when the session payload is missing or invalid.
 - A recursive inspection of the repository's default-branch file tree found no supplier-catalogue importer, scheduled sync job, or source import script. The root `data-plans.js` file contains public plan metadata only; it explicitly does not contain supplier prices.
 - The `public.legitdataway_data_plan_catalog` source rows were imported in one batch timestamp. 160 of 170 rows have NULL `amount`; all 170 are flagged `source_verified=true`. Therefore that flag alone cannot be treated as price verification.
 - No importer was modified and no catalogue rows were changed. The next safe step is to obtain the exact official supplier catalogue response/export or the original import payload, then identify the actual price field and validate the parser against that source before any database changes.
+
+## 9. Follow-up read-only Supabase audit (2026-11-14)
+
+- The live `public.data_plan_catalog` table contains 170 rows, 169 active. Ten rows currently satisfy the Edge Function's visibility filter: active, `supplier_mapping_status='verified'`, non-null supplier plan/network IDs, and non-null `supplier_amount`. All ten are Glo SME plans with supplier plan IDs 220–229.
+- The displayed supplier catalogue also includes Glo SME plan ID 230 (10GB, 14 days, ₦3,480). The current application row for ID 230 still has `supplier_amount=3560` and `supplier_mapping_status='unmapped'`. It is therefore excluded from the verified plan list. Do not change it until the responsible operator confirms the authoritative supplier price and mapping.
+- Forty Vitel rows have no supplier network mapping. The other networks' rows are not currently verified for supplier mapping, so they remain excluded from the verified plan list.
+- Security Advisor reports RLS enabled with no policies on several public tables. A separate grants check found only `service_role` table grants (no `anon` or `authenticated` grants) on the inspected catalogue, order-request, transaction, wallet, and referral tables. This is a deny-by-default configuration for direct client table access; Edge Functions using privileged service credentials still require careful authorization checks.
+- These checks were read-only. No catalogue rows, policies, credentials, wallet balances, or order dispatch settings were changed.

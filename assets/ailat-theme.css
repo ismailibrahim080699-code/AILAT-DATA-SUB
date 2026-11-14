@@ -1,0 +1,20 @@
+/* AILAT DATA shared premium navy + teal theme */
+:root{--ailat-navy:#102a43;--ailat-teal:#0f766e;--ailat-deep:#155e75;--ailat-bg:#edf2f5;--ailat-text:#172b3a;--ailat-muted:#718693;--ailat-border:#dce7ec;--ailat-soft:#e1f0ef}
+body{background:var(--ailat-bg)!important;color:var(--ailat-text)!important}
+header{background:linear-gradient(135deg,var(--ailat-navy),var(--ailat-teal),var(--ailat-deep))!important;color:#fff!important}
+header h1,header h2,header h3,header p{color:#fff}
+.card,.profile-card,.transaction,.wallet-stat,.preview{background:#fff;border-color:var(--ailat-border);box-shadow:0 6px 20px #102a430d}
+h1,h2,h3,.card h3,.transaction-title,.message h3{color:var(--ailat-navy)}
+p,.subtitle,.note,.hint,.small,.details,.label,.meta,.empty{color:var(--ailat-muted)}
+input,select,textarea{border-color:#d4e0e5!important;background:#fbfdfe!important;color:var(--ailat-text)!important}
+input:focus,select:focus,textarea:focus{border-color:var(--ailat-teal)!important;outline:none}
+button,.button,.primary{background:linear-gradient(135deg,var(--ailat-teal),var(--ailat-deep))!important;color:#fff!important}
+button.secondary,.secondary,.refresh{background:var(--ailat-soft)!important;color:var(--ailat-teal)!important}
+a{color:var(--ailat-teal)}
+.back{color:var(--ailat-teal)}
+.network,.purchase-types .type-option{border-color:var(--ailat-border);background:#fff;color:var(--ailat-text)}
+.network.active,.purchase-types .type-option.active{border-color:var(--ailat-teal)!important;background:var(--ailat-soft)!important;color:var(--ailat-teal)!important}
+.network .network-name,.network.active .network-name{color:var(--ailat-teal)}
+.code,.link,.message-icon,.result,.notice,.reply,.wallet-stat{background:var(--ailat-soft);color:#345b57;border-color:#c8e2df}
+.status.request-recorded,.pill{background:var(--ailat-soft);color:var(--ailat-teal)}
+footer{color:#81939e}

@@ -76,7 +76,7 @@ onAuthStateChanged(auth,async user=>{
 document.getElementById("cashForm").addEventListener("submit",event=>{
  event.preventDefault();const network=networkInput.value,phone=phoneInput.value.trim(),amount=Number(amountInput.value),pct=rates[network];
  if(!rates[network]||!/^0[789][01]\d{8}$/.test(phone)||!Number.isSafeInteger(amount)||amount<50)return;
- sessionStorage.setItem("ailat_airtime_to_cash_review",JSON.stringify({network,phone,amount,buyback_pct:pct,estimated_credit:Math.round(amount*pct)/100}));
+ sessionStorage.setItem("ailat_airtime_to_cash_review",JSON.stringify({network,phone,amount,buyback_pct:pct,estimated_credit:Math.round((amount*pct/100)*100)/100}));
  location.href="airtime_to_cash_summary.html";
 });
 </script>

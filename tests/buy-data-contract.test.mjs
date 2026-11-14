@@ -122,3 +122,31 @@ test("Airtime-to-Cash customer details stay in session storage, not URL paramete
   assert.ok(airtimeToCashSummary.includes('sessionStorage.getItem("ailat_airtime_to_cash_review")'));
   assert.ok(!airtimeToCashSummary.includes("new URLSearchParams(window.location.search)"));
 });
+
+const electricity = readFileSync(new URL("../electricity.html", import.meta.url), "utf8");
+const electricitySummary = readFileSync(new URL("../electricity_order_summary.html", import.meta.url), "utf8");
+const electricityBackend = readFileSync(new URL("../supabase/functions/ailat-electricity-orders/index.ts", import.meta.url), "utf8");
+test("Electricity form uses documented Legitdataway DISCO identifiers and meter types", () => {
+  for (const id of ["1","2","3","4","5","6","7","8","9","10"]) assert.ok(electricity.includes(`value="${id}"`));
+  assert.ok(electricity.includes('value="prepaid"'));
+  assert.ok(electricity.includes('value="postpaid"'));
+  assert.ok(electricity.includes('sessionStorage.setItem("ailat_electricity_review"'));
+  assert.ok(electricity.includes('window.location.href="electricity_order_summary.html"'));
+  assert.ok(!electricity.includes("electricity_order_summary.html?"));
+});
+test("Electricity summary validates local review details and does not claim payment", () => {
+  assert.ok(electricitySummary.includes('sessionStorage.getItem("ailat_electricity_review")'));
+  assert.ok(electricitySummary.includes("Electricity Payment Not Enabled"));
+  assert.ok(electricitySummary.includes("no provider request is sent"));
+});
+test("Electricity supplier adapter matches documented Legitdataway bill contract but stays disabled", () => {
+  assert.ok(electricityBackend.includes('Deno.env.get("LEGITDATAWAY_API_KEY")'));
+  assert.ok(electricityBackend.includes('const LIVE_ENABLED = false;'));
+  assert.ok(electricityBackend.includes('https://legitdataway.com/api/bill'));
+  assert.ok(electricityBackend.includes('`Token ${LEGIT_API_KEY}`'));
+  assert.ok(electricityBackend.includes('disco, meter_type: meterType, meter_number: meter, amount, bypass: false'));
+  assert.ok(electricityBackend.includes('"request-id": vendorRequestId'));
+  assert.ok(electricityBackend.includes('if (!LIVE_ENABLED || !LEGIT_API_KEY)'));
+  assert.ok(!electricityBackend.includes("LEGITDATAWAY_USERNAME"));
+  assert.ok(!electricityBackend.includes("getLegitAccessToken"));
+});

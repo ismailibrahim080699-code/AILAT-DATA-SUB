@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const data = readFileSync(new URL("../data.html", import.meta.url), "utf8");
 const summary = readFileSync(new URL("../order_summary.html", import.meta.url), "utf8");
 test("server catalogue supplies Buy Data plans and prices", () => {
-  assert.ok(data.includes("ailat-order-requests? action=plans") || data.includes("ailat-order-requests?action=plans"));
+  assert.ok(data.includes('"?action=plans"'));
   assert.ok(data.includes("result.plans"));
   assert.ok(data.includes("item.amount"));
 });

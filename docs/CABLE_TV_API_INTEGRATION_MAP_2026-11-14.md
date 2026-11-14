@@ -51,3 +51,19 @@ The numeric identifiers above are for IUC validation. The purchase documentation
 ## Non-negotiable mapping rule
 
 Never infer `cableplan` from the package display name or fabricate package prices. A plan must remain unavailable until its exact supplier code and price are independently verified against supplier-provided data.
+
+
+## Database foundation applied (2026-11-14)
+
+Migration `add_cable_tv_catalog_foundation` was applied successfully to the connected Supabase project.
+
+Verified schema result:
+- `service_order_requests.service_key` now permits `cable_tv` in addition to the existing values.
+- New `public.cable_tv_plan_catalog` table exists with provider, supplier cable ID, exact `cableplan`, display name, supplier amount, active flag, and mapping verification flag.
+- Provider-to-ID constraint enforces GOtv=1, DStv=2, StarTimes=3.
+- New catalogue starts empty (0 rows); no package names, supplier plan codes, or prices were fabricated.
+- RLS is enabled and `anon` / `authenticated` table privileges are revoked. Backend service-role access only is intended. Do not add a public read policy until a safe, verified catalogue endpoint is implemented.
+
+The security advisor reports an informational `rls_enabled_no_policy` finding for this table (and other existing tables). For this table, no client policy is intentional at this stage; it keeps the supplier catalogue unavailable to browser clients.
+
+This migration is database preparation only. The Edge Function has not yet been updated to handle Cable TV, IUC verification is not implemented, and no supplier request, payment, or fulfilment has occurred.

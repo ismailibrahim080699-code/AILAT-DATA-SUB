@@ -65,18 +65,22 @@ const SUPABASE_FUNCTION_URL = "https://bdogulpsybiggpgipdbt.supabase.co/function
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS = [];
 let plansLoadError = false;
+const auth = getAuth(app);
 try {
- const plansResponse = await fetch(SUPABASE_FUNCTION_URL+"?action=plans",{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY}});
- const plansResult = await plansResponse.json().catch(()=>({}));
- if(!plansResponse.ok || !plansResult.success || !Array.isArray(plansResult.plans)){
-  throw new Error("Data plan details could not be loaded.");
- }
- DATA_PLANS = plansResult.plans;
+ const user = await new Promise((resolve,reject)=>{
+  const unsubscribe=onAuthStateChanged(auth,u=>{unsubscribe();if(!u)reject(new Error("Please log in."));else resolve(u);},reject);
+ });
+ await user.reload();
+ if(!user.emailVerified) throw new Error("Please verify your email.");
+ const token=await user.getIdToken(true);
+ const plansResponse=await fetch(SUPABASE_FUNCTION_URL+"?action=plans",{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}});
+ const plansResult=await plansResponse.json().catch(()=>({}));
+ if(!plansResponse.ok||!plansResult.success||!Array.isArray(plansResult.plans)) throw new Error(plansResult.error||"Bilalsadasub data plan details could not be loaded.");
+ DATA_PLANS=plansResult.plans;
 } catch(error) {
- plansLoadError = true;
+ plansLoadError=true;
  console.error("Buy Data plan loading error:",error);
 }
-const auth = getAuth(app);
 let orderDraft = null;
 try{
  const rawDraft = sessionStorage.getItem("ailat_data_order_draft");
@@ -90,11 +94,11 @@ const validPurchaseTypes = ["SME","GIFTING","CORPORATE"];
 const phone = typeof orderDraft?.phone === "string" ? orderDraft.phone : "";
 const planId = typeof orderDraft?.plan_id === "string" ? orderDraft.plan_id : "";
 
-const validNetworks = ["MTN","Airtel","Glo","9mobile","Vitel"];
+const validNetworks = ["MTN","Airtel","Glo","T2","Vitel"];
 // AILAT DATA identifiers are separate from LegitDataWay identifiers.
-const AILAT_NETWORK_IDS = Object.freeze({mtn:1,airtel:2,glo:3,"9mobile":4,vitel:5});
+const AILAT_NETWORK_IDS = Object.freeze({mtn:1,airtel:2,glo:3,t2:4,vitel:5});
 // LegitDataWay network IDs documented by the supplier. Vitel is intentionally unmapped.
-const LEGITDATAWAY_NETWORK_IDS = Object.freeze({mtn:1,airtel:2,glo:3,"9mobile":4,vitel:null});
+const BILALSADASUB_NETWORK_IDS = Object.freeze({mtn:1,airtel:2,glo:3,t2:4,vitel:5});
 const expectedNetworkId = AILAT_NETWORK_IDS[network.toLowerCase()] ?? null;
 const suppliedNetworkId = Number(orderDraft?.internal_network_id);
 const validPhone = /^0[789][01]\d{8}$/;
@@ -181,7 +185,7 @@ if(button) button.addEventListener("click", async()=>{
   const response = await fetch(SUPABASE_FUNCTION_URL,{
    method:"POST",
    headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
-   body:JSON.stringify({service_key:"data",idempotency_key:requestKey,customer_data:{network,internal_network_id:expectedNetworkId,phone,bundle:selectedPlan.name+" ("+selectedPlan.validity+")",purchase_type:purchaseType,catalog_plan_id:selectedPlan.id}})
+   body:JSON.stringify({service_key:"data",idempotency_key:requestKey,customer_data:{network,internal_network_id:expectedNetworkId,phone,bundle:selectedPlan.name+" ("+selectedPlan.validity+")",purchase_type:purchaseType,catalog_plan_id:selectedPlan.id,supplier_plan_id:selectedPlan.id}})
   });
   const result = await response.json().catch(()=>({}));
   if(!response.ok || !result.success) throw new Error(result.error || "Could not save your request. Please try again.");

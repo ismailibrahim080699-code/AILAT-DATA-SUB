@@ -265,13 +265,18 @@ alert('Please enter a whole amount between ₦50 and ₦100,000.');
 return;
 }
 
-let params=new URLSearchParams({
-network:selectedNetwork,
-phone:phone,
-amount:String(selectedAmount)
-});
-
-window.location.href='airtime_order_summary.html?'+params.toString();
+// Keep customer details out of the URL, browser history and referrer logs.
+try{
+ sessionStorage.setItem("ailat_airtime_draft_v1",JSON.stringify({
+  network:selectedNetwork,
+  phone,
+  amount:selectedAmount
+ }));
+}catch(error){
+ alert("Your browser could not securely prepare this request. Please enable session storage and try again.");
+ return;
+}
+window.location.href='airtime_order_summary.html';
 }
 </script>
 

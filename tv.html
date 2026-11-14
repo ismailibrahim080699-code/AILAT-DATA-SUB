@@ -1,27 +1,46 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#4c1d95"><link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><title>AILAT DATA | Cable TV Subscription</title>
 <style>*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}header{padding:19px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed)}header a{color:white;text-decoration:none;font-weight:bold}main{width:min(92%,540px);margin:28px auto}.card{background:#fff;padding:25px 22px;border-radius:20px;box-shadow:0 10px 28px #35106f12}.intro{text-align:center}h1{font-size:23px;margin:5px 0 8px;color:#4c1d95}p{font-size:14px;line-height:1.7;color:#75658f}.status{display:inline-block;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:12px;font-weight:bold}form{margin-top:20px;padding:18px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}label{display:block;margin:14px 0 7px;font-size:13px;font-weight:bold}input,select{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}button{width:100%;padding:14px;border:0;border-radius:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white;font-weight:bold;margin-top:16px}.secondary{background:#eee7ff;color:#4c1d95}.error{color:#b42318;font-size:12px;min-height:17px}.preview{display:none;margin-top:15px;padding:14px;border:1px solid #ddd1fa;border-radius:12px}.preview pre{white-space:pre-wrap;font:13px/1.6 Arial;color:#51446b}.notice{margin-top:16px;padding:14px;background:#f3efff;color:#5b21b6;border-radius:12px;font-size:12px;line-height:1.7}footer{text-align:center;color:#9589ac;font-size:11px;padding:20px}</style></head><body>
-<header><a href="dashboard.html">← Back to Dashboard</a></header><main><section class="card"><div class="intro"><h1>Cable TV Subscription</h1><p>Prepare a cable subscription request</p><span class="status">PRE-API SETUP</span></div>
+<header><a href="dashboard.html">← Back to Dashboard</a></header><main><section class="card"><div class="intro"><h1>Cable TV Subscription</h1><p>Prepare a cable subscription request</p><span class="status">SUPPLIER CATALOGUE LINKED</span></div>
 <form id="serviceForm" novalidate>
 <label for="provider">TV Provider</label><select id="provider" required><option value="">Choose provider</option><option>DStv</option><option>GOtv</option><option>StarTimes</option></select>
 <label for="account">Smartcard / IUC number</label><input id="account" maxlength="40" placeholder="Enter the decoder number" required>
-<label for="item">Requested package</label><input id="item" maxlength="100" placeholder="Enter the package name" required>
+<label for="item">Available package</label><select id="item" required disabled><option value="">Loading verified packages…</option></select>
 <div class="error" id="error" role="alert"></div><button type="submit">Review Details</button><button type="reset" class="secondary">Clear Form</button>
 </form><section class="preview" id="preview" aria-live="polite"><strong>Local request preview</strong><pre id="previewText"></pre></section>
-<div class="notice"><strong>Provider connection pending:</strong> This form validates and previews your details only. Package catalogue, decoder validation, pricing and provider integration must be confirmed before a subscription can be submitted. This preview is not submitted or sent to any provider.</div></section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
-<script>
-const form=document.getElementById("serviceForm"),error=document.getElementById("error");
+<div class="notice"><strong>Important:</strong> Only packages verified in AILAT DATA’s supplier catalogue are shown. Submitting on the next page records a request only; IUC verification, payment and provider delivery are not enabled.</div></section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
+<script type="module">
+import { app } from "./firebase.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const provider=document.getElementById("provider"),account=document.getElementById("account"),item=document.getElementById("item"),error=document.getElementById("error"),form=document.getElementById("serviceForm");
+const providerKey={"DStv":"dstv","GOtv":"gotv","StarTimes":"startimes"};
+let plans=[];
+async function loadPlans(){
+ item.disabled=true;item.replaceChildren(new Option("Loading verified packages…",""));
+ try{
+  const response=await fetch(API+"?action=cable_plans",{headers:{"apikey":KEY}});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error("Cable TV packages could not be loaded.");
+  plans=result.plans;renderPlans();
+ }catch(e){item.replaceChildren(new Option("Packages temporarily unavailable",""));error.textContent=e.message||"Could not load packages.";}
+}
+function renderPlans(){
+ const available=plans.filter(p=>p.provider===providerKey[provider.value]);
+ item.replaceChildren(new Option(available.length?"Choose a verified package":"No verified packages available yet",""));
+ available.forEach(p=>item.add(new Option(p.display_name+" — ₦"+Number(p.supplier_amount).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2}),String(p.id))));
+ item.disabled=!available.length;
+}
+provider.addEventListener("change",()=>{error.textContent="";renderPlans();});
 form.addEventListener("submit",e=>{
  e.preventDefault();error.textContent="";
- const provider=document.getElementById("provider").value,account=document.getElementById("account").value.trim(),item=document.getElementById("item").value.trim();
- if(!provider){error.textContent="Choose a provider.";return;}
- if(!/^[0-9]{6,20}$/.test(account)){error.textContent="Enter a valid 6–20 digit Smartcard/IUC number.";document.getElementById("account").focus();return;}
- if(item.length<2){error.textContent="Enter the requested package.";document.getElementById("item").focus();return;}
- try{
-  sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider,account,item}));
- }catch(error){
-  error.textContent="This browser cannot keep the review details in this tab. Please try again.";
-  return;
- }
- window.location.href="tv_order_summary.html";
+ if(!providerKey[provider.value]){error.textContent="Choose a TV provider.";return;}
+ if(!/^[0-9]{6,20}$/.test(account.value.trim())){error.textContent="Enter a valid 6–20 digit Smartcard/IUC number.";account.focus();return;}
+ const selected=plans.find(p=>String(p.id)===item.value&&p.provider===providerKey[provider.value]);
+ if(!selected){error.textContent="There are no verified packages available for this provider yet.";return;}
+ try{sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider:providerKey[provider.value],provider_label:provider.value,account:account.value.trim(),plan_id:String(selected.id),plan_name:selected.display_name,amount:Number(selected.supplier_amount)}));}
+ catch(e){error.textContent="Browser storage is unavailable. Please try again.";return;}
+ location.href="tv_order_summary.html";
 });
+getAuth(app);loadPlans();
 </script></section></main></body></html>

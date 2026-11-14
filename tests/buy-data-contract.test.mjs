@@ -71,3 +71,14 @@ test("Airtime request remains clearly request-only and requires verified email",
   assert.ok(airtimeSummary.includes("No payment was taken and no airtime was sent."));
   assert.ok(airtime.includes("Supplier integration pending"));
 });
+
+test("Airtime provider preview uses documented Legitdataway VTU contract in safe mode", () => {
+  assert.ok(backend.includes('const airtimeProviderNetworkIds: Record<string, number | null>'));
+  assert.ok(backend.includes('plan_type: "VTU"'));
+  assert.ok(backend.includes('"request-id": reference'));
+  assert.ok(backend.includes('providerDispatchStatus = "disabled_safe_mode"'));
+  assert.ok(backend.includes('providerDispatchStatus = "provider_mapping_missing"'));
+  assert.ok(backend.includes('provider_request_preview: providerRequestPreview'));
+  assert.ok(!backend.includes('fetch("https://legitdataway.com/api/topup"'));
+  assert.ok(!backend.includes('fetch("https://legitdataway.com/api/data"'));
+});

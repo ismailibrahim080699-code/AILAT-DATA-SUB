@@ -289,6 +289,12 @@ Deno.serve(async (req: Request) => {
         vitel: null,
       };
       supplierNetworkId = airtimeProviderNetworkIds[network];
+      if (supplierNetworkId === null || supplierNetworkId === undefined) {
+        return reply({
+          success: false,
+          error: "Airtime is not available for this network because the supplier network ID is not documented. No request was recorded."
+        }, 409);
+      }
       cleanCustomerData = {
         network,
         phone,
@@ -315,10 +321,10 @@ Deno.serve(async (req: Request) => {
       providerDispatchStatus = "disabled_safe_mode";
       (cleanCustomerData as Record<string, unknown>).provider_request_preview = providerRequestPreview;
       (cleanCustomerData as Record<string, unknown>).provider_dispatch_status = "not_sent";
-    } else if (serviceKey === "airtime" && supplierNetworkId !== null) {
+    } else if (serviceKey === "airtime") {
       providerRequestPreview = {
         network: supplierNetworkId,
-        // Legitdataway Airtime documentation uses the local 11-digit phone format.
+        // Legitdataway's published cURL example uses the local 11-digit phone format.
         phone,
         plan_type: "VTU",
         amount: requestedAmount,
@@ -328,9 +334,6 @@ Deno.serve(async (req: Request) => {
       providerDispatchStatus = "disabled_safe_mode";
       (cleanCustomerData as Record<string, unknown>).provider_request_preview = providerRequestPreview;
       (cleanCustomerData as Record<string, unknown>).provider_dispatch_status = "not_sent";
-    } else if (serviceKey === "airtime") {
-      providerDispatchStatus = "provider_mapping_missing";
-      (cleanCustomerData as Record<string, unknown>).provider_dispatch_status = "provider_mapping_missing";
     }
     const { data: inserted, error: insertError } = await supabase
       .from("service_order_requests")

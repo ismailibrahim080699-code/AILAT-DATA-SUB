@@ -358,15 +358,39 @@ Deno.serve(async (req: Request) => {
     if (insertError?.code === "23505") {
       const { data: existing, error: lookupError } = await supabase
         .from("service_order_requests")
-        .select("id,reference,service_key,requested_amount,currency,status,created_at")
+        .select("id,reference,service_key,requested_amount,currency,status,customer_data,created_at")
         .eq("user_id", userId)
         .eq("idempotency_key", idempotencyKey)
         .maybeSingle();
       if (lookupError) throw lookupError;
       if (existing) {
+        const existingData = (existing.customer_data ?? {}) as Record<string, unknown>;
+        const sameRequest =
+          existing.service_key === serviceKey &&
+          Number(existing.requested_amount) === Number(requestedAmount) &&
+          existingData.network === network &&
+          existingData.phone === phone &&
+          (serviceKey !== "data" ||
+            Number(existingData.catalog_plan_id) === Number((cleanCustomerData as Record<string, unknown>).catalog_plan_id)) &&
+          (serviceKey !== "airtime" ||
+            Number(existingData.amount) === Number(requestedAmount));
+        if (!sameRequest) {
+          return reply({
+            success: false,
+            error: "This request key was already used for different order details. Start a new request."
+          }, 409);
+        }
         return reply({
           success: true,
-          order_request: existing,
+          order_request: {
+            id: existing.id,
+            reference: existing.reference,
+            service_key: existing.service_key,
+            requested_amount: existing.requested_amount,
+            currency: existing.currency,
+            status: existing.status,
+            created_at: existing.created_at,
+          },
           notice: "Request record only. No payment was taken and no service was delivered.",
           repeated_request: true,
         });

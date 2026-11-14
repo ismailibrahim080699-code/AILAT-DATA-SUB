@@ -4,8 +4,9 @@
 <section class="details" id="details">
 <div class="item"><span class="label">Provider</span><span class="value" id="v0">—</span></div>
 <div class="item"><span class="label">Smartcard / IUC number</span><span class="value" id="v1">—</span></div>
+<div class="item"><span class="label">Verified customer name</span><span class="value" id="vCustomer">—</span></div>
 <div class="item"><span class="label">Package</span><span class="value" id="v2">—</span></div><div class="item"><span class="label">Supplier price</span><span class="value" id="v3">—</span></div>
-</section><div class="notice">This action only records a request in AILAT DATA. It does not verify the IUC with Bilalsadasub, debit a wallet, send a supplier order or deliver a subscription.</div><button id="submitRequest" type="button" disabled>Record Cable TV Request</button><p id="requestStatus" role="status" aria-live="polite"></p><button type="button" style="margin-top:10px;background:#eee7ff;color:#4c1d95" onclick="location.href='tv.html'">Back to Service</button></main>
+</section><div class="notice">The IUC has been verified with Bilalsadasub. This action only records a request in AILAT DATA; it does not debit a wallet, send a supplier order or deliver a subscription.</div><button id="submitRequest" type="button" disabled>Record Cable TV Request</button><p id="requestStatus" role="status" aria-live="polite"></p><button type="button" style="margin-top:10px;background:#eee7ff;color:#4c1d95" onclick="location.href='tv.html'">Back to Service</button></main>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -13,11 +14,11 @@ const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-req
 const KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let review={};try{review=JSON.parse(sessionStorage.getItem("ailat_tv_review")||"{}");}catch(e){}
 const labels={dstv:"DStv",gotv:"GOtv",startimes:"StarTimes"};
-const provider=String(review.provider||""),account=String(review.account||""),planId=String(review.plan_id||""),planName=String(review.plan_name||""),amount=Number(review.amount);
-const valid=Object.prototype.hasOwnProperty.call(labels,provider)&&/^\d{6,20}$/.test(account)&&/^\d+$/.test(planId)&&planName.length>1&&Number.isFinite(amount)&&amount>0;
+const provider=String(review.provider||""),account=String(review.account||""),planId=String(review.plan_id||""),planName=String(review.plan_name||""),customerName=String(review.customer_name||""),amount=Number(review.amount);
+const valid=Object.prototype.hasOwnProperty.call(labels,provider)&&/^\d{6,20}$/.test(account)&&/^\d+$/.test(planId)&&planName.length>1&&customerName.length>1&&Number.isFinite(amount)&&amount>0;
 const details=document.getElementById("details"),button=document.getElementById("submitRequest"),status=document.getElementById("requestStatus");
 if(!valid){const box=document.createElement("div");box.className="error";const strong=document.createElement("strong");strong.textContent="Invalid or incomplete Cable TV details.";const p=document.createElement("p");p.textContent="Return to the service page and choose a currently verified package.";box.append(strong,p);details.replaceChildren(box);}
-else{document.getElementById("v0").textContent=labels[provider];document.getElementById("v1").textContent=account;document.getElementById("v2").textContent=planName;document.getElementById("v3").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});button.disabled=false;}
+else{document.getElementById("v0").textContent=labels[provider];document.getElementById("v1").textContent=account;document.getElementById("v2").textContent=planName;document.getElementById("vCustomer").textContent=customerName;document.getElementById("v3").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});button.disabled=false;}
 const auth=getAuth(app);let currentUser=null;
 onAuthStateChanged(auth,user=>{currentUser=user;if(!user){location.replace("login.html");return;}});
 button.addEventListener("click",async()=>{
@@ -27,7 +28,7 @@ button.addEventListener("click",async()=>{
   await currentUser.reload();if(!currentUser.emailVerified)throw new Error("Verify your email before submitting a request.");
   const token=await currentUser.getIdToken(true),storageKey="ailat_cable_request:"+encodeURIComponent([provider,account,planId].join("|"));
   let requestKey=sessionStorage.getItem(storageKey);if(!requestKey||!/^[0-9a-f-]{36}$/i.test(requestKey)){requestKey=crypto.randomUUID();sessionStorage.setItem(storageKey,requestKey);}
-  const response=await fetch(API,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({service_key:"cable_tv",idempotency_key:requestKey,customer_data:{provider,smart_card_number:account,catalog_plan_id:Number(planId)}})});
+  const response=await fetch(API,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({service_key:"cable_tv",idempotency_key:requestKey,customer_data:{provider,smart_card_number:account,customer_name:customerName,iuc_validation_status:"verified",catalog_plan_id:Number(planId)}})});
   const result=await response.json().catch(()=>({}));if(!response.ok||!result.success)throw new Error(result.error||"Could not record Cable TV request.");
   button.textContent="Request Recorded";status.textContent="Reference: "+result.order_request.reference+". Status: "+result.order_request.status+". No payment was taken and no subscription was delivered.";
  }catch(e){button.disabled=false;button.textContent="Try Again";status.textContent=e.message||"Request could not be recorded.";}

@@ -6,6 +6,8 @@ on:
     paths:
       - "data.html"
       - "order_summary.html"
+      - "airtime.html"
+      - "airtime_order_summary.html"
       - "tests/buy-data-contract.test.mjs"
       - ".github/workflows/buy-data-contract.yml"
   pull_request:

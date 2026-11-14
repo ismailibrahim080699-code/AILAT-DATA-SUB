@@ -77,11 +77,22 @@ test("Airtime provider preview uses documented Legitdataway VTU contract in safe
   assert.ok(backend.includes('const airtimeProviderNetworkIds: Record<string, number | null>'));
   assert.ok(backend.includes('plan_type: "VTU"'));
   assert.match(backend, /phone,\s*plan_type: "VTU"/);
-  assert.ok(backend.includes("providerMappingMissing") || backend.includes('provider_mapping_missing'));
+  assert.ok(backend.includes("supplierNetworkId === null || supplierNetworkId === undefined"));
+  assert.ok(backend.includes("No request was recorded."));
+  assert.ok(backend.includes('mtn: 1'));
+  assert.ok(backend.includes('airtel: 2'));
+  assert.ok(backend.includes('glo: 3'));
+  assert.ok(backend.includes('"9mobile": 4'));
   assert.ok(backend.includes('"request-id": reference'));
   assert.ok(backend.includes('providerDispatchStatus = "disabled_safe_mode"'));
-  assert.ok(backend.includes('providerDispatchStatus = "provider_mapping_missing"'));
+  assert.ok(!backend.includes('providerDispatchStatus = "provider_mapping_missing"'));
   assert.ok(backend.includes('provider_request_preview: providerRequestPreview'));
   assert.ok(!backend.includes('fetch("https://legitdataway.com/api/topup"'));
   assert.ok(!backend.includes('fetch("https://legitdataway.com/api/data"'));
+});
+
+test("Airtime UI does not offer Vitel without a documented supplier network ID", () => {
+  assert.ok(airtime.includes('class="network unavailable"'));
+  assert.ok(airtime.includes("Not available yet"));
+  assert.ok(!airtime.includes("chooseNetwork(this,'Vitel')"));
 });

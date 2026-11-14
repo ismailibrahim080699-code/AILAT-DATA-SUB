@@ -84,14 +84,17 @@ main>.card:last-of-type .row{padding:14px 2px}
 <button class="section-toggle" type="button" aria-expanded="false" aria-controls="bioPanel" id="bioSectionToggle"><span class="section-toggle-main"><span class="symbol">🔐</span><span><h2>Fingerprint / Device Biometric</h2><span class="sub">Check whether this browser supports secure device passkeys.</span></span></span><span class="section-chevron">⌄</span></button>
 <div class="section-panel" id="bioPanel" hidden>
 <div class="status" id="bioStatus">Checking device support…</div>
-<p id="deviceCheck">No fingerprint or face data is being requested.</p>
+<p id="deviceCheck">Register this phone using its built-in fingerprint, face unlock, or device screen lock.</p>
+<button class="action" id="registerBiometricBtn" type="button" disabled>Register this device</button>
+<div id="passkeyList" style="margin-top:12px"></div>
+<p class="message" id="bioMessage" role="status" aria-live="polite"></p>
 <div class="note">Your fingerprint or face template must remain on your device. AILAT DATA must never collect biometric images or templates. Passkey enrollment will be added separately after its server-side challenge verification is implemented.</div>
 </div>
 </section>
 <section class="card"><h2>Security controls</h2>
 <div class="row"><strong>4-digit PIN</strong><span id="pinControl">Checking…</span></div>
 <div class="row"><strong>Failed-attempt lock</strong><span>5 attempts / 15 minutes</span></div>
-<div class="row"><strong>Fingerprint passkey</strong><span>Not enrolled</span></div>
+<div class="row"><strong>Fingerprint passkey</strong><span id="passkeyControl">Checking…</span></div>
 <div class="row"><strong>Payment authorization</strong><span>Not connected</span></div>
 </section>
 <a class="back" href="settings.html" style="margin-top:10px;background:#eee9f8;color:#5b21b6">Back to Settings</a>
@@ -99,6 +102,7 @@ main>.card:last-of-type .row{padding:14px 2px}
 </main><footer>AILAT DATA © 2026 · Account Security</footer>
 <script type="module">
 import { app } from "./firebase.js";
+import { startRegistration } from "https://esm.sh/@simplewebauthn/browser@14.1.0";
 import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
@@ -169,10 +173,60 @@ onAuthStateChanged(auth,async user=>{
  catch(e){console.error("Security page account check failed:",e);say("Could not verify your account session. Refresh and try again.");}
 });
 (async()=>{
- const status=$("bioStatus"),detail=$("deviceCheck");
- if(!window.isSecureContext){status.textContent="Secure connection required";detail.textContent="Passkeys require HTTPS.";return;}
- if(!window.PublicKeyCredential){status.textContent="Not supported in this browser";detail.textContent="This browser does not expose WebAuthn passkey support.";return;}
- try{const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();status.textContent=available?"Device authenticator detected":"No platform authenticator detected";detail.textContent=available?"This device reports a platform authenticator. No passkey has been enrolled yet.":"The browser did not detect a built-in platform authenticator. This does not prove whether the phone has a fingerprint sensor.";}
- catch(e){status.textContent="Support could not be confirmed";detail.textContent="The browser could not complete its capability check.";}
+ const status=$("bioStatus"),detail=$("deviceCheck"),registerBtn=$("registerBiometricBtn");
+ async function passkeyRequest(method="GET",body=null){
+  const token=await currentUser.getIdToken(true);
+  const response=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys",{
+   method,headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+   ...(body?{body:JSON.stringify(body)}:{})
+  });
+  const data=await response.json().catch(()=>({success:false,error:"Invalid server response"}));
+  if(!response.ok||!data.success)throw new Error(data.error||"Passkey request failed");
+  return data;
+ }
+ function showPasskeys(items){
+  const list=$("passkeyList");list.replaceChildren();
+  $("passkeyControl").textContent=items.length?items.length+" device(s) enrolled":"Not enrolled";
+  if(!items.length){const p=document.createElement("p");p.className="sub";p.textContent="No device has been registered yet.";list.append(p);return;}
+  items.forEach(item=>{
+   const row=document.createElement("div");row.className="row";
+   const left=document.createElement("div");
+   const name=document.createElement("strong");name.textContent=item.friendly_name||"Registered device";
+   const meta=document.createElement("div");meta.className="sub";meta.textContent="Added "+new Date(item.created_at).toLocaleDateString();
+   left.append(name,meta);
+   const remove=document.createElement("button");remove.type="button";remove.className="action secondary";remove.style.width="auto";remove.style.marginTop="0";remove.style.padding="9px 12px";remove.textContent="Remove";
+   remove.addEventListener("click",async()=>{
+    if(!confirm("Remove this device passkey from your account?"))return;
+    remove.disabled=true;
+    try{await passkeyRequest("DELETE",{credential_id:item.credential_id});$("bioMessage").textContent="Device removed.";showPasskeys((await passkeyRequest()).passkeys);}
+    catch(e){$("bioMessage").textContent=e.message;remove.disabled=false;}
+   });
+   row.append(left,remove);list.append(row);
+  });
+ }
+ async function loadPasskeys(){const data=await passkeyRequest();showPasskeys(data.passkeys||[]);}
+ if(!window.isSecureContext){status.textContent="Secure connection required";detail.textContent="Passkeys require HTTPS.";registerBtn.disabled=true;}
+ else if(!window.PublicKeyCredential){status.textContent="Not supported in this browser";detail.textContent="This browser does not expose WebAuthn passkey support.";registerBtn.disabled=true;}
+ else{
+  try{
+   const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+   status.textContent=available?"Device authentication available":"Device authentication not detected";
+   detail.textContent=available?"You can register this phone. Your device will ask for fingerprint, face unlock, or its screen lock. AILAT DATA will not receive your biometric data.":"This browser did not detect a built-in authenticator. Check your phone's screen lock and browser support.";
+   registerBtn.disabled=!available;
+   await loadPasskeys();
+  }catch(e){status.textContent="Support could not be confirmed";detail.textContent=e.message;registerBtn.disabled=true;}
+ }
+ registerBtn.addEventListener("click",async()=>{
+  registerBtn.disabled=true;$("bioMessage").textContent="Preparing secure device registration…";
+  try{
+   const begin=await passkeyRequest("POST",{action:"start_registration"});
+   const response=await startRegistration({optionsJSON:begin.options});
+   const result=await passkeyRequest("POST",{action:"finish_registration",response,friendly_name:"My phone"});
+   $("bioMessage").textContent=result.message||"Device registered.";
+   await loadPasskeys();
+  }catch(e){
+   $("bioMessage").textContent=e.name==="NotAllowedError"?"Registration was cancelled or timed out. Try again.":e.message;
+  }finally{registerBtn.disabled=false;}
+ });
 })();
 </script></body></html>

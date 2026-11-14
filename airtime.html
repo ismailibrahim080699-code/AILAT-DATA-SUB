@@ -158,26 +158,11 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 </div>
 
-<div class="network"
- onclick="chooseNetwork(this,'9mobile')">
-
-<div class="ninemobile-logo">
-<span>9</span>mobile
-</div>
-
-<span class="network-name">9mobile</span>
+<div class="network" onclick="chooseNetwork(this,'T2')"><div class="ninemobile-logo">T2</div><span class="network-name">T2</span></div><div class="network" onclick="chooseNetwork(this,'Vitel')"><img class="vitel-logo-img" src="https://mma.prnewswire.com/media/2609274/Vitel_Wireless_Logo.jpg" alt="Vitel"><span class="network-name">Vitel</span></div>
 
 </div>
 
-<div class="network unavailable" aria-disabled="true" title="Supplier network ID is not documented yet">
- <img class="vitel-logo-img" src="https://mma.prnewswire.com/media/2609274/Vitel_Wireless_Logo.jpg" alt="Vitel Wireless">
- <span class="network-name">Vitel</span>
- <span class="network-name">Not available yet</span>
-</div>
-
-</div>
-
-<label>Phone Number</label>
+<label>Airtime Type</label><div class="amounts" id="airtimeTypes"><div class="amount active" onclick="chooseAirtimeType(this,'VTU')">VTU</div><div class="amount" onclick="chooseAirtimeType(this,'SNS')">Share &amp; Sell (SNS)</div></div><p class="note">VTU is regular transferable airtime. SNS is cheaper and cannot be transferred.</p><label>Phone Number</label>
 <input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="Enter 11-digit phone number" maxlength="11">
 
 <label>Select Amount</label>
@@ -192,7 +177,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 </div>
 
 <label>Or Enter Amount</label>
-<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter amount (₦)" min="50" max="100000" step="1" oninput="customValue()">
+<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter amount (₦)" min="50" max="50000" step="1" oninput="customValue()">
 
 <div class="total">
 <span>Requested Airtime Value</span>
@@ -212,17 +197,19 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <script>
 let selectedNetwork="MTN";
 let selectedAmount=0;
+let selectedAirtimeType="VTU";
 
 function updateAirtimeContinue(){
  const button=document.getElementById("continueAirtimeBtn");
  if(!button) return;
  const phone=document.getElementById("phone").value.trim();
  const validPhone=/^0[789][01]\d{8}$/.test(phone);
- const validAmount=Number.isSafeInteger(selectedAmount) && selectedAmount>=50 && selectedAmount<=100000;
+ const validAmount=Number.isSafeInteger(selectedAmount) && selectedAmount>=50 && selectedAmount<=50000;
  button.disabled=!(validPhone && validAmount);
  button.textContent=button.disabled?"Enter valid phone and amount":"Continue";
 }
 
+function chooseAirtimeType(element,type){selectedAirtimeType=type;document.querySelectorAll("#airtimeTypes .amount").forEach(a=>a.classList.remove("active"));element.classList.add("active");}
 function chooseNetwork(element,network){
 selectedNetwork=network;
 document.querySelectorAll('.network').forEach(n=>n.classList.remove('active'));
@@ -261,8 +248,8 @@ alert('Please enter a valid 11-digit Nigerian phone number.');
 return;
 }
 
-if(!Number.isInteger(selectedAmount) || selectedAmount<50 || selectedAmount>100000){
-alert('Please enter a whole amount between ₦50 and ₦100,000.');
+if(!Number.isInteger(selectedAmount) || selectedAmount<50 || selectedAmount>50000){
+alert('Please enter a whole amount between ₦50 and ₦50,000.');
 return;
 }
 
@@ -270,6 +257,7 @@ return;
 try{
  sessionStorage.setItem("ailat_airtime_draft_v1",JSON.stringify({
   network:selectedNetwork,
+  plan_type:selectedAirtimeType,
   phone,
   amount:selectedAmount
  }));

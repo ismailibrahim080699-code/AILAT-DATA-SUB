@@ -3,7 +3,7 @@
 <header><a href="dashboard.html">← Back to Dashboard</a></header><main><section class="card"><div class="intro"><h1>Cable TV Subscription</h1><p>Prepare a cable subscription request</p><span class="status">SUPPLIER CATALOGUE LINKED</span></div>
 <form id="serviceForm" novalidate>
 <label for="provider">TV Provider</label><select id="provider" required><option value="">Choose provider</option><option>DStv</option><option>GOtv</option><option>StarTimes</option></select>
-<label for="account">Smartcard / IUC number</label><input id="account" maxlength="40" placeholder="Enter the decoder number" required>
+<label for="account">Smartcard / IUC number</label><input id="account" maxlength="10" inputmode="numeric" placeholder="Enter 10-digit IUC / smart-card number" required>
 <label for="item">Available package</label><select id="item" required disabled><option value="">Loading verified packages…</option></select>
 <div class="error" id="error" role="alert"></div><button type="submit">Review Details</button><button type="reset" class="secondary">Clear Form</button>
 </form><section class="preview" id="preview" aria-live="polite"><strong>Local request preview</strong><pre id="previewText"></pre></section>
@@ -35,7 +35,7 @@ provider.addEventListener("change",()=>{error.textContent="";renderPlans();});
 form.addEventListener("submit",e=>{
  e.preventDefault();error.textContent="";
  if(!providerKey[provider.value]){error.textContent="Choose a TV provider.";return;}
- if(!/^[0-9]{6,20}$/.test(account.value.trim())){error.textContent="Enter a valid 6–20 digit Smartcard/IUC number.";account.focus();return;}
+ if(!/^[0-9]{10}$/.test(account.value.trim())){error.textContent="Enter the 10-digit Smartcard/IUC number.";account.focus();return;}
  const selected=plans.find(p=>String(p.id)===item.value&&p.provider===providerKey[provider.value]);
  if(!selected){error.textContent="There are no verified packages available for this provider yet.";return;}
  try{sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider:providerKey[provider.value],provider_label:provider.value,account:account.value.trim(),plan_id:String(selected.id),plan_name:selected.display_name,amount:Number(selected.supplier_amount)}));}

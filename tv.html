@@ -4,7 +4,7 @@
 <form id="serviceForm" novalidate>
 <label for="provider">TV Provider</label><select id="provider" required><option value="">Choose provider</option><option>DStv</option><option>GOtv</option><option>StarTimes</option></select>
 <label for="account">Smartcard / IUC number</label><input id="account" maxlength="10" inputmode="numeric" placeholder="Enter 10-digit IUC / smart-card number" required>
-<label for="item">Available package</label><select id="item" required disabled><option value="">Loading verified packages…</option></select>
+<button type="button" id="verifyIuc" class="secondary">Verify IUC / Smart-card</button><div class="notice" id="customerResult" role="status" aria-live="polite" style="display:none"></div><label for="item">Available package</label><select id="item" required disabled><option value="">Loading verified packages…</option></select>
 <div class="error" id="error" role="alert"></div><button type="submit">Review Details</button><button type="reset" class="secondary">Clear Form</button>
 </form><section class="preview" id="preview" aria-live="polite"><strong>Local request preview</strong><pre id="previewText"></pre></section>
 <div class="notice"><strong>Important:</strong> Only packages verified in AILAT DATA’s supplier catalogue are shown. Submitting on the next page records a request only; IUC verification, payment and provider delivery are not enabled.</div></section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
@@ -13,9 +13,20 @@ import { app } from "./firebase.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-const provider=document.getElementById("provider"),account=document.getElementById("account"),item=document.getElementById("item"),error=document.getElementById("error"),form=document.getElementById("serviceForm");
+const provider=document.getElementById("provider"),account=document.getElementById("account"),item=document.getElementById("item"),error=document.getElementById("error"),form=document.getElementById("serviceForm"),verifyButton=document.getElementById("verifyIuc"),customerResult=document.getElementById("customerResult");
 const providerKey={"DStv":"dstv","GOtv":"gotv","StarTimes":"startimes"};
-let plans=[];
+let plans=[],verifiedCustomerName="";
+function clearVerification(){verifiedCustomerName="";customerResult.style.display="none";customerResult.textContent="";verifyButton.disabled=false;verifyButton.textContent="Verify IUC / Smart-card";}
+provider.addEventListener("change",clearVerification);account.addEventListener("input",clearVerification);
+verifyButton.addEventListener("click",async()=>{
+ error.textContent="";clearVerification();
+ if(!providerKey[provider.value]){error.textContent="Choose a TV provider first.";return;}
+ if(!/^\\d{10}$/.test(account.value.trim())){error.textContent="Enter the 10-digit IUC / smart-card number.";account.focus();return;}
+ const user=getAuth(app).currentUser;if(!user){error.textContent="Please log in first.";return;}
+ verifyButton.disabled=true;verifyButton.textContent="Verifying…";
+ try{await user.reload();if(!user.emailVerified)throw new Error("Verify your email before using this service.");const token=await user.getIdToken(true);const cable={dstv:2,gotv:1,startimes:3}[providerKey[provider.value]];const url=API+"?action=cable_validate&cable="+cable+"&iuc="+encodeURIComponent(account.value.trim());const response=await fetch(url,{headers:{"apikey":KEY,"Authorization":"Bearer "+token}});const result=await response.json().catch(()=>({}));if(!response.ok||!result.success||!result.name)throw new Error(result.error||"IUC could not be verified.");verifiedCustomerName=String(result.name).trim();customerResult.textContent="Verified customer: "+verifiedCustomerName+" · "+result.cable;customerResult.style.display="block";verifyButton.textContent="IUC Verified";}
+ catch(e){error.textContent=e.message||"IUC verification failed.";verifyButton.disabled=false;verifyButton.textContent="Try Verification Again";}
+});
 async function loadPlans(){
  item.disabled=true;item.replaceChildren(new Option("Loading verified packages…",""));
  try{
@@ -36,11 +47,12 @@ form.addEventListener("submit",e=>{
  e.preventDefault();error.textContent="";
  if(!providerKey[provider.value]){error.textContent="Choose a TV provider.";return;}
  if(!/^[0-9]{10}$/.test(account.value.trim())){error.textContent="Enter the 10-digit Smartcard/IUC number.";account.focus();return;}
+ if(!verifiedCustomerName){error.textContent="Verify the IUC before continuing.";return;}
  const selected=plans.find(p=>String(p.id)===item.value&&p.provider===providerKey[provider.value]);
  if(!selected){error.textContent="There are no verified packages available for this provider yet.";return;}
- try{sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider:providerKey[provider.value],provider_label:provider.value,account:account.value.trim(),plan_id:String(selected.id),plan_name:selected.display_name,amount:Number(selected.supplier_amount)}));}
+ try{sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider:providerKey[provider.value],provider_label:provider.value,account:account.value.trim(),customer_name:verifiedCustomerName,plan_id:String(selected.id),plan_name:selected.display_name,amount:Number(selected.supplier_amount)}));}
  catch(e){error.textContent="Browser storage is unavailable. Please try again.";return;}
  location.href="tv_order_summary.html";
 });
-getAuth(app);loadPlans();
+loadPlans();
 </script></section></main></body></html>

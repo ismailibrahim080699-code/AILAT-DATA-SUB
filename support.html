@@ -7,72 +7,50 @@
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <title>AILAT DATA | Customer Support</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#edf2f5;color:#172b3a;font-family:Arial,sans-serif}
-header{padding:25px 20px 30px;background:linear-gradient(135deg,#102a43,#0f766e,#155e75);color:#fff;border-radius:0 0 28px 28px}
-.back{color:#d9f3ef;text-decoration:none;font-size:13px;font-weight:700}
-header h1{font-size:25px;margin:24px 0 7px}
-header p{font-size:13px;line-height:1.5;margin:0;color:#e1eeee}
-.wrap{max-width:650px;margin:20px auto;padding:0 15px 35px}
-.card{background:#fff;border:1px solid #dce7ec;border-radius:18px;padding:18px;margin-bottom:13px;box-shadow:0 5px 15px #102a4309}
-.card h2{font-size:16px;margin:0 0 9px;color:#102a43}
-.card p,.card li{font-size:13px;line-height:1.7;color:#627987}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.action{display:block;text-align:center;text-decoration:none;padding:13px 10px;border-radius:12px;background:#e1f0ef;color:#0f766e;font-size:12px;font-weight:800}
-.action.primary{background:linear-gradient(135deg,#0f766e,#155e75);color:white}
-.topic{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #edf2f5}
-.topic:last-child{border:0;padding-bottom:0}
-.dot{width:34px;height:34px;flex:0 0 34px;border-radius:11px;background:#e1f0ef;color:#0f766e;display:grid;place-items:center;font-weight:900}
-.topic strong{display:block;font-size:13px;margin-bottom:4px;color:#203d4c}
-.topic small{display:block;font-size:12px;line-height:1.5;color:#718693}
-.notice{background:#fff8e8;border:1px solid #f2dfb5;border-radius:13px;padding:13px;color:#775a22;font-size:12px;line-height:1.6}
+*{box-sizing:border-box}body{margin:0;background:#edf2f5;color:#172b3a;font-family:Arial,sans-serif}
+header{padding:24px 20px 28px;background:linear-gradient(135deg,#102a43,#0f766e,#155e75);color:#fff;border-radius:0 0 28px 28px}
+.back{color:#d9f3ef;text-decoration:none;font-size:13px;font-weight:700}header h1{font-size:25px;margin:22px 0 7px}header p{font-size:13px;line-height:1.5;margin:0;color:#e1eeee}
+.wrap{max-width:650px;margin:20px auto;padding:0 15px 35px}.card{background:#fff;border:1px solid #dce7ec;border-radius:18px;padding:18px;margin-bottom:13px;box-shadow:0 5px 15px #102a4309}
+.card h2{font-size:16px;margin:0 0 10px;color:#102a43}.card p,.hint{font-size:12px;line-height:1.6;color:#718693}
+label{display:block;font-size:12px;font-weight:800;color:#34505e;margin:14px 0 7px}
+input,select,textarea{width:100%;border:1px solid #d4e0e5;border-radius:11px;padding:13px;font:14px Arial;color:#172b3a;background:#fbfdfe}
+textarea{min-height:125px;resize:vertical}button{width:100%;border:0;border-radius:12px;padding:14px;background:linear-gradient(135deg,#0f766e,#155e75);color:#fff;font-size:13px;font-weight:800;margin-top:13px}
+button:disabled{opacity:.6}.status{font-size:12px;line-height:1.6;margin-top:10px;color:#0f766e;min-height:18px}
+.ticket{padding:14px 0;border-bottom:1px solid #edf2f5}.ticket:last-child{border:0}.tickettop{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.ticket strong{font-size:13px;color:#203d4c}.ref{font-size:11px;color:#0f766e;font-weight:800}
+.pill{display:inline-block;border-radius:20px;padding:5px 9px;background:#e1f0ef;color:#0f766e;font-size:10px;font-weight:800}
+.ticket p{margin:8px 0 5px;white-space:pre-wrap;overflow-wrap:anywhere}.reply{background:#f0f7f6;border-radius:10px;padding:10px;margin-top:9px;font-size:12px;line-height:1.5;color:#345b57}
+.notice{background:#fff8e8;border:1px solid #f2dfb5;border-radius:13px;padding:12px;color:#775a22;font-size:11px;line-height:1.6}
 footer{text-align:center;padding:20px;color:#81939e;font-size:11px}
-@media(max-width:360px){.actions{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header>
- <a class="back" href="dashboard.html">← Back to Dashboard</a>
- <h1>Customer Support</h1>
- <p>We’re here to help with your AILAT DATA account and service questions.</p>
-</header>
+<header><a class="back" href="dashboard.html">← Back to Dashboard</a><h1>Customer Support</h1><p>Send a support ticket and track its status from your account.</p></header>
 <main class="wrap">
  <section class="card">
-  <h2>How can we help you?</h2>
-  <p>Choose the option that best matches the help you need. For an order-related issue, check your transaction history first and keep the transaction reference available.</p>
-  <div class="actions">
-   <a class="action primary" href="faqs.html">Read FAQs</a>
-   <a class="action" href="transaction_history.html">Transaction History</a>
-  </div>
+  <h2>Submit a support ticket</h2>
+  <p>Describe the issue clearly. A support ticket is a message for review; it does not trigger a payment, refund or service delivery.</p>
+  <form id="ticketForm">
+   <label for="category">What do you need help with?</label>
+   <select id="category" required>
+    <option value="">Choose a topic</option><option value="data">Buy Data</option><option value="airtime">Buy Airtime</option><option value="electricity">Electricity</option><option value="cable_tv">Cable TV</option><option value="account">Account / Login</option><option value="transaction">Transaction question</option><option value="referral">Referral</option><option value="other">Other</option>
+   </select>
+   <label for="subject">Subject</label><input id="subject" maxlength="100" minlength="5" required placeholder="Briefly describe the issue">
+   <label for="message">Message</label><textarea id="message" maxlength="2000" minlength="10" required placeholder="Tell us what happened, when it happened, and any reference number (if available)."></textarea>
+   <div class="notice">Never include your password, OTP, transaction PIN, recovery code, full bank/card details or other secret credentials.</div>
+   <button id="submitBtn" type="submit">Submit Support Ticket</button>
+   <div class="status" id="formStatus" role="status" aria-live="polite"></div>
+  </form>
  </section>
  <section class="card">
-  <h2>Common support topics</h2>
-  <div class="topic"><span class="dot">01</span><div><strong>Data or Airtime issue</strong><small>Note the network, phone number used (mask most digits when sharing), service, date and transaction reference.</small></div></div>
-  <div class="topic"><span class="dot">02</span><div><strong>Electricity or Cable TV issue</strong><small>Keep the service type, provider, date and transaction reference. Never publish your full meter or smartcard details.</small></div></div>
-  <div class="topic"><span class="dot">03</span><div><strong>Account or login issue</strong><small>Check that you are using your registered email and that your email address is verified.</small></div></div>
-  <div class="topic"><span class="dot">04</span><div><strong>Referral or transaction question</strong><small>Open the Referral page or Transaction History and note the relevant record before seeking help.</small></div></div>
+  <h2>My support tickets</h2>
+  <p>Only tickets belonging to your signed-in account are shown here.</p>
+  <div id="ticketList" class="hint">Loading your tickets…</div>
+  <button type="button" id="refreshBtn" style="background:#e1f0ef;color:#0f766e">Refresh Tickets</button>
  </section>
  <section class="card">
-  <h2>Before you ask for help</h2>
-  <ul>
-   <li>Write a short description of what happened and when.</li>
-   <li>Include the service name and transaction reference if one exists.</li>
-   <li>Never share your password, OTP, transaction PIN, recovery code or full bank/card details.</li>
-   <li>Do not send the same request repeatedly while an earlier request is being reviewed.</li>
-  </ul>
- </section>
- <section class="card">
-  <h2>Official contact channel</h2>
-  <div class="notice">A verified AILAT DATA support email address or WhatsApp number has not yet been configured on this page. We will not display an unverified or invented contact. Please use the FAQs and account records for now.</div>
- </section>
- <section class="card">
-  <h2>Quick links</h2>
-  <div class="actions">
-   <a class="action" href="profile.html">My Profile</a>
-   <a class="action" href="settings.html">Account Settings</a>
-   <a class="action" href="referral.html">My Referral</a>
-   <a class="action" href="dashboard.html">Dashboard</a>
-  </div>
+  <h2>Useful links</h2>
+  <p><a href="faqs.html">Frequently Asked Questions</a> · <a href="transaction_history.html">Transaction History</a> · <a href="settings.html">Account Settings</a></p>
  </section>
 </main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
@@ -80,20 +58,92 @@ footer{text-align:center;padding:20px;color:#81939e;font-size:11px}
 import {app} from "./firebase.js";
 import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-customer-support";
+const API_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const form=document.getElementById("ticketForm");
+const submitBtn=document.getElementById("submitBtn");
+const statusBox=document.getElementById("formStatus");
+const ticketList=document.getElementById("ticketList");
+const refreshBtn=document.getElementById("refreshBtn");
+let currentUser=null;
+
+function safeText(value){return typeof value==="string"?value:"";}
+function addText(parent,tag,className,value){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ node.textContent=safeText(value);
+ parent.appendChild(node);
+ return node;
+}
+async function api(path="",options={}){
+ if(!currentUser)throw new Error("Please sign in again.");
+ const token=await currentUser.getIdToken(true);
+ const response=await fetch(API+path,{
+  method:options.method||"GET",
+  headers:{"apikey":API_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+  body:options.body?JSON.stringify(options.body):undefined
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok||!data.success)throw new Error(data.error||"Support service is temporarily unavailable.");
+ return data;
+}
+function renderTickets(tickets){
+ ticketList.replaceChildren();
+ if(!Array.isArray(tickets)||tickets.length===0){
+  addText(ticketList,"p","","You have not submitted any support tickets yet.");
+  return;
+ }
+ for(const ticket of tickets){
+  const item=document.createElement("article");item.className="ticket";
+  const top=document.createElement("div");top.className="tickettop";
+  addText(top,"span","ref",ticket.ticket_ref);
+  addText(top,"span","pill",String(ticket.status||"open").replaceAll("_"," ").toUpperCase());
+  item.appendChild(top);
+  addText(item,"strong","",ticket.subject);
+  addText(item,"p","",ticket.message);
+  addText(item,"p","hint", "Topic: "+ticket.category+" · "+(ticket.created_at?new Date(ticket.created_at).toLocaleString():""));
+  if(ticket.admin_reply){
+   const reply=document.createElement("div");reply.className="reply";
+   addText(reply,"strong","","Support reply");
+   addText(reply,"div","",ticket.admin_reply);
+   item.appendChild(reply);
+  }
+  ticketList.appendChild(item);
+ }
+}
+async function loadTickets(){
+ ticketList.textContent="Loading your tickets…";
+ refreshBtn.disabled=true;
+ try{const result=await api();renderTickets(result.tickets);}
+ catch(error){ticketList.textContent=error.message;}
+ finally{refreshBtn.disabled=false;}
+}
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}
+ currentUser=user;
  try{
   await user.reload();
-  if(!user.emailVerified){
-   await signOut(auth);
-   alert("Please verify your email before accessing this page.");
-   location.replace("login.html");
-  }
- }catch(error){
-  console.error("Support access check failed:",error);
-  location.replace("login.html");
- }
+  if(!user.emailVerified){await signOut(auth);alert("Please verify your email before accessing this page.");location.replace("login.html");return;}
+  await loadTickets();
+ }catch(error){ticketList.textContent=error.message;}
 });
+form.addEventListener("submit",async event=>{
+ event.preventDefault();
+ if(!form.reportValidity())return;
+ submitBtn.disabled=true;statusBox.textContent="Submitting your ticket…";
+ try{
+  const result=await api("",{method:"POST",body:{
+   category:document.getElementById("category").value,
+   subject:document.getElementById("subject").value.trim(),
+   message:document.getElementById("message").value.trim()
+  }});
+  statusBox.textContent="Ticket submitted. Your reference is "+result.ticket.ticket_ref+".";
+  form.reset();
+  await loadTickets();
+ }catch(error){statusBox.textContent=error.message;}
+ finally{submitBtn.disabled=false;}
+});
+refreshBtn.addEventListener("click",loadTickets);
 </script>
 </body>
 </html>

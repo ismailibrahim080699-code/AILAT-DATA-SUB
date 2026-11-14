@@ -173,6 +173,8 @@ onAuthStateChanged(auth,async user=>{
  catch(e){console.error("Security page account check failed:",e);say("Could not verify your account session. Refresh and try again.");}
 });
 (async()=>{
+ const authReady=new Promise(resolve=>{if(currentUser){resolve(currentUser);return;}const unsubscribe=onAuthStateChanged(auth,user=>{unsubscribe();resolve(user);});});
+ const signedInUser=await authReady;if(!signedInUser)return;
  const status=$("bioStatus"),detail=$("deviceCheck"),registerBtn=$("registerBiometricBtn");
  async function passkeyRequest(method="GET",body=null){
   const token=await currentUser.getIdToken(true);

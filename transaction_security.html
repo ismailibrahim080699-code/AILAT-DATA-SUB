@@ -22,6 +22,29 @@ h2{font-size:15px;margin:0 0 5px}.sub{font-size:11px;color:#718096;line-height:1
 .back{display:block;text-align:center;text-decoration:none;background:#5b21b6;color:#fff;padding:14px;border-radius:12px;font-size:13px;font-weight:700;margin-top:18px}
 #deviceCheck{font-size:11px;color:#766b8a;line-height:1.5;margin-top:10px}footer{text-align:center;color:#718096;font-size:10px;padding:10px 15px 24px}
 [hidden]{display:none!important}
+
+/* Phone-settings style: clean vertical rows, not floating accordion cards */
+main{max-width:600px;padding:20px 15px 36px}
+main>.card{background:#fff;border:0;border-radius:17px;padding:0;margin:0 0 14px;box-shadow:0 2px 12px rgba(16,27,45,.045);overflow:hidden}
+main>.card .section-toggle{min-height:78px;padding:14px 16px;display:flex}
+.section-toggle-main{gap:14px}
+.symbol{width:43px;height:43px;border-radius:13px;background:#edf7f7;color:#087f76;font-size:19px}
+.section-toggle-main h2{font-size:14px;font-weight:750;color:#172b3a;margin:0 0 5px}
+.section-toggle-main .sub{display:block;color:#81909c;font-size:11px;line-height:1.45}
+.section-chevron{width:27px;height:27px;border-radius:50%;background:#f3f6f7;color:#6c7d88;font-size:17px}
+.section-toggle[aria-expanded="true"] .section-chevron{background:#e3f4f1;color:#087f76}
+.section-panel{margin:0;padding:17px 16px 18px;border-top:1px solid #edf1f3;background:#fbfdfd}
+#pinStatus{margin:0 16px 13px}
+#pinPanel .section-panel{padding-top:18px}
+main>.card:has(.section-toggle[aria-expanded="true"]){box-shadow:0 3px 15px rgba(16,27,45,.07)}
+#resetSectionToggle .symbol{background:#f0f3fb;color:#526b9a}
+#bioSectionToggle .symbol{background:#edf7f1;color:#32815d}
+main>.card:last-of-type{padding:16px}
+main>.card:last-of-type h2{padding:0;margin-bottom:8px}
+main>.card:last-of-type .row{padding:14px 2px}
+.action{border-radius:11px}
+@media(max-width:420px){main{padding-left:12px;padding-right:12px}main>.card{border-radius:15px}main>.card .section-toggle{min-height:74px;padding:13px 14px}.symbol{width:41px;height:41px}}
+
 </style></head>
 <body>
 <header><h1>Transaction Security</h1><p>Protect your AILAT DATA account with a private 4-digit PIN.</p></header>

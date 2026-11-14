@@ -22,7 +22,7 @@ header .subtitle{color:#eee}
 .total{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;padding:17px;border-radius:12px;background:#f3edff}
 .total strong{color:#6425c5;font-size:19px;text-align:right}
 .notice{background:#fff8e7;color:#805600;padding:14px;border-radius:11px;margin-top:20px;font-size:12px;line-height:1.7}
-button{width:100%;padding:16px;border:0;border-radius:11px;background:#e7e0ef;color:#6c5d7c;font-size:14px;font-weight:bold;margin-top:20px;cursor:not-allowed}
+button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;color:white;font-size:14px;font-weight:bold;margin-top:20px;cursor:pointer}button:disabled{opacity:.65;cursor:wait}.secondary{background:#eee7ff;color:#4c1d95;margin-top:10px}#requestStatus{font-size:13px;line-height:1.6;margin-top:15px;overflow-wrap:anywhere}.error{background:#fff0ef;color:#a52222;padding:16px;border-radius:12px;font-size:14px;line-height:1.7}
 .cancel{display:block;text-align:center;margin-top:18px;color:#6425c5;text-decoration:none;font-size:14px}
 .error{background:#fff0ef;color:#a52222;padding:16px;border-radius:12px;font-size:14px;line-height:1.7}
 </style>
@@ -44,51 +44,36 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#e7e0ef;co
 </main>
 </div>
 <script>
-let reviewData={};
-try{reviewData=JSON.parse(sessionStorage.getItem("ailat_electricity_review")||"{}");}catch(error){}
-const params=new URLSearchParams();
-const providers={
- "8":"Abuja Electricity",
- "10":"Benin Electricity",
- "2":"Eko Electricity",
- "6":"Ibadan Electricity",
- "1":"Ikeja Electricity",
- "5":"Jos Electricity",
- "7":"Kaduna Electric",
- "3":"Kano Electricity",
- "4":"Port Harcourt Electricity",
- "9":"Yola Electricity"
-};
-const disco=String(reviewData.disco||"");
-const type=String(reviewData.type||"");
-const meter=String(reviewData.meter||"");
-const amountRaw=String(reviewData.amount||"");
-const amount=Number(amountRaw);
-const valid=Object.prototype.hasOwnProperty.call(providers,disco)&&
- ["prepaid","postpaid"].includes(type)&&/^[0-9]{6,20}$/.test(meter)&&
- /^\d{1,7}$/.test(amountRaw)&&Number.isSafeInteger(amount)&&amount>=100&&amount<=1000000;
-if(!valid){
- const summaryCard=document.getElementById("summaryCard");
- const errorBox=document.createElement("div");
- errorBox.className="error";
- const heading=document.createElement("h3");
- heading.textContent="Invalid order details.";
- const message=document.createElement("p");
- message.className="subtitle";
- message.textContent="Please return to the electricity form and enter a valid provider, meter number, meter type and amount.";
- const backLink=document.createElement("a");
- backLink.className="cancel";
- backLink.href="electricity.html";
- backLink.textContent="← Back to Electricity";
- errorBox.append(heading,message);
- summaryCard.replaceChildren(errorBox,backLink);
-}else{
- document.getElementById("provider").textContent=providers[disco];
- document.getElementById("type").textContent=type==="prepaid"?"Prepaid":"Postpaid";
- document.getElementById("meter").textContent=meter;
- document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+import { app } from "./firebase.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const FUNCTION_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-electricity-orders";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const auth=getAuth(app);let draft={};
+try{draft=JSON.parse(sessionStorage.getItem("ailat_electricity_review")||"{}");}catch(error){}
+const providers={"1":"Ikeja Electricity","2":"Eko Electricity","3":"Kano Electricity","4":"Port Harcourt Electricity","5":"Jos Electricity","6":"Ibadan Electricity","7":"Kaduna Electric","8":"Abuja Electricity","9":"Yola Electricity","10":"Benin Electricity"};
+const disco=String(draft.disco||""),type=String(draft.type||""),meter=String(draft.meter||""),amountRaw=String(draft.amount||""),amount=Number(amountRaw);
+const valid=Object.prototype.hasOwnProperty.call(providers,disco)&&["prepaid","postpaid"].includes(type)&&/^\\d{6,20}$/.test(meter)&&/^\\d{1,7}$/.test(amountRaw)&&Number.isSafeInteger(amount)&&amount>=100&&amount<=1000000;
+const button=document.getElementById("submitRequest"),newButton=document.getElementById("newRequest"),statusBox=document.getElementById("requestStatus");
+const storageKey="ailat_electricity_request:"+encodeURIComponent([disco,type,meter,String(amount)].join("|"));
+function requestId(){try{const old=sessionStorage.getItem(storageKey);if(old&&/^[0-9a-f-]{36}$/i.test(old))return old;const id=crypto.randomUUID();sessionStorage.setItem(storageKey,id);return id;}catch(error){return crypto.randomUUID();}}
+let key=requestId(),saved=false;
+function signedInUser(){return new Promise((resolve,reject)=>{const off=onAuthStateChanged(auth,user=>{off();if(user)resolve(user);else reject(new Error("Please log in first."));},error=>{off();reject(error);});});}
+if(!valid){const card=document.getElementById("summaryCard"),err=document.createElement("div"),back=document.createElement("a");err.className="error";err.textContent="Invalid electricity details. Return to the form and check the meter number, company and amount.";back.className="cancel";back.href="electricity.html";back.textContent="← Back to Electricity";card.replaceChildren(err,back);}
+else{
+ document.getElementById("provider").textContent=providers[disco];document.getElementById("type").textContent=type==="prepaid"?"Prepaid":"Postpaid";document.getElementById("meter").textContent=meter;document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-</script>
+newButton.addEventListener("click",()=>{key=crypto.randomUUID();try{sessionStorage.setItem(storageKey,key);}catch(error){}saved=false;button.disabled=false;button.textContent="Submit Electricity Request";newButton.hidden=true;statusBox.textContent="A new request is ready. Review the details before submitting.";});
+button.addEventListener("click",async()=>{
+ if(!valid||saved)return;button.disabled=true;button.textContent="Recording request...";statusBox.textContent="Please wait while your request is securely recorded.";
+ try{
+  const user=await signedInUser();await user.reload();if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
+  const idToken=await user.getIdToken(true);
+  const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify({idempotency_key:key,customer_data:{disco:Number(disco),meter_type:type,meter_number:meter,amount}})});
+  const result=await response.json().catch(()=>({}));if(!response.ok||!result.success)throw new Error(result.error||"Could not record this request.");
+  saved=true;button.textContent="Request Recorded";newButton.hidden=false;const order=result.order_request||{};
+  statusBox.textContent="Your request is recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". No payment was taken, no provider was contacted and no token was issued.";
+ }catch(error){button.disabled=false;button.textContent="Try Again";statusBox.textContent=error.message||"Could not record the request. Please try again.";}
+});</script>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";

@@ -299,13 +299,11 @@ Choose your network and preferred data plan.
 </div>
 
 <div class="network"
- onclick="chooseNetwork(this,'9mobile')">
+ onclick="chooseNetwork(this,'T2')">
 
-<div class="ninemobile-logo">
-<span>9</span>mobile
-</div>
+<div class="ninemobile-logo" style="color:#5b21b6;font-size:20px;letter-spacing:0">T2</div>
 
-<span class="network-name">9mobile</span>
+<span class="network-name">T2</span>
 
 </div>
 
@@ -360,6 +358,9 @@ Please check your phone number and selected data bundle before continuing.
 
 
 <script type="module">
+import { app } from "./firebase.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app);
 const SUPABASE_FUNCTION_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS=[];
@@ -369,7 +370,7 @@ const AILAT_NETWORK_IDS = Object.freeze({
  mtn:1,
  airtel:2,
  glo:3,
- "9mobile":4,
+ t2:4,
  vitel:5
 });
 function getInternalNetworkId(network){
@@ -500,11 +501,24 @@ window.chooseNetwork=chooseNetwork;
 window.continuePurchase=continuePurchase;
 loadPlans();
 
+async function getVerifiedUser(){
+ return await new Promise((resolve,reject)=>{
+  const unsubscribe=onAuthStateChanged(auth,user=>{
+   unsubscribe();
+   if(!user){reject(new Error("Please log in to view data bundles."));return;}
+   resolve(user);
+  },error=>{unsubscribe();reject(error);});
+ });
+}
 async function loadPlans(){
  try{
-  const response=await fetch(SUPABASE_FUNCTION_URL+"?action=plans",{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY}});
+  const user=await getVerifiedUser();
+  await user.reload();
+  if(!user.emailVerified) throw new Error("Please verify your email before using Buy Data.");
+  const token=await user.getIdToken(true);
+  const response=await fetch(SUPABASE_FUNCTION_URL+"?action=plans",{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}});
   const result=await response.json();
-  if(!response.ok || !result.success || !Array.isArray(result.plans)) throw new Error("Could not load data bundles.");
+  if(!response.ok || !result.success || !Array.isArray(result.plans)) throw new Error(result.error||"Could not load Bilalsadasub data bundles.");
   DATA_PLANS=result.plans;
   renderPlans();
  }catch(error){

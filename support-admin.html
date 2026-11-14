@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102a43"><title>AILAT DATA | Support Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf2f5;color:#172b3a;font-family:Arial,sans-serif}
+header{padding:24px 18px;background:linear-gradient(135deg,#102a43,#0f766e,#155e75);color:white;border-radius:0 0 24px 24px}
+header h1{font-size:22px;margin:15px 0 5px}header p{font-size:12px;color:#e1eeee}
+main{max-width:760px;margin:18px auto;padding:0 14px 35px}.bar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card{background:#fff;border:1px solid #dce7ec;border-radius:16px;padding:15px;margin:12px 0}
+.ticket{border-bottom:1px solid #edf2f5;padding:13px 0}.ticket:last-child{border:0}
+.meta{font-size:11px;color:#718693;line-height:1.6}.ref{color:#0f766e;font-weight:800}
+h3{font-size:15px;margin:8px 0}.msg{font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+input,select,textarea{width:100%;border:1px solid #d4e0e5;border-radius:10px;padding:11px;font:13px Arial;margin:7px 0}
+textarea{min-height:85px}button{border:0;border-radius:10px;padding:11px 14px;background:#0f766e;color:white;font-weight:800;font-size:12px}
+button:disabled{opacity:.55}.status{font-size:12px;color:#0f766e;margin-top:8px}.empty{font-size:13px;color:#718693}
+</style></head><body>
+<header><a href="support.html" style="color:#d9f3ef;font-size:12px">← Customer Support</a><h1>Support Admin Dashboard</h1><p>Review customer tickets, reply, and update ticket status.</p></header>
+<main><section class="card"><div class="bar"><strong>Customer tickets</strong><button id="refresh">Refresh</button></div><div id="status" class="status" aria-live="polite">Checking administrator access…</div></section><section class="card"><div id="tickets" class="empty">Loading tickets…</div></section></main>
+<script type="module">
+import {app} from "./firebase.js";
+import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app),API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-customer-support",KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+let user=null;
+const status=document.getElementById("status"),tickets=document.getElementById("tickets"),refresh=document.getElementById("refresh");
+async function call(method="GET",body=null){
+ const token=await user.getIdToken(true);
+ const r=await fetch(API+(method==="GET"?"?admin=1":""),{method,headers:{"apikey":KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok||!data.success)throw new Error(data.error||"Request failed");
+ return data;
+}
+function el(parent,tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;parent.appendChild(n);return n}
+async function load(){
+ refresh.disabled=true;status.textContent="Loading tickets…";
+ try{const data=await call();tickets.replaceChildren();
+  if(!data.tickets.length){el(tickets,"p","empty","No support tickets have been submitted yet.");}
+  data.tickets.forEach(t=>{
+   const box=el(tickets,"article","ticket"),top=el(box,"div","bar");
+   el(top,"span","ref",t.ticket_ref);el(top,"span","meta",String(t.status).toUpperCase().replaceAll("_"," "));
+   el(box,"div","meta","Customer UID: "+t.user_id);
+   el(box,"div","meta","Category: "+t.category+" · "+(t.created_at?new Date(t.created_at).toLocaleString():""));
+   el(box,"h3","",t.subject);el(box,"p","msg",t.message);
+   const reply=el(box,"textarea","");reply.maxLength=2000;reply.placeholder="Write a reply to the customer…";reply.value=t.admin_reply||"";
+   const state=el(box,"select","");["open","in_review","resolved","closed"].forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v.replaceAll("_"," ").toUpperCase();state.appendChild(o)});state.value=t.status;
+   const save=el(box,"button","","Save reply and status");
+   const result=el(box,"div","status","");
+   save.addEventListener("click",async()=>{save.disabled=true;result.textContent="Saving…";try{await call("PATCH",{ticket_ref:t.ticket_ref,status:state.value,admin_reply:reply.value});result.textContent="Updated successfully.";await load()}catch(e){result.textContent=e.message;save.disabled=false}});
+  });
+  status.textContent="Loaded "+data.tickets.length+" ticket(s).";
+ }catch(e){tickets.textContent=e.message;status.textContent="Access check failed."}
+ finally{refresh.disabled=false}
+}
+onAuthStateChanged(auth,async u=>{if(!u){location.replace("login.html");return}user=u;try{await u.reload();if(!u.emailVerified){await signOut(auth);location.replace("login.html");return}await load()}catch(e){status.textContent=e.message}});
+refresh.addEventListener("click",load);
+</script></body></html>

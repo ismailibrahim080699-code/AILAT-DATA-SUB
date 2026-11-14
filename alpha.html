@@ -63,9 +63,9 @@ form.addEventListener("submit",e=>{
  let accountType="PhoneNumber";
  if(PROVIDER==="smile"){
   accountType=document.getElementById("accountType").value;
-  const valid=accountType==="AccountNumber"?/^[A-Za-z0-9]{6,16}$/.test(account):/^0[789][01]\\d{8}$/.test(account);
+  const valid=accountType==="AccountNumber"?/^[A-Za-z0-9]{6,16}$/.test(account):/^0[789][01]\d{8}$/.test(account);
   if(!valid){errorBox.textContent=accountType==="AccountNumber"?"Enter a 6–16 character Smile account number.":"Enter a valid 11-digit Nigerian phone number.";return;}
- }else if(!/^0[789][01]\\d{8}$/.test(account)){
+ }else if(!/^0[789][01]\d{8}$/.test(account)){
   errorBox.textContent="Enter a valid 11-digit Nigerian phone number.";return;
  }
  const lines=[
@@ -78,7 +78,7 @@ form.addEventListener("submit",e=>{
   "Account: "+account,
   "Status: PREVIEW ONLY — no bundle was purchased."
  ];
- previewText.textContent=lines.join("\\n");
+ previewText.textContent=lines.join("\n");
  preview.style.display="block";
 });
 form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";previewText.textContent="";setTimeout(updatePlanInfo,0);});

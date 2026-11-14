@@ -61,10 +61,15 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 const SUPABASE_FUNCTION_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 const auth = getAuth(app);
-const params = new URLSearchParams(window.location.search);
-const network = params.get("network") || "";
-const phone = params.get("phone") || "";
-const amount = Number(params.get("amount"));
+// Read the one-tab draft; never place a customer's phone number in the URL.
+let airtimeDraft = null;
+try{
+ const rawDraft = sessionStorage.getItem("ailat_airtime_draft_v1");
+ if(rawDraft) airtimeDraft = JSON.parse(rawDraft);
+}catch(error){ airtimeDraft = null; }
+const network = typeof airtimeDraft?.network === "string" ? airtimeDraft.network : "";
+const phone = typeof airtimeDraft?.phone === "string" ? airtimeDraft.phone : "";
+const amount = Number(airtimeDraft?.amount);
 const validNetworks = ["MTN","Airtel","Glo","9mobile","Vitel"];
 const validPhone = /^0[789][01]\d{8}$/;
 const validAmount = Number.isSafeInteger(amount) && amount >= 50 && amount <= 100000;

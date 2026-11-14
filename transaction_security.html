@@ -12,7 +12,7 @@ main{max-width:560px;margin:auto;padding:18px 16px 35px}.card{background:#fff;bo
 .card-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}.symbol{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:#e7f7f5;font-size:22px;flex-shrink:0}
 h2{font-size:15px;margin:0 0 5px}.sub{font-size:11px;color:#718096;line-height:1.5;margin:0}
 .status{display:inline-flex;padding:7px 10px;background:#e7f7f5;color:#087f76;border-radius:20px;font-size:11px;font-weight:700;margin:10px 0}
-.field{display:block;width:100%;padding:13px;border:1px solid #e2e9ee;border-radius:11px;margin:9px 0;font-size:16px;letter-spacing:5px}
+.field{display:block;width:100%;padding:13px;border:1px solid #e2e9ee;border-radius:11px;margin:9px 0;font-size:15px}.pin-boxes{display:flex;justify-content:center;gap:10px;margin:12px 0 16px}.pin-digit{width:clamp(48px,15vw,60px);height:58px;text-align:center;font-size:24px;font-weight:700;letter-spacing:0;border:1px solid #cbd8df;border-radius:12px;background:#fff;color:#172b3a}.pin-digit:focus{outline:2px solid #0e9488;border-color:#0e9488}.text-action{display:block;margin:12px auto 0;border:0;background:none;color:#087f76;font-weight:700;font-size:12px;text-decoration:underline}
 .action{width:100%;border:0;border-radius:11px;padding:13px 14px;margin-top:10px;font-size:13px;font-weight:700;background:#0e9488;color:#fff}
 .action.secondary{background:#e7f7f5;color:#087f76}
 .note{font-size:12px;line-height:1.65;color:#536777;background:#f0f7f8;border-radius:12px;padding:13px;margin-top:12px}
@@ -31,18 +31,21 @@ h2{font-size:15px;margin:0 0 5px}.sub{font-size:11px;color:#718096;line-height:1
 <div class="status" id="pinStatus">Checking PIN status…</div>
 <div id="setupBox" hidden>
 <h2>Create your PIN</h2>
-<input class="field" id="newPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="new-password" placeholder="New 4-digit PIN" aria-label="New PIN">
-<input class="field" id="confirmPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="new-password" placeholder="Confirm 4-digit PIN" aria-label="Confirm PIN">
+<p class="sub">New 4-digit PIN</p><div class="pin-boxes" data-pin-group="newPin" role="group" aria-label="New PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 4" autocomplete="off"></div><p class="sub">Confirm your PIN</p><div class="pin-boxes" data-pin-group="confirmPin" role="group" aria-label="Confirm PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm PIN digit 4" autocomplete="off"></div>
 <button class="action" id="createBtn" type="button">Create PIN</button>
 </div>
 <div id="manageBox" hidden>
 <h2>Change your PIN</h2>
-<input class="field" id="currentPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="Current PIN" aria-label="Current PIN">
-<input class="field" id="changePin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="New 4-digit PIN" aria-label="New PIN">
-<input class="field" id="changeConfirm" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Confirm new PIN" aria-label="Confirm new PIN">
+<p class="sub">Current PIN</p><div class="pin-boxes" data-pin-group="currentPin" role="group" aria-label="Current PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Current PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Current PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Current PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Current PIN digit 4" autocomplete="off"></div><p class="sub">New 4-digit PIN</p><div class="pin-boxes" data-pin-group="changePin" role="group" aria-label="New PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New PIN digit 4" autocomplete="off"></div><p class="sub">Confirm new PIN</p><div class="pin-boxes" data-pin-group="changeConfirm" role="group" aria-label="Confirm new PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm new PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm new PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm new PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm new PIN digit 4" autocomplete="off"></div>
 <button class="action" id="changeBtn" type="button">Update PIN</button>
 <h2 style="margin-top:20px">Test your PIN</h2>
-<input class="field" id="testPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter PIN to verify" aria-label="Enter PIN to verify">
+<p class="sub">Enter your 4-digit PIN</p><div class="pin-boxes" data-pin-group="testPin" role="group" aria-label="PIN to verify"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN to verify digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN to verify digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN to verify digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN to verify digit 4" autocomplete="off"></div>
+<button class="text-action" id="forgotPinBtn" type="button">Forgot PIN?</button>
+<div id="resetBox" hidden style="margin-top:14px"><p class="sub">Confirm your account password to reset your PIN securely.</p>
+<input class="field" id="resetEmail" type="email" autocomplete="username" placeholder="Account email" aria-label="Account email">
+<input class="field" id="resetPassword" type="password" autocomplete="current-password" placeholder="Account password" aria-label="Account password">
+<p class="sub">Choose a new PIN</p><div class="pin-boxes" data-pin-group="resetPin" role="group" aria-label="New reset PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New reset PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New reset PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New reset PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="New reset PIN digit 4" autocomplete="off"></div><p class="sub">Confirm new PIN</p><div class="pin-boxes" data-pin-group="resetConfirm" role="group" aria-label="Confirm reset PIN"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm reset PIN digit 1" autocomplete="one-time-code"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm reset PIN digit 2" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm reset PIN digit 3" autocomplete="off"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Confirm reset PIN digit 4" autocomplete="off"></div>
+<button class="action" id="resetBtn" type="button">Verify account &amp; Reset PIN</button></div>
 <button class="action secondary" id="verifyBtn" type="button">Verify PIN</button>
 </div>
 <p class="message" id="pinMessage" role="status" aria-live="polite"></p>
@@ -65,7 +68,7 @@ h2{font-size:15px;margin:0 0 5px}.sub{font-size:11px;color:#718096;line-height:1
 </main><footer>AILAT DATA © 2026 · Account Security</footer>
 <script type="module">
 import { app } from "./firebase.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
 const $=id=>document.getElementById(id);
@@ -89,29 +92,40 @@ async function loadPinStatus(){
  }catch(e){$("pinStatus").textContent="Could not load PIN status";say(e.message);}
 }
 function valid4(value){return /^[0-9]{4}$/.test(value);}
+function readPin(id){return [...document.querySelectorAll('[data-pin-group="'+id+'"] input')].map(x=>x.value).join("");}
+function clearPin(id){document.querySelectorAll('[data-pin-group="'+id+'"] input').forEach(x=>x.value="");}
+document.querySelectorAll(".pin-boxes").forEach(group=>{const boxes=[...group.querySelectorAll("input")];boxes.forEach((box,i)=>{
+box.addEventListener("input",()=>{box.value=box.value.replace(/[^0-9]/g,"").slice(-1);if(box.value&&i<3)boxes[i+1].focus();});
+box.addEventListener("keydown",e=>{if(e.key==="Backspace"&&!box.value&&i>0){boxes[i-1].focus();boxes[i-1].value="";}if(e.key==="ArrowLeft"&&i>0){e.preventDefault();boxes[i-1].focus();}if(e.key==="ArrowRight"&&i<3){e.preventDefault();boxes[i+1].focus();}});
+box.addEventListener("paste",e=>{const digits=(e.clipboardData.getData("text")||"").replace(/\D/g,"").slice(0,4);if(digits){e.preventDefault();boxes.forEach((b,j)=>b.value=digits[j]||"");boxes[Math.min(digits.length,3)].focus();}});
+});});
 $("createBtn").addEventListener("click",async()=>{
- const pin=$("newPin").value,confirm=$("confirmPin").value;
+ const pin=readPin("newPin"),confirm=readPin("confirmPin");
  if(!valid4(pin)||!valid4(confirm)){say("Enter exactly 4 digits in both fields.");return;}
  if(pin!==confirm){say("The PIN entries do not match.");return;}
  $("createBtn").disabled=true;
- try{const r=await request("POST",{action:"setup",pin});say(r.message,true);$("newPin").value=$("confirmPin").value="";await loadPinStatus();}
+ try{const r=await request("POST",{action:"setup",pin});say(r.message,true);clearPin("newPin");clearPin("confirmPin");await loadPinStatus();}
  catch(e){say(e.message);}finally{$("createBtn").disabled=false;}
 });
 $("changeBtn").addEventListener("click",async()=>{
- const current_pin=$("currentPin").value,pin=$("changePin").value,confirm=$("changeConfirm").value;
+ const current_pin=readPin("currentPin"),pin=readPin("changePin"),confirm=readPin("changeConfirm");
  if(!valid4(current_pin)||!valid4(pin)||!valid4(confirm)){say("All PIN fields must contain exactly 4 digits.");return;}
  if(pin!==confirm){say("The new PIN entries do not match.");return;}
  if(pin===current_pin){say("Choose a new PIN different from your current PIN.");return;}
  $("changeBtn").disabled=true;
- try{const r=await request("POST",{action:"change",current_pin,pin});say(r.message,true);$("currentPin").value=$("changePin").value=$("changeConfirm").value="";}
+ try{const r=await request("POST",{action:"change",current_pin,pin});say(r.message,true);["currentPin","changePin","changeConfirm"].forEach(clearPin);}
  catch(e){say(e.message);}finally{$("changeBtn").disabled=false;}
 });
 $("verifyBtn").addEventListener("click",async()=>{
- const pin=$("testPin").value;if(!valid4(pin)){say("Enter your 4-digit PIN.");return;}
+ const pin=readPin("testPin");if(!valid4(pin)){say("Enter your 4-digit PIN.");return;}
  $("verifyBtn").disabled=true;
- try{await request("POST",{action:"verify",current_pin:pin,pin});say("PIN verified successfully.",true);$("testPin").value="";}
+ try{await request("POST",{action:"verify",current_pin:pin,pin});say("PIN verified successfully.",true);clearPin("testPin");}
  catch(e){say(e.message);}finally{$("verifyBtn").disabled=false;}
 });
+$("forgotPinBtn").addEventListener("click",()=>{$("resetBox").hidden=!$("resetBox").hidden;if(!$("resetBox").hidden){$("resetEmail").value=currentUser?.email||"";$("resetEmail").focus();}});
+$("resetBtn").addEventListener("click",async()=>{const email=$("resetEmail").value.trim(),password=$("resetPassword").value,pin=readPin("resetPin"),confirm=readPin("resetConfirm");
+if(!email||!password){say("Enter your account email and password to verify it.");return;}if(!valid4(pin)||!valid4(confirm)){say("Enter and confirm a 4-digit new PIN.");return;}if(pin!==confirm){say("The new PIN entries do not match.");return;}
+$("resetBtn").disabled=true;try{await reauthenticateWithCredential(currentUser,EmailAuthProvider.credential(email,password));await request("POST",{action:"reset",pin});say("Your PIN has been reset successfully.",true);$("resetPassword").value="";["resetPin","resetConfirm"].forEach(clearPin);$("resetBox").hidden=true;await loadPinStatus();}catch(e){say(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential"?"Account password is incorrect.":e.message);}finally{$("resetBtn").disabled=false;}});
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}
  currentUser=user;

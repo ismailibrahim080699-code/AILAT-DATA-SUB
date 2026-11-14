@@ -51,4 +51,9 @@ form.addEventListener("submit",e=>{
 });
 form.addEventListener("reset",()=>setTimeout(updateMode,0));
 loadCatalogue();
-</script></body></html>
+</script>
+<script type="module">
+import { protectPage } from "./firebase.js";
+await protectPage();
+</script>
+</body></html>

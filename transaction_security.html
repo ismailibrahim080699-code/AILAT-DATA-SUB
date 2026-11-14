@@ -10,36 +10,54 @@ header h1{font-size:22px;margin:0 0 7px}header p{font-size:12px;line-height:1.5;
 main{max-width:560px;margin:auto;padding:18px 16px 35px}.card{background:#fff;border:1px solid #eee7ff;border-radius:18px;padding:18px;margin:0 0 14px;box-shadow:0 5px 18px #35106f0b}
 .card-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}.symbol{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:#f0eaff;font-size:22px;flex-shrink:0}
 h2{font-size:15px;margin:0 0 5px}.sub{font-size:11px;color:#8b7aa8;line-height:1.5;margin:0}
-.status{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;background:#fff7ed;color:#9a5310;border-radius:20px;font-size:11px;font-weight:700;margin-top:10px}
-.status:before{content:"";width:7px;height:7px;background:#d97706;border-radius:50%}
-.action{width:100%;border:0;border-radius:11px;padding:13px 14px;margin-top:14px;font-size:13px;font-weight:700;background:#eee9f8;color:#766b8a}.action:disabled{opacity:1;cursor:not-allowed}
+.status{display:inline-flex;padding:7px 10px;background:#fff7ed;color:#9a5310;border-radius:20px;font-size:11px;font-weight:700;margin:10px 0}
+.field{display:block;width:100%;padding:13px;border:1px solid #ddd4ef;border-radius:11px;margin:9px 0;font-size:16px;letter-spacing:5px}
+.action{width:100%;border:0;border-radius:11px;padding:13px 14px;margin-top:10px;font-size:13px;font-weight:700;background:#5b21b6;color:#fff}
+.action.secondary{background:#eee9f8;color:#5b21b6}
 .note{font-size:12px;line-height:1.65;color:#695b82;background:#f7f4ff;border-radius:12px;padding:13px;margin-top:12px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #f0ebf7}.row:last-child{border-bottom:0}
+.message{font-size:12px;line-height:1.5;margin-top:10px;min-height:18px;color:#5b21b6}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #f0ebf7}
 .row strong{font-size:12px}.row span{font-size:11px;color:#8b7aa8;text-align:right}
 .back{display:block;text-align:center;text-decoration:none;background:#5b21b6;color:#fff;padding:14px;border-radius:12px;font-size:13px;font-weight:700;margin-top:18px}
 #deviceCheck{font-size:11px;color:#766b8a;line-height:1.5;margin-top:10px}footer{text-align:center;color:#988cad;font-size:10px;padding:10px 15px 24px}
+[hidden]{display:none!important}
 </style></head>
 <body>
-<header><h1>Transaction Security</h1><p>Review the security options planned for protecting your AILAT DATA account.</p></header>
+<header><h1>Transaction Security</h1><p>Protect your AILAT DATA account with a private 4-digit PIN.</p></header>
 <main>
 <section class="card">
-<div class="card-head"><div class="symbol">🔢</div><div><h2>Transaction PIN</h2><p class="sub">A separate PIN security layer for account actions.</p></div></div>
-<div class="status">Secure setup not available yet</div>
-<button class="action" type="button" disabled>Create Transaction PIN — unavailable</button>
-<div class="note">PIN creation, confirmation, change and recovery are not connected to a verified secure server process yet. This page will not ask you to enter or save a PIN until that process is ready.</div>
+<div class="card-head"><div class="symbol">🔢</div><div><h2>Transaction PIN</h2><p class="sub">Create and manage your separate 4-digit security PIN.</p></div></div>
+<div class="status" id="pinStatus">Checking PIN status…</div>
+<div id="setupBox" hidden>
+<h2>Create your PIN</h2>
+<input class="field" id="newPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="new-password" placeholder="New 4-digit PIN" aria-label="New PIN">
+<input class="field" id="confirmPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="new-password" placeholder="Confirm 4-digit PIN" aria-label="Confirm PIN">
+<button class="action" id="createBtn" type="button">Create PIN</button>
+</div>
+<div id="manageBox" hidden>
+<h2>Change your PIN</h2>
+<input class="field" id="currentPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="Current PIN" aria-label="Current PIN">
+<input class="field" id="changePin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="New 4-digit PIN" aria-label="New PIN">
+<input class="field" id="changeConfirm" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Confirm new PIN" aria-label="Confirm new PIN">
+<button class="action" id="changeBtn" type="button">Update PIN</button>
+<h2 style="margin-top:20px">Test your PIN</h2>
+<input class="field" id="testPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter PIN to verify" aria-label="Enter PIN to verify">
+<button class="action secondary" id="verifyBtn" type="button">Verify PIN</button>
+</div>
+<p class="message" id="pinMessage" role="status" aria-live="polite"></p>
+<div class="note">Never share your PIN with anyone. Five incorrect attempts temporarily lock PIN verification for 15 minutes. This PIN settings page is not yet connected to authorize purchases, wallet transfers, or payments.</div>
 </section>
 <section class="card">
-<div class="card-head"><div class="symbol">🔐</div><div><h2>Fingerprint / Device Biometric</h2><p class="sub">Use your device's supported passkey security when enrollment is available.</p></div></div>
+<div class="card-head"><div class="symbol">🔐</div><div><h2>Fingerprint / Device Biometric</h2><p class="sub">Check whether this browser supports secure device passkeys.</p></div></div>
 <div class="status" id="bioStatus">Checking device support…</div>
-<p id="deviceCheck">Checking whether this browser can use a platform authenticator. No fingerprint or face data is being requested.</p>
-<button class="action" type="button" disabled>Enable Fingerprint — enrollment unavailable</button>
-<div class="note">AILAT DATA should receive only a cryptographic passkey response. Your fingerprint or face template must remain on your device; this website must never collect it.</div>
+<p id="deviceCheck">No fingerprint or face data is being requested.</p>
+<div class="note">Your fingerprint or face template must remain on your device. AILAT DATA must never collect biometric images or templates. Passkey enrollment will be added separately after its server-side challenge verification is implemented.</div>
 </section>
 <section class="card"><h2>Security controls</h2>
-<div class="row"><strong>Change Transaction PIN</strong><span>Not available yet</span></div>
-<div class="row"><strong>Forgot PIN recovery</strong><span>Not available yet</span></div>
-<div class="row"><strong>Fingerprint preference</strong><span>Not enrolled</span></div>
-<div class="row"><strong>Transaction confirmation</strong><span>Not connected</span></div>
+<div class="row"><strong>4-digit PIN</strong><span id="pinControl">Checking…</span></div>
+<div class="row"><strong>Failed-attempt lock</strong><span>5 attempts / 15 minutes</span></div>
+<div class="row"><strong>Fingerprint passkey</strong><span>Not enrolled</span></div>
+<div class="row"><strong>Payment authorization</strong><span>Not connected</span></div>
 </section>
 <a class="back" href="settings.html" style="margin-top:10px;background:#eee9f8;color:#5b21b6">Back to Settings</a>
 <a class="back" href="dashboard.html">Back to Dashboard</a>
@@ -48,19 +66,62 @@ h2{font-size:15px;margin:0 0 5px}.sub{font-size:11px;color:#8b7aa8;line-height:1
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
+const $=id=>document.getElementById(id);
+let currentUser=null;
+function say(message,ok=false){$("pinMessage").textContent=message;$("pinMessage").style.color=ok?"#16734a":"#b42318";}
+async function request(method="GET",body=null){
+ const token=await currentUser.getIdToken(true);
+ const response=await fetch(API,{method,headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},...(body?{body:JSON.stringify(body)}:{})});
+ const data=await response.json().catch(()=>({success:false,error:"Invalid server response"}));
+ if(!response.ok||!data.success)throw new Error(data.error||"Request failed");
+ return data;
+}
+async function loadPinStatus(){
+ try{
+  const data=await request();
+  $("setupBox").hidden=data.pin_set;
+  $("manageBox").hidden=!data.pin_set;
+  $("pinStatus").textContent=data.pin_set?"Transaction PIN is set":"No Transaction PIN created yet";
+  $("pinControl").textContent=data.pin_set?"Active":"Not set";
+  if(data.locked_until&&new Date(data.locked_until)>new Date())say("PIN verification is temporarily locked until "+new Date(data.locked_until).toLocaleTimeString());
+ }catch(e){$("pinStatus").textContent="Could not load PIN status";say(e.message);}
+}
+function valid4(value){return /^[0-9]{4}$/.test(value);}
+$("createBtn").addEventListener("click",async()=>{
+ const pin=$("newPin").value,confirm=$("confirmPin").value;
+ if(!valid4(pin)||!valid4(confirm)){say("Enter exactly 4 digits in both fields.");return;}
+ if(pin!==confirm){say("The PIN entries do not match.");return;}
+ $("createBtn").disabled=true;
+ try{const r=await request("POST",{action:"setup",pin});say(r.message,true);$("newPin").value=$("confirmPin").value="";await loadPinStatus();}
+ catch(e){say(e.message);}finally{$("createBtn").disabled=false;}
+});
+$("changeBtn").addEventListener("click",async()=>{
+ const current_pin=$("currentPin").value,pin=$("changePin").value,confirm=$("changeConfirm").value;
+ if(!valid4(current_pin)||!valid4(pin)||!valid4(confirm)){say("All PIN fields must contain exactly 4 digits.");return;}
+ if(pin!==confirm){say("The new PIN entries do not match.");return;}
+ if(pin===current_pin){say("Choose a new PIN different from your current PIN.");return;}
+ $("changeBtn").disabled=true;
+ try{const r=await request("POST",{action:"change",current_pin,pin});say(r.message,true);$("currentPin").value=$("changePin").value=$("changeConfirm").value="";}
+ catch(e){say(e.message);}finally{$("changeBtn").disabled=false;}
+});
+$("verifyBtn").addEventListener("click",async()=>{
+ const pin=$("testPin").value;if(!valid4(pin)){say("Enter your 4-digit PIN.");return;}
+ $("verifyBtn").disabled=true;
+ try{await request("POST",{action:"verify",current_pin:pin,pin});say("PIN verified successfully.",true);$("testPin").value="";}
+ catch(e){say(e.message);}finally{$("verifyBtn").disabled=false;}
+});
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}
- try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before accessing account security.");location.replace("login.html");}}
- catch(error){console.error("Security page account check failed:",error);}
+ currentUser=user;
+ try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before accessing account security.");location.replace("login.html");return;}await loadPinStatus();}
+ catch(e){console.error("Security page account check failed:",e);say("Could not verify your account session. Refresh and try again.");}
 });
 (async()=>{
- const status=document.getElementById("bioStatus"),detail=document.getElementById("deviceCheck");
- if(!window.isSecureContext){status.textContent="Secure connection required";detail.textContent="Biometric passkeys require HTTPS. Open the official AILAT DATA website over a secure connection.";return;}
- if(!window.PublicKeyCredential){status.textContent="Not supported in this browser";detail.textContent="This browser does not expose WebAuthn passkey support. No biometric data was accessed.";return;}
- try{
-  const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-  status.textContent=available?"Device authenticator detected":"No platform authenticator detected";
-  detail.textContent=available?"This device/browser reports a platform authenticator. It may support fingerprint or face verification, but no passkey has been enrolled.":"The browser did not detect a built-in platform authenticator. This check does not prove whether the device has a fingerprint sensor.";
- }catch(error){status.textContent="Support could not be confirmed";detail.textContent="The browser could not complete its capability check. No biometric information was requested.";console.info("WebAuthn capability check:",error);}
+ const status=$("bioStatus"),detail=$("deviceCheck");
+ if(!window.isSecureContext){status.textContent="Secure connection required";detail.textContent="Passkeys require HTTPS.";return;}
+ if(!window.PublicKeyCredential){status.textContent="Not supported in this browser";detail.textContent="This browser does not expose WebAuthn passkey support.";return;}
+ try{const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();status.textContent=available?"Device authenticator detected":"No platform authenticator detected";detail.textContent=available?"This device reports a platform authenticator. No passkey has been enrolled yet.":"The browser did not detect a built-in platform authenticator. This does not prove whether the phone has a fingerprint sensor.";}
+ catch(e){status.textContent="Support could not be confirmed";detail.textContent="The browser could not complete its capability check.";}
 })();
 </script></body></html>

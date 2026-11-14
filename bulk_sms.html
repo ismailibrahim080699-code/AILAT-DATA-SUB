@@ -14,44 +14,62 @@
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">✉️</div><h1>Bulk SMS</h1><p>Prepare a message campaign</p><span class="status">PRE-API SETUP</span></div>
+<div class="hero"><div class="icon" aria-hidden="true">✉️</div><h1>Bulk SMS</h1><p>Prepare and check your SMS campaign</p><span class="status">LOCAL PREVIEW ONLY</span></div>
 <form id="serviceForm" novalidate><div class="form-section">
-<label for="sender">Sender ID (if approved)</label><input id="sender" type="text" required  placeholder="Optional sender label">
-<label for="recipients">Recipient numbers</label><textarea id="recipients" required rows="4" placeholder="Enter one number per line"></textarea>
+<label for="sender">Approved Sender ID</label><input id="sender" type="text" required  placeholder="Enter approved sender ID (max 11 characters)">
+<label for="recipients">Recipient numbers</label><textarea id="recipients" required rows="4" placeholder="Enter numbers separated by commas or new lines"></textarea>
 <label for="message">Message</label><textarea id="message" required rows="4" placeholder="Write your message"></textarea>
 <div class="error" id="formError" role="alert" aria-live="polite"></div>
 <div class="actions"><button class="primary" type="submit">Preview Request</button><button class="secondary" type="reset">Clear Form</button></div>
 </div></form>
 <section class="preview" id="preview" aria-live="polite"><h2>Local Request Preview</h2><pre id="previewText"></pre></section>
-<div class="notice"><strong>Integration status:</strong> This page can prepare and validate a local draft only. Sender ID approval, pricing, consent checks, delivery reports and gateway connection must be confirmed before any message can be sent. This preview stays on this device and is not sent to AILAT DATA, a provider or another person.</div>
+<div class="notice"><strong>Integration status:</strong> This page only validates and previews your message on this device. It does not connect to Bilalsadasub or send SMS. Sender IDs must already be approved. Marketing messages to DND numbers may be blocked. Send only to recipients who have consented.</div>
 </section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
 const form=document.getElementById("serviceForm");
 const errorBox=document.getElementById("formError");
 const preview=document.getElementById("preview");
 const previewText=document.getElementById("previewText");
-const fields=[["sender","Sender ID (if approved)"],["recipients","Recipient numbers"],["message","Message"]];
+const sender=document.getElementById("sender");
+const recipients=document.getElementById("recipients");
+const message=document.getElementById("message");
 form.addEventListener("submit",event=>{
- event.preventDefault(); errorBox.textContent="";
- const values=[];
- for(const [id,label] of fields){
-  const el=document.getElementById(id); const value=el.value.trim();
-  if(el.required && !value){errorBox.textContent="Please complete: "+label;el.focus();return;}
-  if(el.type==="number" && value && (!Number.isSafeInteger(Number(value)) || Number(value)<1)){errorBox.textContent=label+" must be a whole number greater than zero.";el.focus();return;}
-  if(["phone","sender","recipient"].includes(id) && value && !/^0[789][01]\d{8}$/.test(value)){errorBox.textContent=label+" must be a valid 11-digit Nigerian mobile number.";el.focus();return;}
-  values.push(label+": "+(value||"Not provided"));
- }
- if(document.getElementById("sender") && document.getElementById("recipients")){
-  const raw=document.getElementById("recipients").value.trim();
-  const numbers=raw.split(/[\s,;]+/).filter(Boolean);
-  if(numbers.some(n=>!/^0[789][01]\d{8}$/.test(n))){errorBox.textContent="Check recipient numbers. Use valid 11-digit Nigerian mobile numbers.";return;}
-  values.push("Recipient count: "+numbers.length);
-  values.push("Message characters: "+document.getElementById("message").value.length);
- }
- previewText.textContent=values.join("\n");
+ event.preventDefault();
+ errorBox.textContent="";
+ preview.style.display="none";
+ const senderId=sender.value.trim();
+ const rawNumbers=recipients.value.trim();
+ const body=message.value.trim();
+ if(!senderId){errorBox.textContent="Enter your approved Sender ID.";sender.focus();return;}
+ if(senderId.length>11){errorBox.textContent="Sender ID must not exceed 11 characters.";sender.focus();return;}
+ if(/^\d+$/.test(senderId)){errorBox.textContent="Sender ID cannot contain numbers only.";sender.focus();return;}
+ if(!/^[A-Za-z0-9 ]+$/.test(senderId)){errorBox.textContent="Use plain text for Sender ID.";sender.focus();return;}
+ if(!rawNumbers){errorBox.textContent="Enter at least one recipient number.";recipients.focus();return;}
+ const numbers=rawNumbers.split(/[\s,;]+/).filter(Boolean);
+ const invalid=numbers.filter(n=>!/^0[789][01]\d{8}$/.test(n));
+ if(invalid.length){errorBox.textContent="Invalid number(s): "+invalid.slice(0,3).join(", ")+". Use valid 11-digit Nigerian mobile numbers.";recipients.focus();return;}
+ if(!body){errorBox.textContent="Write your SMS message.";message.focus();return;}
+ const unicode=/[^\u0000-\u007F]/.test(body);
+ const chars=Array.from(body).length;
+ const pages=chars<=(unicode?70:160)?1:Math.ceil(chars/(unicode?67:153));
+ const lines=[
+  "Sender ID: "+senderId,
+  "Recipient count: "+numbers.length,
+  "Message: "+body,
+  "Characters: "+chars,
+  "Encoding estimate: "+(unicode?"Unicode":"GSM/basic text"),
+  "Pages per recipient (estimate): "+pages,
+  "Total SMS pages (estimate): "+(pages*numbers.length),
+  "Status: NOT SENT — local preview only"
+ ];
+ previewText.textContent=lines.join("\n");
  preview.style.display="block";
 });
-form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";previewText.textContent="";});
+form.addEventListener("reset",()=>{
+ errorBox.textContent="";
+ preview.style.display="none";
+ previewText.textContent="";
+});
 </script>
 <script type="module">
 import { app } from "./firebase.js";

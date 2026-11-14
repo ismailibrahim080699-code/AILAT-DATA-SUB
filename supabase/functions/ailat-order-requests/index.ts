@@ -175,6 +175,9 @@ Deno.serve(async (req: Request) => {
     const phone = String((customerData as Record<string, unknown>).phone);
     let cleanCustomerData: Record<string, unknown>;
     let requestedAmount: number | null = null;
+    let supplierNetworkId: number | null = null;
+    let providerDispatchStatus = "not_sent";
+    let providerRequestPreview: Record<string, unknown> | null = null;
 
     if (serviceKey === "data") {
       const purchaseType = String((customerData as Record<string, unknown>).purchase_type ?? "SME").toUpperCase();
@@ -278,24 +281,55 @@ Deno.serve(async (req: Request) => {
         return reply({ success: false, error: "Airtime amount must be between ₦50 and ₦100,000" }, 400);
       }
       requestedAmount = amount;
-      cleanCustomerData = { network, phone, amount };
+      const airtimeProviderNetworkIds: Record<string, number | null> = {
+        mtn: 1,
+        airtel: 2,
+        glo: 3,
+        "9mobile": 4,
+        vitel: null,
+      };
+      supplierNetworkId = airtimeProviderNetworkIds[network];
+      cleanCustomerData = {
+        network,
+        phone,
+        amount,
+        plan_type: "VTU",
+        provider_network_id: supplierNetworkId,
+      };
     } else {
       return reply({ success: false, error: "This service is not enabled for order requests yet" }, 400);
     }
 
     const reference = `AIL-${crypto.randomUUID().replaceAll("-", "").slice(0, 12).toUpperCase()}`;
 
-    // Prepare a provider-format preview for review only. No external supplier
+    // Prepare provider-format previews for review only. No external supplier
     // request is sent and no purchase is fulfilled by this endpoint.
     if (serviceKey === "data") {
-      (cleanCustomerData as Record<string, unknown>).provider_request_preview = {
+      providerRequestPreview = {
         network: Number((cleanCustomerData as Record<string, unknown>).provider_network_id),
         phone: `234${phone.slice(1)}`,
         data_plan: Number((cleanCustomerData as Record<string, unknown>).supplier_plan_id),
         bypass: false,
         "request-id": reference
       };
+      providerDispatchStatus = "disabled_safe_mode";
+      (cleanCustomerData as Record<string, unknown>).provider_request_preview = providerRequestPreview;
       (cleanCustomerData as Record<string, unknown>).provider_dispatch_status = "not_sent";
+    } else if (serviceKey === "airtime" && supplierNetworkId !== null) {
+      providerRequestPreview = {
+        network: supplierNetworkId,
+        phone: `234${phone.slice(1)}`,
+        plan_type: "VTU",
+        amount: requestedAmount,
+        bypass: false,
+        "request-id": reference
+      };
+      providerDispatchStatus = "disabled_safe_mode";
+      (cleanCustomerData as Record<string, unknown>).provider_request_preview = providerRequestPreview;
+      (cleanCustomerData as Record<string, unknown>).provider_dispatch_status = "not_sent";
+    } else if (serviceKey === "airtime") {
+      providerDispatchStatus = "provider_mapping_missing";
+      (cleanCustomerData as Record<string, unknown>).provider_dispatch_status = "provider_mapping_missing";
     }
     const { data: inserted, error: insertError } = await supabase
       .from("service_order_requests")
@@ -307,11 +341,11 @@ Deno.serve(async (req: Request) => {
         requested_amount: requestedAmount,
         currency: "NGN",
         customer_data: cleanCustomerData,
-        supplier_network_id: serviceKey === "data" ? Number((cleanCustomerData as Record<string, unknown>).provider_network_id) : null,
+        supplier_network_id: serviceKey === "data" ? Number((cleanCustomerData as Record<string, unknown>).provider_network_id) : supplierNetworkId,
         supplier_plan_id: serviceKey === "data" ? Number((cleanCustomerData as Record<string, unknown>).supplier_plan_id) : null,
-        provider_request_id: serviceKey === "data" ? reference : null,
-        provider_dispatch_status: serviceKey === "data" ? "disabled_safe_mode" : "not_sent",
-        provider_request_preview: serviceKey === "data" ? (cleanCustomerData as Record<string, unknown>).provider_request_preview : null,
+        provider_request_id: providerRequestPreview ? reference : null,
+        provider_dispatch_status: providerDispatchStatus,
+        provider_request_preview: providerRequestPreview,
         status: "received",
       })
       .select("id,reference,service_key,requested_amount,currency,status,created_at")

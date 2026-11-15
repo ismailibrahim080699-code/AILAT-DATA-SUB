@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4c1d95"><title>Withdrawal Admin | AILAT DATA</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,sans-serif}
+header{padding:20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:#fff}
+header a{color:white;text-decoration:none;font-size:13px}main{max-width:850px;margin:22px auto;padding:0 14px 40px}
+h1{font-size:22px;margin:8px 0}p{font-size:13px;line-height:1.6;color:#75658f}
+.toolbar{display:flex;gap:10px;align-items:center;margin:16px 0}.toolbar button,.action{border:0;border-radius:9px;padding:11px 13px;background:#6d28d9;color:#fff;font-weight:700;cursor:pointer}
+#status{font-size:13px;color:#6d28d9;margin:12px 0;white-space:pre-wrap}
+.item{background:#fff;border:1px solid #e9e1fa;border-radius:16px;padding:16px;margin:13px 0;box-shadow:0 5px 16px #35106f0a}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.amount{font-size:20px;font-weight:800;color:#5b21b6}
+.meta{font-size:12px;line-height:1.8;color:#685981;margin:9px 0;overflow-wrap:anywhere}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#f3e8ff;color:#6b21a8;font-size:11px;font-weight:800}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.approve{background:#15803d}.reject{background:#b91c1c}.paid{background:#0369a1}
+button:disabled{opacity:.5}.empty{background:white;border-radius:14px;padding:22px;text-align:center;color:#75658f}
+.warning{padding:12px;border-radius:10px;background:#fff7ed;color:#92400e;font-size:12px;line-height:1.6}
+</style></head>
+<body>
+<header><a href="dashboard.html">← Dashboard</a><h1>Customer Withdrawal Requests</h1><div style="font-size:12px;opacity:.85">Secure AILAT DATA Admin</div></header>
+<main>
+<p>Only the authorised Firebase admin account can access this page. Approving a request reserves the funds by deducting the wallet balance. A bank transfer is still manual.</p>
+<div class="warning"><b>Important:</b> After approving, transfer the money through your bank/provider first. Only then tap “Mark as paid” and enter the real transfer reference. Never mark a request paid before the transfer is successful.</div>
+<div class="toolbar"><button id="refresh">Refresh requests</button><span id="count" style="font-size:12px;color:#75658f"></span></div>
+<div id="status">Verifying admin access…</div><div id="requests"></div>
+</main>
+<script type="module">
+import { app } from "./firebase.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app), endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-withdrawal-requests";
+const statusEl=document.getElementById("status"), list=document.getElementById("requests"), count=document.getElementById("count");
+let admin=null, busy=false;
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function api(method,body){
+ const token=await admin.getIdToken(true);
+ const r=await fetch(endpoint,{method,headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},...(body?{body:JSON.stringify(body)}:{})});
+ const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||"Request failed");return d;
+}
+function render(rows){
+ count.textContent=rows.length+" open request(s)";
+ if(!rows.length){list.innerHTML='<div class="empty">No pending or approved withdrawal requests.</div>';return;}
+ list.innerHTML=rows.map(x=>{
+  const approved=x.status==="approved";
+  return '<article class="item"><div class="top"><div class="amount">₦'+Number(x.amount).toLocaleString("en-NG",{minimumFractionDigits:2})+'</div><span class="tag">'+esc(x.status.replace("_"," ").toUpperCase())+'</span></div>'+
+  '<div class="meta"><b>Reference:</b> '+esc(x.reference)+'<br><b>Customer UID:</b> '+esc(x.user_id)+'<br><b>Bank:</b> '+esc(x.bank_name)+' ('+esc(x.bank_code)+')<br><b>Account:</b> '+esc(x.account_number)+'<br><b>Account name:</b> '+esc(x.account_name)+'<br><b>Submitted:</b> '+new Date(x.created_at).toLocaleString()+'</div>'+
+  '<div class="actions">'+(approved?'<button class="action paid" data-act="paid" data-id="'+esc(x.id)+'">Mark as paid</button>':'<button class="action approve" data-act="approve" data-id="'+esc(x.id)+'">Approve & reserve funds</button><button class="action reject" data-act="reject" data-id="'+esc(x.id)+'">Reject request</button>')+'</div></article>';
+ }).join("");
+}
+async function load(){
+ if(!admin||busy)return;busy=true;statusEl.textContent="Loading requests…";list.innerHTML="";
+ try{const d=await api("GET");render(d.requests||[]);statusEl.textContent="Admin verified. Requests loaded securely.";}
+ catch(e){statusEl.textContent=e.message;list.innerHTML="";}
+ finally{busy=false;}
+}
+document.getElementById("refresh").addEventListener("click",load);
+list.addEventListener("click",async e=>{
+ const b=e.target.closest("button[data-act]");if(!b||busy)return;
+ const action=b.dataset.act,id=b.dataset.id;
+ let body;
+ if(action==="approve"){
+  if(!confirm("Approve this withdrawal? The customer's wallet will be debited/reserved immediately."))return;
+  body={action:"review",request_id:id,decision:"approved"};
+ }else if(action==="reject"){
+  const note=prompt("Reason for rejection (optional):")||"";
+  if(!confirm("Reject this withdrawal request?"))return;
+  body={action:"review",request_id:id,decision:"rejected",admin_note:note};
+ }else{
+  const ref=prompt("Enter the real bank transfer reference AFTER the transfer is successful:");
+  if(!ref||!ref.trim())return;
+  if(!confirm("Have you successfully transferred the money to the customer's bank account?"))return;
+  body={action:"mark_paid",request_id:id,payment_reference:ref.trim()};
+ }
+ busy=true;b.disabled=true;statusEl.textContent="Processing securely…";
+ try{await api("POST",body);statusEl.textContent="Action completed.";await load();}
+ catch(err){statusEl.textContent=err.message;}
+ finally{busy=false;}
+});
+onAuthStateChanged(auth,async user=>{
+ if(!user){location.replace("login.html");return;}
+ try{await user.reload();if(!user.emailVerified){await signOut(auth);location.replace("login.html");return;}
+ admin=user;await load();}
+ catch(e){statusEl.textContent="Could not verify sign-in. Please log in again.";}
+});
+</script></body></html>

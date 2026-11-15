@@ -365,6 +365,7 @@ const auth=getAuth(app);
 const SUPPLIER_CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/bilalsadasub-data-catalog";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS=[];
+let catalogRequestId=0;
 
 // AILAT DATA's own stable network identifiers. These are not supplier IDs.
 const AILAT_NETWORK_IDS = Object.freeze({
@@ -412,20 +413,16 @@ function choosePurchaseType(element,type){
  renderPlans();
 }
 function chooseNetwork(element,network){
- selectedNetwork=network;
- document.querySelectorAll(".network").forEach(item=>item.classList.remove("active"));
- element.classList.add("active");
- const availableTypes=[...new Set(DATA_PLANS
-  .filter(item=>item.network.toLowerCase()===selectedNetwork.toLowerCase())
-  .map(item=>normalizedType(item.type)))];
- if(!availableTypes.includes(selectedPurchaseType)){
-  selectedPurchaseType=["SME","GIFTING","CORPORATE"].find(type=>availableTypes.includes(type))||"SME";
-  document.querySelectorAll(".type-option").forEach(item=>{
-   item.classList.toggle("active",item.textContent.trim().toUpperCase().startsWith(selectedPurchaseType));
-  });
- }
- clearSelectedPlan();
- renderPlans();
+  selectedNetwork=network;
+  document.querySelectorAll(".network").forEach(item=>item.classList.remove("active"));
+  element.classList.add("active");
+  clearSelectedPlan();
+  DATA_PLANS=[];
+  bundleGrid.textContent="Loading "+network+" bundles...";
+  bundleCount.textContent="Loading...";
+  const note=document.getElementById("planAvailability");
+  if(note) note.textContent="Connecting securely to Bilalsadasub...";
+  loadPlans(network);
 }
 function selectBundle(id){
  selectedPlanId=String(id);
@@ -562,13 +559,14 @@ function normalizeSupplierPlan(raw,network){
   supplier:"Bilalsadasub"
  };
 }
-async function loadPlans(){
+async function loadPlans(networkToLoad=selectedNetwork){
+ const requestId=++catalogRequestId;
  try{
   const user=await getVerifiedUser();
   await user.reload();
   if(!user.emailVerified) throw new Error("Please verify your email before using Buy Data.");
   const token=await user.getIdToken(true);
-  const supplierNetwork=selectedNetwork.toLowerCase()==="9mobile"?"T2":selectedNetwork.toUpperCase();
+  const supplierNetwork=networkToLoad.toLowerCase()==="9mobile"?"T2":networkToLoad.toUpperCase();
   const response=await fetch(SUPPLIER_CATALOG_URL+"?action=plans&network="+encodeURIComponent(supplierNetwork),{
    headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}
   });
@@ -576,10 +574,13 @@ async function loadPlans(){
   if(!response.ok || !result.success) throw new Error(result.error||"Could not load Bilalsadasub data bundles.");
   const rawPlans=findPlanArray(result.data);
   if(!rawPlans) throw new Error("Bilalsadasub returned an unknown plan format. No unverified bundles were shown.");
-  DATA_PLANS=rawPlans.map(plan=>normalizeSupplierPlan(plan,selectedNetwork)).filter(Boolean);
-  if(!DATA_PLANS.length) throw new Error("No verified plan details were returned for "+selectedNetwork+".");
-  renderPlans();
+  const verifiedPlans=rawPlans.map(plan=>normalizeSupplierPlan(plan,networkToLoad)).filter(Boolean);
+  if(!verifiedPlans.length) throw new Error("No verified plan details were returned for "+networkToLoad+".");
+  if(requestId!==catalogRequestId) return;
+  DATA_PLANS=verifiedPlans;
+  if(selectedNetwork===networkToLoad) renderPlans();
  }catch(error){
+  if(requestId!==catalogRequestId) return;
   DATA_PLANS=[];
   bundleGrid.textContent="Bilalsadasub data bundles are temporarily unavailable. Please refresh the page.";
   bundleCount.textContent="Unavailable";

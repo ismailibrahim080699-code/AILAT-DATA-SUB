@@ -79,7 +79,7 @@ function findPlanArray(payload){
  return null;
 }
 function getDataSizeGb(name){
- const match=String(name||"").match(/(\\d+(?:\\.\\d+)?)\\s*(MB|GB)\\b/i);
+ const match=String(name||"").match(/(\d+(?:\.\d+)?)\s*(MB|GB)\b/i);
  if(!match) return null;
  const size=Number(match[1]);
  return Number.isFinite(size)&&size>0?(match[2].toUpperCase()==="MB"?size/1000:size):null;

@@ -35,7 +35,9 @@ button.secondary{background:#e1f0ef;color:#0f766e}
   <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
   <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
   <div class="card"><small>Total Profit Credits</small><div class="value" id="profitCredits">—</div></div>
-  <div class="card"><small>Total Profit Debits</small><div class="value" id="profitDebits">—</div></div>\n  <div class="card"><small>Reserved for Withdrawals</small><div class="value" id="reservedWithdrawals">—</div></div>\n  <div class="card"><small>Available Verified Profit</small><div class="value" id="availableProfit">—</div></div>
+  <div class="card"><small>Total Profit Debits</small><div class="value" id="profitDebits">—</div></div>
+  <div class="card"><small>Reserved for Withdrawals</small><div class="value" id="reservedWithdrawals">—</div></div>
+  <div class="card"><small>Available Verified Profit</small><div class="value" id="availableProfit">—</div></div>
  </section>
  <h2 class="section">Manual Profit Withdrawal</h2>
  <section class="card">
@@ -67,7 +69,10 @@ const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-admin-pro
 const API_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 const statusEl=document.getElementById("status");
 const ordersEl=document.getElementById("orders");
-const ledgerEl=document.getElementById("ledger");\nconst withdrawalsEl=document.getElementById("withdrawals");\nconst withdrawalStatus=document.getElementById("withdrawalStatus");\nconst withdrawalForm=document.getElementById("withdrawalForm");
+const ledgerEl=document.getElementById("ledger");
+const withdrawalsEl=document.getElementById("withdrawals");
+const withdrawalStatus=document.getElementById("withdrawalStatus");
+const withdrawalForm=document.getElementById("withdrawalForm");
 const refresh=document.getElementById("refresh");
 let user=null;
 const money=n=>"₦"+Number(n||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -99,7 +104,7 @@ function addWithdrawal(item){
  const amount=document.createElement("span");amount.className="profit";amount.textContent=money(item.amount)+" · "+item.status.toUpperCase();
  top.append(ref,amount);
  const meta=document.createElement("div");meta.className="meta";
- meta.textContent=item.bank_name+" · "+item.account_name+" · "+item.account_number+"\\nRequested: "+new Date(item.requested_at).toLocaleString("en-NG")+(item.payment_reference?"\\nPayment reference: "+item.payment_reference:"")+(item.admin_note?"\\nNote: "+item.admin_note:"");
+ meta.textContent=item.bank_name+" · "+item.account_name+" · "+item.account_number+"\nRequested: "+new Date(item.requested_at).toLocaleString("en-NG")+(item.payment_reference?"\nPayment reference: "+item.payment_reference:"")+(item.admin_note?"\nNote: "+item.admin_note:"");
  card.append(top,meta);
  const actions=document.createElement("div");actions.className="actions";actions.style.marginTop="10px";
  if(item.status==="requested"){
@@ -166,7 +171,9 @@ async function loadReport(){
   const t=data.totals||{};
   document.getElementById("totalProfit").textContent=money(data.profit_wallet?.balance ?? t.verified_profit);
   document.getElementById("profitCredits").textContent=money(data.profit_wallet?.total_credits);
-  document.getElementById("profitDebits").textContent=money(data.profit_wallet?.total_debits);\n  document.getElementById("reservedWithdrawals").textContent=money(data.profit_wallet?.reserved_for_withdrawals);\n  document.getElementById("availableProfit").textContent=money(data.profit_wallet?.available_to_request);
+  document.getElementById("profitDebits").textContent=money(data.profit_wallet?.total_debits);
+  document.getElementById("reservedWithdrawals").textContent=money(data.profit_wallet?.reserved_for_withdrawals);
+  document.getElementById("availableProfit").textContent=money(data.profit_wallet?.available_to_request);
   withdrawalsEl.replaceChildren();
   if(!data.withdrawals||!data.withdrawals.length){const empty=document.createElement("div");empty.className="card status";empty.textContent="No withdrawal requests yet.";withdrawalsEl.append(empty);}
   else data.withdrawals.forEach(item=>withdrawalsEl.append(addWithdrawal(item)));

@@ -53,8 +53,9 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:linear-gra
 <p id="meterHelp" class="note">Enter the digits printed on your electricity meter. Use 6–20 digits.</p>
 <button id="validateMeterButton" type="button" disabled>Verify Meter (Free)</button>
 <div id="meterValidationResult" class="note" role="status" aria-live="polite"></div>
-<label for="amount">Amount (₦) — minimum ₦500</label>
+<label for="amount">Electricity Amount (₦) — minimum ₦500</label>
 <input id="amount" type="number" inputmode="numeric" min="500" max="500000" step="1" placeholder="Enter ₦500–₦500,000" required>
+<p class="note">AILAT DATA adds a 10% service fee: ₦50 per ₦500. The total wallet debit will be shown before you approve with your Transaction PIN.</p>
 <button id="continueButton" type="submit" disabled>Review Order Details</button>
 </form>
 <p class="note"><strong>Notice:</strong> Meter validation is free. After you review the details and approve with your 4-digit Transaction PIN, AILAT DATA will debit your wallet and send the bill payment to Bilalsadasub. Only submit a real customer meter you have permission to pay for. If the supplier response is pending or unclear, the payment stays reserved for support review; do not submit it again.</p>

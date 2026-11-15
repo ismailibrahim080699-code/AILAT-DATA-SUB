@@ -38,8 +38,10 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>Meter Number</span><strong id="meter">-</strong></div>
 <div class="item"><span>Verified Customer</span><strong id="customerName">-</strong></div>
 <div class="item" id="customerAddressRow" hidden><span>Customer Address</span><strong id="customerAddress">-</strong></div>
-<div class="total"><span>Requested Amount</span><strong id="amount">₦0.00</strong></div>
-<div class="notice"><strong>Electricity payment:</strong> Your wallet is charged only after your Transaction PIN is approved. Confirm the meter, disco and amount carefully. If Bilalsadasub is still processing or the response is unclear, the order will remain pending; do not submit it again.</div>
+<div class="item"><span>Electricity Amount</span><strong id="amount">₦0</strong></div>
+<div class="item"><span>AILAT DATA service fee (10%)</span><strong id="serviceFee">₦0</strong></div>
+<div class="total"><span>Total Wallet Debit</span><strong id="customerTotal">₦0</strong></div>
+<div class="notice"><strong>Electricity payment:</strong> Your wallet is charged only after your Transaction PIN is approved. Confirm the meter and disco carefully. A 10% service fee is added to the electricity amount. If Bilalsadasub is still processing or the response is unclear, the order will remain pending; do not submit it again.</div>
 <button type="button" id="submitRequest" disabled>Submit Electricity Request</button>
 <button type="button" id="newRequest" class="secondary" hidden>Record a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite">Sign in with a verified email to record this request.</p>
@@ -85,7 +87,10 @@ onAuthStateChanged(auth,async currentUser=>{
   document.getElementById("meter").textContent=meter;
   document.getElementById("customerName").textContent=customerName;
   if(customerAddress){document.getElementById("customerAddress").textContent=customerAddress;document.getElementById("customerAddressRow").hidden=false;}
-  document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const serviceFee=Math.round(amount*0.10),customerTotal=amount+serviceFee;
+  document.getElementById("amount").textContent="₦"+amount.toLocaleString("en-NG");
+  document.getElementById("serviceFee").textContent="₦"+serviceFee.toLocaleString("en-NG");
+  document.getElementById("customerTotal").textContent="₦"+customerTotal.toLocaleString("en-NG");
   requestKey=makeKey();
   button.disabled=false;
  }catch(error){showError("Could not verify your account. Please log in again.");window.location.replace("login.html");}
@@ -101,7 +106,7 @@ button.addEventListener("click",async()=>{
   await user.reload();
   if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
   const idToken=await user.getIdToken(true);
-  const intent={service_key:"electricity",idempotency_key:requestKey,details:{disco:Number(disco),meter_type:type,meter,amount}};
+  const intent={service_key:"electricity",idempotency_key:requestKey,details:{disco:Number(disco),meter_type:type,meter,amount,customer_total:Math.round(amount*1.10)}};
   const approvalResponse=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys",{
    method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},
    body:JSON.stringify({action:"authorize_with_pin",pin,intent})

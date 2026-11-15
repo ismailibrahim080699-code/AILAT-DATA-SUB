@@ -165,7 +165,7 @@ button.addEventListener("click",async()=>{
   await user.reload();
   if(!user.emailVerified) throw new Error("Please verify your email before submitting an airtime request.");
   const token = await user.getIdToken(true);
-  const transactionIntent={service_key:"airtime",idempotency_key:requestKey,details:{network:network.toLowerCase(),phone,amount,plan_type:"VTU"}};
+  const transactionIntent={service_key:"airtime",idempotency_key:requestKey,details:{network:network.toLowerCase(),phone,amount,plan_type:planType}};
   statusBox.textContent="Waiting for fingerprint / device unlock…";
   const authorizationToken=await approveTransactionWithBiometric(token,transactionIntent);
   statusBox.textContent="Biometric approved. Submitting the approved request…";

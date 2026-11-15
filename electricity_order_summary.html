@@ -95,7 +95,7 @@ button.addEventListener("click",async()=>{
  if(!valid||!user||saved||button.disabled)return;
  const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity payment.");
  if(pin===null)return;
- if(!/^\\d{4}$/.test(pin)){updateStatus("Enter your correct 4-digit Transaction PIN.",true);return;}
+ if(!/^\d{4}$/.test(pin)){updateStatus("Enter your correct 4-digit Transaction PIN.",true);return;}
  button.disabled=true;button.textContent="Verifying PIN...";updateStatus("Verifying your Transaction PIN.");
  try{
   await user.reload();

@@ -40,7 +40,7 @@ async function loadPlans(){
 function renderPlans(){
  const available=plans.filter(p=>p.provider===providerKey[provider.value]);
  item.replaceChildren(new Option(available.length?"Choose a verified package":"No verified packages available yet",""));
- available.forEach(p=>item.add(new Option(p.display_name+" — ₦"+Number(p.supplier_amount).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2}),String(p.id))));
+ available.forEach(p=>item.add(new Option(p.display_name+" — ₦"+Number(p.customer_amount).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2}),String(p.id))));
  item.disabled=!available.length;
 }
 provider.addEventListener("change",()=>{error.textContent="";renderPlans();});
@@ -51,7 +51,7 @@ form.addEventListener("submit",e=>{
  if(!verifiedCustomerName){error.textContent="Verify the IUC before continuing.";return;}
  const selected=plans.find(p=>String(p.id)===item.value&&p.provider===providerKey[provider.value]);
  if(!selected){error.textContent="There are no verified packages available for this provider yet.";return;}
- try{sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider:providerKey[provider.value],provider_label:provider.value,account:account.value.trim(),customer_name:verifiedCustomerName,plan_id:String(selected.id),plan_name:selected.display_name,amount:Number(selected.supplier_amount)}));}
+ try{sessionStorage.setItem("ailat_tv_review",JSON.stringify({provider:providerKey[provider.value],provider_label:provider.value,account:account.value.trim(),customer_name:verifiedCustomerName,plan_id:String(selected.id),plan_name:selected.display_name,supplier_amount:Number(selected.supplier_amount),markup_amount:Number(selected.markup_amount),amount:Number(selected.customer_amount)}));}
  catch(e){error.textContent="Browser storage is unavailable. Please try again.";return;}
  location.href="tv_order_summary.html";
 });

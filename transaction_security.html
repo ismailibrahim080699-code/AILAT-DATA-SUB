@@ -4,7 +4,6 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2d"><title>Transaction Security - AILAT DATA</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=2">
-<script src="https://unpkg.com/@simplewebauthn/browser@14.1.0/dist/bundle/index.umd.min.js"></script>
 <style>
 /* Premium PIN setup presentation */
 .pin-intro{display:flex;align-items:flex-start;gap:12px;padding:15px;background:linear-gradient(135deg,#f0f8f8,#f7fafc);border:1px solid #e4eeee;border-radius:14px;margin:0 0 17px}
@@ -213,6 +212,12 @@ onAuthStateChanged(auth,async user=>{
  const authReady=new Promise(resolve=>{if(currentUser){resolve(currentUser);return;}let unsubscribe=()=>{};unsubscribe=onAuthStateChanged(auth,user=>{unsubscribe();resolve(user);});});
  const signedInUser=await authReady;if(!signedInUser)return;
  const status=$("bioStatus"),detail=$("deviceCheck"),registerBtn=$("registerBiometricBtn");
+ function fromB64url(value){const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const p=s+"=".repeat((4-s.length%4)%4);const raw=atob(p);const out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out;}
+ function toB64url(buffer){const bytes=new Uint8Array(buffer);let raw="";for(let i=0;i<bytes.length;i++)raw+=String.fromCharCode(bytes[i]);return btoa(raw).replace(/\\+/g,"-").replace(/\\//g,"_").replace(/=+$/g,"");}
+ function creationOptions(o){return {...o,challenge:fromB64url(o.challenge),user:{...o.user,id:fromB64url(o.user.id)},excludeCredentials:(o.excludeCredentials||[]).map(x=>({...x,id:fromB64url(x.id)}))};}
+ function requestOptions(o){return {...o,challenge:fromB64url(o.challenge),allowCredentials:(o.allowCredentials||[]).map(x=>({...x,id:fromB64url(x.id)}))};}
+ function registrationJSON(c){return {id:c.id,rawId:toB64url(c.rawId),type:c.type,authenticatorAttachment:c.authenticatorAttachment,clientExtensionResults:c.getClientExtensionResults(),response:{clientDataJSON:toB64url(c.response.clientDataJSON),attestationObject:toB64url(c.response.attestationObject),transports:c.response.getTransports?c.response.getTransports():[]}};}
+ function authenticationJSON(c){return {id:c.id,rawId:toB64url(c.rawId),type:c.type,authenticatorAttachment:c.authenticatorAttachment,clientExtensionResults:c.getClientExtensionResults(),response:{clientDataJSON:toB64url(c.response.clientDataJSON),authenticatorData:toB64url(c.response.authenticatorData),signature:toB64url(c.response.signature),userHandle:c.response.userHandle?toB64url(c.response.userHandle):null}};}
  async function passkeyRequest(method="GET",body=null){
   const token=await currentUser.getIdToken(true);
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),12000);
@@ -268,8 +273,7 @@ onAuthStateChanged(auth,async user=>{
   const testBtn=$("testBiometricBtn");testBtn.disabled=true;$("bioMessage").textContent="Waiting for device verification…";
   try{
    const begin=await passkeyRequest("POST",{action:"start_authentication"});
-   const startAuthentication=window.SimpleWebAuthnBrowser?.startAuthentication;if(!startAuthentication)throw new Error("Device security library could not load. Refresh the page and try again.");
-   const response=await startAuthentication({optionsJSON:begin.options});
+   const credential=await navigator.credentials.get({publicKey:requestOptions(begin.options)});if(!credential)throw new Error("Device verification was cancelled.");const response=authenticationJSON(credential);
    const result=await passkeyRequest("POST",{action:"finish_authentication",response});
    $("bioMessage").textContent=result.message||"Device verified successfully.";
   }catch(e){
@@ -280,8 +284,7 @@ onAuthStateChanged(auth,async user=>{
   registerBtn.disabled=true;$("bioMessage").textContent="Preparing secure device registration…";
   try{
    const begin=await passkeyRequest("POST",{action:"start_registration"});
-   const startRegistration=window.SimpleWebAuthnBrowser?.startRegistration;if(!startRegistration)throw new Error("Device security library could not load. Refresh the page and try again.");
-   const response=await startRegistration({optionsJSON:begin.options});
+   const credential=await navigator.credentials.create({publicKey:creationOptions(begin.options)});if(!credential)throw new Error("Device registration was cancelled.");const response=registrationJSON(credential);
    const result=await passkeyRequest("POST",{action:"finish_registration",response,friendly_name:"My phone"});
    $("bioMessage").textContent=result.message||"Device registered.";
    await loadPasskeys();

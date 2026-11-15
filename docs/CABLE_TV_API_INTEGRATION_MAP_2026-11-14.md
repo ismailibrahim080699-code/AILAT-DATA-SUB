@@ -86,3 +86,42 @@ Important current limitations:
 - IUC validation is explicitly recorded as `not_performed`; no supplier verification request was sent.
 - The existing `tv.html` / `tv_order_summary.html` frontend has not yet been wired to these new endpoints.
 - No live fulfilment or payment was enabled.
+
+
+## Bilalsadasub Cable TV endpoints added (2026-11-15)
+
+The user supplied the current Bilalsadasub documentation for Cable TV:
+
+- Live plans: `GET https://bilalsadasub.com/api/v1/plans/cable?cable=DSTV|GOTV|STARTIME`
+- Free IUC validation: `GET https://bilalsadasub.com/api/cable/cable-validation?cable=<provider_id>&iuc=<10-digit-iuc>`
+- Subscription request: `POST https://bilalsadasub.com/api/cable`
+- Provider IDs: GOtv=1, DStv=2, StarTimes=3.
+- Purchase fields: `cable`, `iuc`, `plan_id`, optional `phone`, optional `request-id`.
+
+### Deployed read-only backend
+
+Supabase Edge Function `ailat-order-requests` is ACTIVE at version 72.
+
+Added:
+- `GET ?action=cable_plans` fetches live plans from all three Bilalsadasub provider catalogues and returns only validated plan IDs, names and supplier prices.
+- `GET ?action=cable_validate&cable=<id>&iuc=<10 digits>` performs server-side free IUC validation and returns the verified customer name.
+- Supplier API key remains server-side; browser never receives it.
+- IUC validation errors and unknown outcomes do not create an order or charge a wallet.
+
+### Frontend status
+
+- `tv.html` already calls the matching `cable_plans` and `cable_validate` actions and consumes the returned plan and customer fields.
+- `tv_order_summary.html` remains intentionally purchase-disabled. Its button is disabled and copy explains that Cable TV subscription purchasing is not yet enabled.
+- No cable order is dispatched, no wallet debit is performed, and no customer subscription has been delivered.
+
+### Still required before live purchase
+
+Implement and review a complete server-side transaction flow for Cable TV:
+1. Revalidate IUC and re-fetch the selected plan directly from Bilalsadasub immediately before charging.
+2. Bind the exact supplier plan ID and price to the reviewed transaction intent and one-time transaction authorization.
+3. Charge the wallet atomically and idempotently.
+4. Submit `POST /api/cable` with the exact `cable`, `iuc`, `plan_id` and unique `request-id`.
+5. Handle success, confirmed failure/refund, and unknown/pending supplier outcomes without duplicate dispatch.
+6. Record supplier response and transaction history safely.
+
+Do not mark Cable TV fully complete or enable the purchase button until these steps are implemented and tested.

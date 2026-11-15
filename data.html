@@ -522,7 +522,7 @@ function findPlanArray(payload){
  return null;
 }
 function getDataSizeGb(planName){
- const match=String(planName||"").match(/(\\d+(?:\\.\\d+)?)\\s*(MB|GB)\\b/i);
+ const match=String(planName||"").match(/(\d+(?:\.\d+)?)\s*(MB|GB)\b/i);
  if(!match) return null;
  const size=Number(match[1]);
  if(!Number.isFinite(size) || size<=0) return null;

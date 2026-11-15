@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
+<title>AILAT DATA | Business Profit</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf2f5;color:#172b3a;font-family:Arial,sans-serif}
+header{padding:22px 18px 28px;background:linear-gradient(135deg,#102a43,#0f766e,#155e75);color:#fff;border-radius:0 0 27px 27px}
+header a{color:#d9f3ef;text-decoration:none;font-size:13px;font-weight:700}header h1{font-size:23px;margin:19px 0 6px}header p{font-size:12px;margin:0;color:#e1eeee}
+.wrap{max-width:760px;margin:19px auto;padding:0 14px 36px}.status{font-size:12px;line-height:1.6;color:#0f766e;white-space:pre-wrap}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:14px 0}
+.card{background:#fff;border:1px solid #dce7ec;border-radius:17px;padding:16px;box-shadow:0 5px 15px #102a4308}
+.card small{display:block;color:#718693;font-size:11px;font-weight:700}.value{font-size:23px;font-weight:900;color:#0f766e;margin-top:9px;overflow-wrap:anywhere}
+.card.primary{grid-column:1/-1;background:linear-gradient(135deg,#102a43,#0f766e);color:#fff}.primary small{color:#d9f3ef}.primary .value{font-size:31px;color:#fff}
+.section{font-size:15px;font-weight:900;margin:23px 2px 11px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:12px 15px;background:linear-gradient(135deg,#0f766e,#155e75);color:#fff;font-size:12px;font-weight:800}
+button.secondary{background:#e1f0ef;color:#0f766e}
+.order{background:#fff;border:1px solid #dce7ec;border-radius:14px;padding:13px;margin-bottom:9px}
+.order-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.ref{font-size:11px;font-weight:900;color:#0f766e}.profit{font-size:14px;font-weight:900;color:#15803d}
+.meta{font-size:11px;color:#718693;line-height:1.7;margin-top:8px}.note{font-size:11px;color:#718693;line-height:1.6;margin-top:15px}
+@media(max-width:360px){.value{font-size:20px}.primary .value{font-size:27px}}
+</style>
+</head>
+<body>
+<header><a href="dashboard.html">← Dashboard</a><h1>Business Profit</h1><p>Private administrator report · AILAT DATA</p></header>
+<main class="wrap">
+ <section class="card"><div id="status" class="status">Checking administrator access…</div><div class="actions"><button id="refresh" class="secondary" type="button" disabled>Refresh report</button></div></section>
+ <section class="cards" aria-live="polite">
+  <div class="card primary"><small>Verified Total Profit</small><div class="value" id="totalProfit">—</div></div>
+  <div class="card"><small>Today's Profit</small><div class="value" id="todayProfit">—</div></div>
+  <div class="card"><small>Verified Sales</small><div class="value" id="totalSales">—</div></div>
+  <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
+  <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
+ </section>
+ <h2 class="section">Recent Successful Transactions</h2>
+ <section id="orders"><div class="card status">Waiting for secure report…</div></section>
+ <p class="note">Only supplier-confirmed successful orders are included. Failed and refunded orders are excluded. Profit is counted only when the selling price minus supplier cost matches the recorded profit. This report is private to the authorized administrator.</p>
+</main>
+<script type="module">
+import {app} from "./firebase.js";
+import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app);
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-admin-profit";
+const API_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const statusEl=document.getElementById("status");
+const ordersEl=document.getElementById("orders");
+const refresh=document.getElementById("refresh");
+let user=null;
+const money=n=>"₦"+Number(n||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+function addOrder(item){
+ const card=document.createElement("article");card.className="order";
+ const top=document.createElement("div");top.className="order-top";
+ const ref=document.createElement("span");ref.className="ref";ref.textContent=item.reference;
+ const profit=document.createElement("span");profit.className="profit";profit.textContent=item.profit_verified?money(item.profit_amount):"Needs review";
+ top.append(ref,profit);
+ const meta=document.createElement("div");meta.className="meta";
+ const date=new Date(item.created_at).toLocaleString("en-NG");
+ meta.textContent="Service: "+item.service+" · Date: "+date+"\nCustomer paid: "+money(item.selling_amount)+" · Supplier cost: "+money(item.supplier_amount);
+ card.append(top,meta);return card;
+}
+async function loadReport(){
+ if(!user)return;
+ refresh.disabled=true;statusEl.textContent="Loading secure profit report…";
+ try{
+  const token=await user.getIdToken(true);
+  const response=await fetch(API,{method:"GET",headers:{"apikey":API_KEY,"Authorization":"Bearer "+token}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.success)throw new Error(data.error||"Could not load profit report.");
+  const t=data.totals||{};
+  document.getElementById("totalProfit").textContent=money(t.verified_profit);
+  document.getElementById("todayProfit").textContent=money(t.today_profit);
+  document.getElementById("totalSales").textContent=money(t.verified_sales);
+  document.getElementById("successCount").textContent=String(t.successful_orders||0);
+  document.getElementById("reviewCount").textContent=String(t.needs_review_orders||0);
+  ordersEl.replaceChildren();
+  if(!data.recent_orders||!data.recent_orders.length){
+   const empty=document.createElement("div");empty.className="card status";empty.textContent="No successful transactions yet.";ordersEl.append(empty);
+  }else data.recent_orders.forEach(item=>ordersEl.append(addOrder(item)));
+  statusEl.textContent="Admin access confirmed. Report updated successfully.";
+ }catch(error){
+  statusEl.textContent=error.message;
+  ordersEl.textContent="The report could not be loaded.";
+ }finally{refresh.disabled=false;}
+}
+onAuthStateChanged(auth,async u=>{
+ if(!u){location.replace("login.html");return;}
+ user=u;
+ try{
+  await u.reload();
+  if(!u.emailVerified){await signOut(auth);location.replace("login.html");return;}
+  await loadReport();
+ }catch(error){statusEl.textContent=error.message;}
+});
+refresh.addEventListener("click",loadReport);
+</script>
+</body>
+</html>

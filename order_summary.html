@@ -268,7 +268,7 @@ if(button) button.addEventListener("click", async()=>{
    button.textContent = "Order Submitted";
    newRequestButton.hidden = false;
    const referenceText = "Reference: "+result.order_request.reference+". ";
-   if(result.payment_status === "refunded" || result.fulfillment_status === "failed"){
+   if(result.payment_status === "refunded" || result.fulfillment_status === "failed" || result.fulfillment_status === "refunded" || result.order_request.status === "refunded"){
     statusBox.textContent = referenceText+"Supplier could not deliver the data. Your wallet charge has been refunded. Supplier response: "+(result.supplier_message || result.error || "No additional supplier detail was returned.")+" Please do not pay again until the issue is checked.";
     statusBox.style.color = "#b42318";
     return;

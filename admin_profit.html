@@ -35,13 +35,29 @@ button.secondary{background:#e1f0ef;color:#0f766e}
   <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
   <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
   <div class="card"><small>Total Profit Credits</small><div class="value" id="profitCredits">—</div></div>
-  <div class="card"><small>Total Profit Debits</small><div class="value" id="profitDebits">—</div></div>
+  <div class="card"><small>Total Profit Debits</small><div class="value" id="profitDebits">—</div></div>\n  <div class="card"><small>Reserved for Withdrawals</small><div class="value" id="reservedWithdrawals">—</div></div>\n  <div class="card"><small>Available Verified Profit</small><div class="value" id="availableProfit">—</div></div>
  </section>
+ <h2 class="section">Manual Profit Withdrawal</h2>
+ <section class="card">
+  <p class="note" style="margin-top:0">This is a manual bank-payment workflow, not an automatic Paystack transfer. Only request an amount after confirming the same cleared cash is available in the AILAT DATA business bank account. Customer wallet funds are never available here.</p>
+  <form id="withdrawalForm" style="display:grid;gap:10px;margin-top:12px">
+   <label>Amount (₦)<input id="withdrawAmount" type="number" min="0.01" step="0.01" required inputmode="decimal" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px"></label>
+   <label>Bank name<input id="withdrawBank" type="text" maxlength="80" required style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px"></label>
+   <label>Account name<input id="withdrawAccountName" type="text" maxlength="120" required style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px"></label>
+   <label>10-digit account number<input id="withdrawAccountNumber" type="text" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px"></label>
+   <label>Admin note (optional)<input id="withdrawNote" type="text" maxlength="300" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px"></label>
+   <label style="display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.5"><input id="cashConfirmed" type="checkbox" required style="margin-top:2px">I confirm that cleared business cash matching this withdrawal is already available in the AILAT DATA business bank account. This is not customer wallet money.</label>
+   <button id="withdrawSubmit" type="submit">Request withdrawal</button>
+  </form>
+  <div id="withdrawalStatus" class="status" style="margin-top:10px"></div>
+ </section>
+ <h2 class="section">Withdrawal Requests & History</h2>
+ <section id="withdrawals"><div class="card status">Waiting for withdrawal history…</div></section>
  <h2 class="section">Profit Wallet History</h2>
  <section id="ledger"><div class="card status">Waiting for secure ledger…</div></section>
  <h2 class="section">Recent Successful Transactions</h2>
  <section id="orders"><div class="card status">Waiting for secure report…</div></section>
- <p class="note">Only supplier-confirmed successful orders with a valid customer wallet charge are credited. Failed, refunded and uncharged orders are excluded. This is an accounting balance; withdrawals and supplier transfers remain locked until available business cash and a verified payment route are confirmed. This report is private to the authorized administrator.</p>
+ <p class="note">Only supplier-confirmed successful orders with a valid customer wallet charge are credited. Failed, refunded and uncharged orders are excluded. Manual withdrawal requests reserve verified profit; rejected requests release the reserve. A debit is recorded only after the admin completes the bank transfer outside AILAT DATA and enters its bank reference. This report is private to the authorized administrator.</p>
 </main>
 <script type="module">
 import {app} from "./firebase.js";
@@ -51,7 +67,7 @@ const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-admin-pro
 const API_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 const statusEl=document.getElementById("status");
 const ordersEl=document.getElementById("orders");
-const ledgerEl=document.getElementById("ledger");
+const ledgerEl=document.getElementById("ledger");\nconst withdrawalsEl=document.getElementById("withdrawals");\nconst withdrawalStatus=document.getElementById("withdrawalStatus");\nconst withdrawalForm=document.getElementById("withdrawalForm");
 const refresh=document.getElementById("refresh");
 let user=null;
 const money=n=>"₦"+Number(n||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -76,6 +92,69 @@ function addLedger(item){
  meta.textContent=item.reference+" · "+new Date(item.created_at).toLocaleString("en-NG")+" · "+item.description;
  card.append(top,meta);return card;
 }
+function addWithdrawal(item){
+ const card=document.createElement("article");card.className="order";
+ const top=document.createElement("div");top.className="order-top";
+ const ref=document.createElement("span");ref.className="ref";ref.textContent=item.reference;
+ const amount=document.createElement("span");amount.className="profit";amount.textContent=money(item.amount)+" · "+item.status.toUpperCase();
+ top.append(ref,amount);
+ const meta=document.createElement("div");meta.className="meta";
+ meta.textContent=item.bank_name+" · "+item.account_name+" · "+item.account_number+"\\nRequested: "+new Date(item.requested_at).toLocaleString("en-NG")+(item.payment_reference?"\\nPayment reference: "+item.payment_reference:"")+(item.admin_note?"\\nNote: "+item.admin_note:"");
+ card.append(top,meta);
+ const actions=document.createElement("div");actions.className="actions";actions.style.marginTop="10px";
+ if(item.status==="requested"){
+  const approve=document.createElement("button");approve.type="button";approve.textContent="Approve";
+  approve.addEventListener("click",()=>reviewWithdrawal(item.id,"approved"));
+  const reject=document.createElement("button");reject.type="button";reject.className="secondary";reject.textContent="Reject";
+  reject.addEventListener("click",()=>reviewWithdrawal(item.id,"rejected"));
+  actions.append(approve,reject);
+ }else if(item.status==="approved"){
+  const paid=document.createElement("button");paid.type="button";paid.textContent="Mark as PAID";
+  paid.addEventListener("click",()=>markWithdrawalPaid(item.id));
+  actions.append(paid);
+ }
+ if(actions.childElementCount)card.append(actions);
+ return card;
+}
+async function postAction(payload){
+ const token=await user.getIdToken(true);
+ const response=await fetch(API,{method:"POST",headers:{"apikey":API_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(payload)});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok||!data.success)throw new Error(data.error||"Withdrawal action failed.");
+ return data;
+}
+async function reviewWithdrawal(id,decision){
+ const note=prompt("Optional admin note (leave blank if none):","")||"";
+ if(decision==="rejected"&&!confirm("Reject this withdrawal request and release its reserved amount?"))return;
+ try{withdrawalStatus.textContent="Saving review…";await postAction({action:"review",id,decision,admin_note:note});withdrawalStatus.textContent="Request "+decision+" successfully.";await loadReport();}
+ catch(error){withdrawalStatus.textContent=error.message;}
+}
+async function markWithdrawalPaid(id){
+ const ref=prompt("Enter the bank transfer reference AFTER you have completed the manual bank transfer:");
+ if(!ref||!ref.trim()){alert("No payment reference entered. The request remains approved and unpaid.");return;}
+ if(!confirm("Confirm that the bank transfer has already succeeded? This records a profit debit."))return;
+ try{withdrawalStatus.textContent="Recording confirmed payment…";await postAction({action:"mark_paid",id,payment_reference:ref.trim()});withdrawalStatus.textContent="Payment recorded. Profit ledger updated.";await loadReport();}
+ catch(error){withdrawalStatus.textContent=error.message;}
+}
+withdrawalForm.addEventListener("submit",async event=>{
+ event.preventDefault();
+ if(!user)return;
+ const submit=document.getElementById("withdrawSubmit");
+ const amount=Number(document.getElementById("withdrawAmount").value);
+ const bank=document.getElementById("withdrawBank").value.trim();
+ const accountName=document.getElementById("withdrawAccountName").value.trim();
+ const accountNumber=document.getElementById("withdrawAccountNumber").value.trim();
+ const cashConfirmed=document.getElementById("cashConfirmed").checked;
+ if(!cashConfirmed){withdrawalStatus.textContent="Confirm cleared business cash is available before continuing.";return;}
+ if(!Number.isFinite(amount)||amount<=0||!/^\\d{10}$/.test(accountNumber)){withdrawalStatus.textContent="Check the amount and 10-digit account number.";return;}
+ try{
+  submit.disabled=true;withdrawalStatus.textContent="Submitting secure withdrawal request…";
+  const result=await postAction({action:"create",amount,bank_name:bank,account_name:accountName,account_number:accountNumber,cash_confirmed:true,admin_note:document.getElementById("withdrawNote").value.trim()});
+  withdrawalForm.reset();withdrawalStatus.textContent="Request received: "+result.reference+". It is reserved and awaiting admin approval.";
+  await loadReport();
+ }catch(error){withdrawalStatus.textContent=error.message;}
+ finally{submit.disabled=false;}
+});
 async function loadReport(){
  if(!user)return;
  refresh.disabled=true;statusEl.textContent="Loading secure profit report…";
@@ -87,7 +166,10 @@ async function loadReport(){
   const t=data.totals||{};
   document.getElementById("totalProfit").textContent=money(data.profit_wallet?.balance ?? t.verified_profit);
   document.getElementById("profitCredits").textContent=money(data.profit_wallet?.total_credits);
-  document.getElementById("profitDebits").textContent=money(data.profit_wallet?.total_debits);
+  document.getElementById("profitDebits").textContent=money(data.profit_wallet?.total_debits);\n  document.getElementById("reservedWithdrawals").textContent=money(data.profit_wallet?.reserved_for_withdrawals);\n  document.getElementById("availableProfit").textContent=money(data.profit_wallet?.available_to_request);
+  withdrawalsEl.replaceChildren();
+  if(!data.withdrawals||!data.withdrawals.length){const empty=document.createElement("div");empty.className="card status";empty.textContent="No withdrawal requests yet.";withdrawalsEl.append(empty);}
+  else data.withdrawals.forEach(item=>withdrawalsEl.append(addWithdrawal(item)));
   ledgerEl.replaceChildren();
   if(!data.recent_ledger||!data.recent_ledger.length){const empty=document.createElement("div");empty.className="card status";empty.textContent="No profit entries yet.";ledgerEl.append(empty);}
   else data.recent_ledger.forEach(item=>ledgerEl.append(addLedger(item)));

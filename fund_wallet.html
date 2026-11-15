@@ -30,10 +30,6 @@ button:disabled{opacity:.55;cursor:wait}
 <p>Add money securely to your AILAT DATA wallet using Paystack. Your wallet is credited only after the payment is verified directly with Paystack.</p>
 <label for="amount">Amount (₦)</label>
 <input id="amount" type="number" min="100" max="1000000" step="1" inputmode="numeric" placeholder="Enter amount (minimum ₦100)">
-<div class="notice"><strong>Payment recovery:</strong> If Paystack already showed Success but your wallet was not credited, enter that transaction reference below. Do not make another payment.</div>
-<label for="recoveryReference">Existing Paystack reference</label>
-<input id="recoveryReference" type="text" autocomplete="off" placeholder="AILATFUND...">
-<button id="verifyButton" type="button">Verify Existing Payment</button>
 <button id="payButton" type="button">Continue to Paystack</button>
 <div class="notice"><strong>Important:</strong> Minimum funding is ₦100. Do not close the Paystack page before completing payment. Never share your password, OTP, card PIN, or secret keys with anyone.</div>
 <div id="status" class="status" role="status" aria-live="polite">Checking your verified account…</div>
@@ -49,7 +45,6 @@ const FUNCTION_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/aila
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 const statusBox = document.getElementById("status");
 const payButton = document.getElementById("payButton");
-const verifyButton = document.getElementById("verifyButton");
 let currentUser = null;
 let processingCallback = false;
 
@@ -80,7 +75,6 @@ async function verifyReturnedPayment(user) {
   if (!reference || processingCallback) return;
   processingCallback = true;
   payButton.disabled = true;
-  verifyButton.disabled = true;
   statusBox.textContent = "Verifying your Paystack payment. Please wait…";
   try {
     const result = await callFundingFunction(user, { action: "verify", reference });
@@ -95,7 +89,6 @@ async function verifyReturnedPayment(user) {
     statusBox.textContent = "We could not verify the payment right now. Your wallet has not been credited by this page. Keep this reference for support: " + reference;
   } finally {
     payButton.disabled = false;
-    verifyButton.disabled = false;
     processingCallback = false;
   }
 }
@@ -122,37 +115,6 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
-
-verifyButton.addEventListener("click", async () => {
-  if (!currentUser || processingCallback) {
-    statusBox.textContent = "Please wait while your verified account is checked.";
-    return;
-  }
-  const reference = document.getElementById("recoveryReference").value.trim().toUpperCase();
-  if (!/^AILATFUND[A-F0-9]{32}$/.test(reference)) {
-    statusBox.textContent = "Enter the complete AILATFUND reference from your Paystack receipt.";
-    return;
-  }
-  processingCallback = true;
-  verifyButton.disabled = true;
-  statusBox.textContent = "Checking this existing payment directly with Paystack…";
-  try {
-    const result = await callFundingFunction(currentUser, { action: "verify", reference });
-    if (!result.verified) {
-      statusBox.textContent = "Paystack did not confirm this reference for this account. No wallet credit was made. Please check the reference.";
-      return;
-    }
-    statusBox.textContent = "Verified: ₦" + Number(result.amount).toLocaleString("en-NG") + " credited. Current wallet balance: ₦" + Number(result.wallet?.balance ?? 0).toLocaleString("en-NG") + ". You may now enter the other successful reference.";
-    document.getElementById("recoveryReference").value = "";
-  } catch (error) {
-    console.error("Existing payment recovery error:", error);
-    statusBox.textContent = "Verification could not be completed right now. No new payment is needed. Keep the reference and try again later.";
-  } finally {
-    processingCallback = false;
-    verifyButton.disabled = false;
-    payButton.disabled = false;
-  }
-});
 
 payButton.addEventListener("click", async () => {
   if (!currentUser) {

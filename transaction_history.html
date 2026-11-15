@@ -311,7 +311,7 @@ function renderTransactions(items){
     </div>
 
     <span class="status ${safe(statusClass)}">${safe(statusLabel)}</span>
-   ${item.is_request && item.reference ? `<button class="refresh check-order" type="button" data-reference="${safe(item.reference)}">Check order status</button>` : ""}
+   ${item.is_request && item.reference ? `<div style="margin-top:12px"><button class="check-order" type="button" data-reference="${safe(item.reference)}" style="display:block;width:100%;border:0;border-radius:10px;padding:13px 16px;background:#6d28d9;color:#fff;font-weight:700;font-size:14px;cursor:pointer">Check Order Status</button></div>` : ""}
    </div>
   `;
  }).join("");

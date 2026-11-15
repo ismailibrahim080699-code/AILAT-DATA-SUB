@@ -392,9 +392,6 @@ footer{
   <a href="dashboard.html"><i data-lucide="house"></i>Dashboard</a>
  </div>
 
- <button class="logout" id="logoutBtn">
-  <i data-lucide="log-out"></i> Logout
- </button>
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -691,14 +688,6 @@ document.getElementById("removePhoto").addEventListener("click",function(){
  alert("Profile photo removed.");
 });
 
-document.getElementById("logoutBtn").addEventListener("click",async function(){
- try{
-  await signOut(auth);
-  window.location.href = "login.html";
- }catch(error){
-  alert("Logout failed. Please try again.");
- }
-});
 
 </script>
 </body>

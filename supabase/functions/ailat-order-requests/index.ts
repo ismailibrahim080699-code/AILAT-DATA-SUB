@@ -107,8 +107,8 @@ Deno.serve(async (req: Request) => {
       return reply({ success: true, plans: publicPlans });
     }
 
-    const authorization = req.headers.get("Authorization") ?? "";
-    const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+    const requestAuthorization = req.headers.get("Authorization") ?? "";
+    const token = requestAuthorization.startsWith("Bearer ") ? requestAuthorization.slice(7) : "";
     if (!token) return reply({ success: false, error: "Login required" }, 401);
 
     let userId: string;

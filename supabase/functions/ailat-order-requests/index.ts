@@ -306,6 +306,76 @@ Deno.serve(async (req: Request) => {
       return reply({ success: false, error: "This service is not enabled for order requests yet" }, 400);
     }
 
+
+    // A biometric authorization is mandatory for every data/airtime request.
+    // The signed-in user, exact reviewed intent, expiry and one-time use are
+    // all checked on the server; a client-side "verified" flag is never trusted.
+    const authorizationToken = typeof body.authorization_token === "string" ? body.authorization_token : "";
+    if (!authorizationToken || authorizationToken.length > 200) {
+      return reply({ success: false, error: "Approve this transaction with your fingerprint or device unlock first." }, 403);
+    }
+    const expectedIntent = serviceKey === "data"
+      ? {
+          service_key: "data",
+          idempotency_key: idempotencyKey,
+          details: {
+            network,
+            phone,
+            purchase_type: String((cleanCustomerData as Record<string, unknown>).purchase_type),
+            catalog_plan_id: Number((cleanCustomerData as Record<string, unknown>).catalog_plan_id),
+          },
+        }
+      : {
+          service_key: "airtime",
+          idempotency_key: idempotencyKey,
+          details: {
+            network,
+            phone,
+            amount: Number(requestedAmount),
+            plan_type: "VTU",
+          },
+        };
+    const canonical = (value: unknown): string => {
+      if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
+      if (value && typeof value === "object") {
+        const obj = value as Record<string, unknown>;
+        return "{" + Object.keys(obj).sort().map(k => JSON.stringify(k) + ":" + canonical(obj[k])).join(",") + "}";
+      }
+      return JSON.stringify(value);
+    };
+    const toB64url = (bytes: Uint8Array) => {
+      let binary = "";
+      for (const byte of bytes) binary += String.fromCharCode(byte);
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    };
+    const expectedIntentText = canonical(expectedIntent);
+    const expectedIntentHash = toB64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(expectedIntentText))));
+    const tokenHash = toB64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(authorizationToken))));
+    const { data: authorization, error: authorizationError } = await supabase
+      .from("transaction_authorizations")
+      .select("id,transaction_intent,expires_at,consumed_at")
+      .eq("user_id", userId)
+      .eq("token_hash", tokenHash)
+      .eq("intent_hash", expectedIntentHash)
+      .is("consumed_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+    if (authorizationError) throw authorizationError;
+    if (!authorization || canonical(authorization.transaction_intent) !== expectedIntentText) {
+      return reply({ success: false, error: "Biometric approval is missing, expired, or does not match these transaction details. Please approve again." }, 403);
+    }
+    const { data: consumed, error: consumeError } = await supabase
+      .from("transaction_authorizations")
+      .update({ consumed_at: new Date().toISOString() })
+      .eq("id", authorization.id)
+      .eq("user_id", userId)
+      .is("consumed_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .select("id")
+      .maybeSingle();
+    if (consumeError) throw consumeError;
+    if (!consumed) return reply({ success: false, error: "This biometric approval has already been used or has expired. Approve again." }, 409);
+
     const reference = `AIL-${crypto.randomUUID().replaceAll("-", "").slice(0, 12).toUpperCase()}`;
 
     // Prepare provider-format previews for review only. No external supplier

@@ -29,15 +29,19 @@ button.secondary{background:#e1f0ef;color:#0f766e}
 <main class="wrap">
  <section class="card"><div id="status" class="status">Checking administrator access…</div><div class="actions"><button id="refresh" class="secondary" type="button" disabled>Refresh report</button></div></section>
  <section class="cards" aria-live="polite">
-  <div class="card primary"><small>Verified Total Profit</small><div class="value" id="totalProfit">—</div></div>
+  <div class="card primary"><small>Admin Profit Wallet Balance</small><div class="value" id="totalProfit">—</div></div>
   <div class="card"><small>Today's Profit</small><div class="value" id="todayProfit">—</div></div>
   <div class="card"><small>Verified Sales</small><div class="value" id="totalSales">—</div></div>
   <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
   <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
+  <div class="card"><small>Total Profit Credits</small><div class="value" id="profitCredits">—</div></div>
+  <div class="card"><small>Total Profit Debits</small><div class="value" id="profitDebits">—</div></div>
  </section>
+ <h2 class="section">Profit Wallet History</h2>
+ <section id="ledger"><div class="card status">Waiting for secure ledger…</div></section>
  <h2 class="section">Recent Successful Transactions</h2>
  <section id="orders"><div class="card status">Waiting for secure report…</div></section>
- <p class="note">Only supplier-confirmed successful orders are included. Failed and refunded orders are excluded. Profit is counted only when the selling price minus supplier cost matches the recorded profit. This report is private to the authorized administrator.</p>
+ <p class="note">Only supplier-confirmed successful orders with a valid customer wallet charge are credited. Failed, refunded and uncharged orders are excluded. This is an accounting balance; withdrawals and supplier transfers remain locked until available business cash and a verified payment route are confirmed. This report is private to the authorized administrator.</p>
 </main>
 <script type="module">
 import {app} from "./firebase.js";
@@ -47,6 +51,7 @@ const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-admin-pro
 const API_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 const statusEl=document.getElementById("status");
 const ordersEl=document.getElementById("orders");
+const ledgerEl=document.getElementById("ledger");
 const refresh=document.getElementById("refresh");
 let user=null;
 const money=n=>"₦"+Number(n||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -61,6 +66,16 @@ function addOrder(item){
  meta.textContent="Service: "+item.service+" · Date: "+date+"\nCustomer paid: "+money(item.selling_amount)+" · Supplier cost: "+money(item.supplier_amount);
  card.append(top,meta);return card;
 }
+function addLedger(item){
+ const card=document.createElement("article");card.className="order";
+ const top=document.createElement("div");top.className="order-top";
+ const title=document.createElement("span");title.className="ref";title.textContent=item.entry_type.replaceAll("_"," ").toUpperCase();
+ const amount=document.createElement("span");amount.className="profit";amount.textContent=(item.direction==="debit"?"−":"+")+money(item.amount);
+ top.append(title,amount);
+ const meta=document.createElement("div");meta.className="meta";
+ meta.textContent=item.reference+" · "+new Date(item.created_at).toLocaleString("en-NG")+" · "+item.description;
+ card.append(top,meta);return card;
+}
 async function loadReport(){
  if(!user)return;
  refresh.disabled=true;statusEl.textContent="Loading secure profit report…";
@@ -70,7 +85,12 @@ async function loadReport(){
   const data=await response.json().catch(()=>({}));
   if(!response.ok||!data.success)throw new Error(data.error||"Could not load profit report.");
   const t=data.totals||{};
-  document.getElementById("totalProfit").textContent=money(t.verified_profit);
+  document.getElementById("totalProfit").textContent=money(data.profit_wallet?.balance ?? t.verified_profit);
+  document.getElementById("profitCredits").textContent=money(data.profit_wallet?.total_credits);
+  document.getElementById("profitDebits").textContent=money(data.profit_wallet?.total_debits);
+  ledgerEl.replaceChildren();
+  if(!data.recent_ledger||!data.recent_ledger.length){const empty=document.createElement("div");empty.className="card status";empty.textContent="No profit entries yet.";ledgerEl.append(empty);}
+  else data.recent_ledger.forEach(item=>ledgerEl.append(addLedger(item)));
   document.getElementById("todayProfit").textContent=money(t.today_profit);
   document.getElementById("totalSales").textContent=money(t.verified_sales);
   document.getElementById("successCount").textContent=String(t.successful_orders||0);

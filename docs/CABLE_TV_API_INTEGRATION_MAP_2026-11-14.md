@@ -125,3 +125,31 @@ Implement and review a complete server-side transaction flow for Cable TV:
 6. Record supplier response and transaction history safely.
 
 Do not mark Cable TV fully complete or enable the purchase button until these steps are implemented and tested.
+
+
+## Live purchase flow implementation prepared (2026-11-16)
+
+Supabase deployment:
+- `ailat-order-requests`: ACTIVE version 76.
+- `ailat-transaction-passkeys`: ACTIVE version 8; Transaction PIN authorization now accepts `cable_tv` intents.
+
+Implemented for Cable TV:
+1. Re-check the IUC/customer name with Bilalsadasub immediately before creating a purchase.
+2. Refresh the selected provider catalogue and exact plan ID/price before payment.
+3. Bind provider, IUC, plan ID, supplier amount and verified customer name into a one-time fingerprint/PIN authorization intent.
+4. Create the order by consuming the matching one-time authorization.
+5. Charge the wallet through the existing atomic/idempotent `ailat_charge_order_wallet` RPC.
+6. Dispatch `POST https://bilalsadasub.com/api/cable` with provider ID, IUC, exact plan ID and unique AIL request reference.
+7. On supplier-confirmed success, mark the order and purchase transaction successful.
+8. On an explicit supplier failure response, use the existing confirmed-failure/refund RPC. On timeout or non-final status, keep the order charged/processing and prevent repeat dispatch.
+
+Frontend:
+- `tv_order_summary.html` now requests fingerprint/passkey approval with Transaction PIN fallback and submits the authorization token.
+- `tv.html` validates a 10-digit IUC correctly.
+- Supplier API key remains server-side.
+
+Important operational note:
+- The live purchase code is deployed, but no real Cable TV order has been dispatched and no wallet debit has been tested in production. Do not describe this as live-verified.
+- The current sale amount equals the live supplier price; no additional Cable TV markup was configured because no margin rule was supplied.
+- A supplier timeout/unknown result is intentionally not auto-refunded or retried. Reconcile with Bilalsadasub first to avoid charging twice or issuing duplicate subscriptions.
+- Official test/customer IUC and package information are still awaited for a controlled first production verification.

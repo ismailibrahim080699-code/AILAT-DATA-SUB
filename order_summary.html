@@ -131,7 +131,7 @@ newRequestButton.addEventListener("click",()=>{
  try{ sessionStorage.setItem(requestStorageKey,requestKey); }catch(error){}
  requestSaved = false;
  button.disabled = false;
- button.textContent = "Submit Order Request";
+ button.textContent = "Confirm with Fingerprint";
  newRequestButton.hidden = true;
  statusBox.textContent = "A new request has been prepared. Review the details before submitting.";
 });
@@ -162,6 +162,38 @@ if(!validNetworks.includes(network) || expectedNetworkId===null || suppliedNetwo
  document.getElementById("amount").textContent = "₦"+Number(selectedPlan.amount).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
+
+async function approveTransactionWithBiometric(token,intent){
+ const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+ const headers={"Authorization":"Bearer "+token,"Content-Type":"application/json"};
+ const call=async body=>{
+  const response=await fetch(endpoint,{method:"POST",headers,body:JSON.stringify(body)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.success)throw new Error(data.error||"Biometric authorization failed.");
+  return data;
+ };
+ const fromB64url=value=>{const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
+ const toB64url=buffer=>{const bytes=new Uint8Array(buffer);let raw="";for(const b of bytes)raw+=String.fromCharCode(b);return btoa(raw).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
+ const begin=await call({action:"start_transaction",intent});
+ const options={...begin.options,challenge:fromB64url(begin.options.challenge),allowCredentials:(begin.options.allowCredentials||[]).map(item=>({...item,id:fromB64url(item.id)}))};
+ const credential=await navigator.credentials.get({publicKey:options});
+ if(!credential)throw new Error("Biometric approval was cancelled.");
+ const response={
+  id:credential.id,rawId:toB64url(credential.rawId),type:credential.type,
+  authenticatorAttachment:credential.authenticatorAttachment,
+  clientExtensionResults:credential.getClientExtensionResults(),
+  response:{
+   clientDataJSON:toB64url(credential.response.clientDataJSON),
+   authenticatorData:toB64url(credential.response.authenticatorData),
+   signature:toB64url(credential.response.signature),
+   userHandle:credential.response.userHandle?toB64url(credential.response.userHandle):null
+  }
+ };
+ const finished=await call({action:"finish_transaction",response});
+ if(!finished.authorization_token)throw new Error("The server did not issue transaction approval.");
+ return finished.authorization_token;
+}
+
 function getSignedInUser(){
  return new Promise((resolve,reject)=>{
   const unsubscribe = onAuthStateChanged(auth, user=>{
@@ -175,17 +207,21 @@ function getSignedInUser(){
 if(button) button.addEventListener("click", async()=>{
  if(requestSaved || !selectedPlan || !validNetworks.includes(network) || expectedNetworkId===null || suppliedNetworkId!==expectedNetworkId || !validPhone.test(phone) || normalizedType(selectedPlan.type)!==purchaseType) return;
  button.disabled = true;
- button.textContent = "Submitting request...";
- statusBox.textContent = "Please wait while your request is securely recorded.";
+ button.textContent = "Confirm with fingerprint...";
+ statusBox.textContent = "Review the details, then approve this request with your fingerprint or device unlock.";
  try{
   const user = await getSignedInUser();
   await user.reload();
   if(!user.emailVerified) throw new Error("Please verify your email before submitting an order request.");
   const token = await user.getIdToken(true);
+  const transactionIntent={service_key:"data",idempotency_key:requestKey,details:{network:network.toLowerCase(),phone,purchase_type:purchaseType,catalog_plan_id:Number(selectedPlan.id)}};
+  statusBox.textContent="Waiting for fingerprint / device unlock…";
+  const authorizationToken=await approveTransactionWithBiometric(token,transactionIntent);
+  statusBox.textContent="Biometric approved. Submitting the approved request…";
   const response = await fetch(SUPABASE_FUNCTION_URL,{
    method:"POST",
    headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
-   body:JSON.stringify({service_key:"data",idempotency_key:requestKey,customer_data:{network,internal_network_id:expectedNetworkId,phone,bundle:selectedPlan.name+" ("+selectedPlan.validity+")",purchase_type:purchaseType,catalog_plan_id:selectedPlan.id,supplier_plan_id:selectedPlan.id}})
+   body:JSON.stringify({service_key:"data",idempotency_key:requestKey,authorization_token:authorizationToken,customer_data:{network,internal_network_id:expectedNetworkId,phone,bundle:selectedPlan.name+" ("+selectedPlan.validity+")",purchase_type:purchaseType,catalog_plan_id:selectedPlan.id,supplier_plan_id:selectedPlan.id}})
   });
   const result = await response.json().catch(()=>({}));
   if(!response.ok || !result.success) throw new Error(result.error || "Could not save your request. Please try again.");

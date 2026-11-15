@@ -46,9 +46,9 @@ button:disabled{opacity:.65;cursor:wait}
 <div class="item"><span>Phone Number</span><strong id="phone">-</strong></div>
 <div class="total"><span>Requested Airtime Value</span><strong id="amount">₦0.00</strong></div>
 <div class="notice">
-<strong>Request recording only:</strong> This is the airtime value you requested, not a confirmed final charge or service fee. Submitting records your request with AILAT DATA; it does not mean Bilalsadasub has accepted or delivered airtime. No payment will be taken, no wallet balance will be deducted, and no airtime will be sent.
+<strong>Live airtime purchase:</strong> Confirming will debit the displayed amount from your AILAT DATA wallet and send your VTU or SNS airtime request to Bilalsadasub. If the supplier confirms failure, the system will refund your wallet. If the supplier response is delayed, the order will remain under processing—do not submit it again.
 </div>
-<button id="confirmButton" type="button">Submit Airtime Request</button>
+<button id="confirmButton" type="button">Buy Airtime Now</button>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite"></p>
 <a href="airtime.html" class="cancel">← Go Back and Edit</a>
@@ -186,12 +186,12 @@ button.addEventListener("click",async()=>{
   const result = await response.json().catch(()=>({}));
   if(!response.ok || !result.success) throw new Error(result.error || "Could not save your request. Please try again.");
   requestSaved = true;
-  button.textContent = "Request Recorded";
+  button.textContent = result.fulfillment_status === "success" ? "Airtime Sent" : "Order Processing";
   newRequestButton.hidden = false;
   const savedRequest = result.order_request || {};
   const referenceText = savedRequest.reference ? " Reference: " + savedRequest.reference + "." : "";
   const statusText = savedRequest.status ? " Status: " + savedRequest.status + "." : "";
-  statusBox.textContent = "Your request has been recorded." + referenceText + statusText + " No payment was taken and no airtime was sent.";
+  statusBox.textContent = result.fulfillment_status === "success" ? "Bilalsadasub confirmed that your airtime was sent." + referenceText + statusText : "Your wallet payment was accepted and your airtime order is processing. Do not submit again." + referenceText + statusText;
  }catch(error){
   button.disabled = false;
   button.textContent = "Try Again";

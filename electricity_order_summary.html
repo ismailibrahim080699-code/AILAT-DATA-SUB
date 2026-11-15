@@ -39,7 +39,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>Verified Customer</span><strong id="customerName">-</strong></div>
 <div class="item" id="customerAddressRow" hidden><span>Customer Address</span><strong id="customerAddress">-</strong></div>
 <div class="total"><span>Requested Amount</span><strong id="amount">₦0.00</strong></div>
-<div class="notice"><strong>Live payment is not enabled yet:</strong> Your Transaction PIN will approve and record this electricity request. This does not debit your wallet or pay the electricity bill. No token or receipt will be issued until live payment is activated.</div>
+<div class="notice"><strong>Electricity payment:</strong> Your wallet is charged only after your Transaction PIN is approved. Confirm the meter, disco and amount carefully. If Bilalsadasub is still processing or the response is unclear, the order will remain pending; do not submit it again.</div>
 <button type="button" id="submitRequest" disabled>Submit Electricity Request</button>
 <button type="button" id="newRequest" class="secondary" hidden>Record a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite">Sign in with a verified email to record this request.</p>
@@ -93,10 +93,10 @@ onAuthStateChanged(auth,async currentUser=>{
 
 button.addEventListener("click",async()=>{
  if(!valid||!user||saved||button.disabled)return;
- const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity request.");
+ const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity payment.");
  if(pin===null)return;
  if(!/^\\d{4}$/.test(pin)){updateStatus("Enter your correct 4-digit Transaction PIN.",true);return;}
- button.disabled=true;button.textContent="Verifying PIN...";updateStatus("Verifying your Transaction PIN. No wallet debit will occur.");
+ button.disabled=true;button.textContent="Verifying PIN...";updateStatus("Verifying your Transaction PIN.");
  try{
   await user.reload();
   if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
@@ -108,14 +108,39 @@ button.addEventListener("click",async()=>{
   });
   const approval=await approvalResponse.json().catch(()=>({}));
   if(!approvalResponse.ok||!approval.success||!approval.authorization_token)throw new Error(approval.error||"Transaction PIN approval failed.");
-  button.textContent="Recording approved request...";
+  button.textContent="Processing electricity payment...";
   const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify({idempotency_key:requestKey,authorization_token:approval.authorization_token,customer_data:{disco:Number(disco),meter_type:type,meter_number:meter,amount}})});
   const result=await response.json().catch(()=>({}));
-  if(!response.ok||!result.success)throw new Error(result.error||"Could not record this request.");
-  saved=true;button.textContent="Request Recorded";newButton.hidden=false;
-  const order=result.order_request||{};
-  updateStatus("PIN approved. Request recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". No payment was taken, no bill was paid and no token was issued.");
- }catch(error){button.disabled=false;button.textContent="Try Again";updateStatus(error.message||"Could not record the request. Please try again.",true);}
+  if(result.payment_status==="not_charged"){
+   requestKey=makeKey();button.disabled=false;button.textContent="Try Again";
+   throw new Error(result.error||"Wallet was not charged. You can retry with a new approval.");
+  }
+  if(result.payment_status==="refunded"){
+   saved=true;button.textContent="Payment Refunded";newButton.hidden=false;
+   updateStatus("Bilalsadasub confirmed failure. Your wallet has been refunded. Reference: "+(result.order_request?.reference||"see Transaction History")+". "+(result.supplier_message||""),true);
+   return;
+  }
+  if(result.payment_status==="charged"&&result.fulfillment_status==="success"&&result.success){
+   saved=true;button.textContent="Electricity Paid";newButton.hidden=false;
+   const details=[];
+   if(result.result?.token)details.push("Token: "+result.result.token);
+   if(result.result?.units)details.push("Units: "+result.result.units);
+   if(result.result?.request_id)details.push("Supplier reference: "+result.result.request_id);
+   updateStatus("Payment successful. Reference: "+(result.order_request?.reference||"see Transaction History")+". "+(details.join(" | ")||"Check Transaction History for the payment record."));
+   return;
+  }
+  if(result.payment_status==="charged"){
+   saved=true;button.textContent="Payment Pending";newButton.hidden=true;
+   updateStatus((result.notice||"Your payment is reserved and supplier confirmation is pending.")+" Do not submit again. Check Transaction History or contact support.");
+   return;
+  }
+  if(!response.ok||!result.success)throw new Error(result.error||"Could not process this electricity payment.");
+  saved=true;button.textContent="Request Recorded";newButton.hidden=true;
+  updateStatus(result.notice||"Your electricity request was recorded. Check Transaction History.");
+ }catch(error){
+  if(!saved){button.disabled=false;button.textContent="Try Again";}
+  updateStatus(error.message||"Could not process the electricity payment. Check Transaction History before trying again.",true);
+ }
 });
 newButton.addEventListener("click",()=>{
  requestKey=makeKey();saved=false;button.disabled=false;button.textContent="Submit Electricity Request";newButton.hidden=true;

@@ -354,11 +354,19 @@ function renderTransactions(items){
      }
      const details = card.querySelector(".details");
      if(details){
+      const oldDispatch = details.querySelector(".dispatch-check-note");
+      if(oldDispatch) oldDispatch.remove();
+      const dispatchNote = document.createElement("div");
+      dispatchNote.className = "dispatch-check-note";
+      const dispatch = String(order.provider_dispatch_status || "not_sent");
+      dispatchNote.textContent = "Supplier dispatch: " + (dispatch === "disabled_safe_mode" || dispatch === "not_sent" ? "Not sent (safe mode)" : dispatch);
+      details.append(dispatchNote);
       const oldCheck = details.querySelector(".status-check-note");
       if(oldCheck) oldCheck.remove();
       const note = document.createElement("div");
       note.className = "status-check-note";
-      note.textContent = "AILAT record checked: " + formatDate(order.updated_at) + ". This does not confirm supplier delivery.";
+      const payment = String(result.payment_status || "not_charged");
+      note.textContent = "Wallet payment: " + (payment === "charged" ? "Charged" : payment === "refunded" ? "Refunded" : "Not charged") + ". AILAT record checked: " + formatDate(order.updated_at) + ". Supplier delivery is not independently verified.";
       details.append(note);
      }
     }

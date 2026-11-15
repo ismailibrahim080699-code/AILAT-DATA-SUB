@@ -351,7 +351,7 @@ Deno.serve(async (req: Request) => {
     const expectedIntentText = canonical(expectedIntent);
     const expectedIntentHash = toB64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(expectedIntentText))));
     const tokenHash = toB64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(authorizationToken))));
-    const { data: authorization, error: authorizationError } = await supabase
+    const { data: approvedAuthorization, error: authorizationError } = await supabase
       .from("transaction_authorizations")
       .select("id,transaction_intent,expires_at,consumed_at")
       .eq("user_id", userId)
@@ -361,13 +361,13 @@ Deno.serve(async (req: Request) => {
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
     if (authorizationError) throw authorizationError;
-    if (!authorization || canonical(authorization.transaction_intent) !== expectedIntentText) {
+    if (!approvedAuthorization || canonical(approvedAuthorization.transaction_intent) !== expectedIntentText) {
       return reply({ success: false, error: "Biometric approval is missing, expired, or does not match these transaction details. Please approve again." }, 403);
     }
     const { data: consumed, error: consumeError } = await supabase
       .from("transaction_authorizations")
       .update({ consumed_at: new Date().toISOString() })
-      .eq("id", authorization.id)
+      .eq("id", approvedAuthorization.id)
       .eq("user_id", userId)
       .is("consumed_at", null)
       .gt("expires_at", new Date().toISOString())

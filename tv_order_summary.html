@@ -57,7 +57,7 @@ button.addEventListener("click",async()=>{
    if(result.fulfillment_status==="success"){status.textContent=ref+"Cable TV subscription completed successfully. "+(result.supplier_message||"");return;}
    if(result.payment_status==="charged"||result.fulfillment_status==="processing"||response.status===202){status.textContent=ref+"Wallet payment taken; supplier confirmation is pending. Do not submit again. Check Transaction History.";return;}
   }
-  if(!response.ok||!result.success)throw new Error(result.error||"Cable TV purchase could not be completed.");
+  if(!response.ok||!result.success){if(response.status===402&&result.payment_status==="not_charged"){requestKey=crypto.randomUUID();sessionStorage.setItem(storageKey,requestKey);}throw new Error(result.error||"Cable TV purchase could not be completed.");}
   button.disabled=true;button.textContent="Order Submitted";status.textContent="Order reference: "+result.order_request.reference+". Status: "+result.order_request.status+".";
  }catch(e){button.disabled=false;button.textContent="Try Again";status.textContent=e.message||"Purchase could not be completed. Check Transaction History before retrying.";}
 });

@@ -521,6 +521,20 @@ function findPlanArray(payload){
  }
  return null;
 }
+function getDataSizeGb(planName){
+ const match=String(planName||"").match(/(\\d+(?:\\.\\d+)?)\\s*(MB|GB)\\b/i);
+ if(!match) return null;
+ const size=Number(match[1]);
+ if(!Number.isFinite(size) || size<=0) return null;
+ return match[2].toUpperCase()==="MB" ? size/1000 : size;
+}
+function calculateAilatSellingPrice(supplierAmount,planName){
+ const dataSizeGb=getDataSizeGb(planName);
+ if(dataSizeGb===null) return null;
+ const profit=Math.round(dataSizeGb*50*100)/100;
+ const sellingAmount=Math.round((Number(supplierAmount)+profit)*100)/100;
+ return {dataSizeGb,profit,sellingAmount};
+}
 function normalizeSupplierPlan(raw,network){
  if(!raw || typeof raw!=="object") return null;
  const id=raw.id ?? raw.plan_id ?? raw.planId ?? raw.plan_code ?? raw.code;
@@ -531,6 +545,8 @@ function normalizeSupplierPlan(raw,network){
  const typeText=String(rawType).toUpperCase();
  const type=typeText.includes("CORPORATE") || typeText.includes("COOPERATE") ? "CORPORATE" : typeText;
  if(id===undefined || !name || !Number.isFinite(Number(amount)) || Number(amount)<=0 || !type) return null;
+ const pricing=calculateAilatSellingPrice(Number(amount),name);
+ if(!pricing) return null;
  return {
   id:String(id),
   network:network==="9mobile"?"9mobile":network.toLowerCase(),
@@ -538,7 +554,10 @@ function normalizeSupplierPlan(raw,network){
   type,
   name:String(name),
   validity:String(validity),
-  amount:Number(amount),
+  supplier_amount:Number(amount),
+  data_size_gb:pricing.dataSizeGb,
+  profit:pricing.profit,
+  amount:pricing.sellingAmount,
   supplier_plan_id:String(id),
   supplier:"Bilalsadasub"
  };

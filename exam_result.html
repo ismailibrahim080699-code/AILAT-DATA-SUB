@@ -1,60 +1,24 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#4c1d95"><link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><title>AILAT DATA | Exam PIN / Result Checker</title>
-<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}header{padding:19px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed)}header a{color:white;text-decoration:none;font-weight:bold}main{width:min(92%,540px);margin:28px auto}.card{background:#fff;padding:25px 22px;border-radius:20px;box-shadow:0 10px 28px #35106f12}.intro{text-align:center}h1{font-size:23px;margin:5px 0 8px;color:#4c1d95}p{font-size:14px;line-height:1.7;color:#75658f}.status{display:inline-block;padding:8px 13px;border-radius:20px;background:#e9f8ef;color:#176b3a;font-size:12px;font-weight:bold}form{margin-top:20px;padding:18px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}label{display:block;margin:14px 0 7px;font-size:13px;font-weight:bold}input,select{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}button{width:100%;padding:14px;border:0;border-radius:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white;font-weight:bold;margin-top:16px}.secondary{background:#eee7ff;color:#4c1d95}.error{color:#b42318;font-size:12px;min-height:17px}.hint{font-size:12px;color:#77698f;margin-top:7px}.notice{margin-top:16px;padding:14px;background:#f3efff;color:#5b21b6;border-radius:12px;font-size:12px;line-height:1.7}footer{text-align:center;color:#9589ac;font-size:11px;padding:20px}</style>  <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
-</head><body>
-<header><a href="dashboard.html">← Back to Dashboard</a></header><main><section class="card"><div class="intro"><h1>Exam PIN / Result Checker</h1><p>Choose an examination product from Bilalsadasub's current catalogue</p><span class="status">CATALOGUE CONNECTED · PREVIEW ONLY</span></div>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}header{padding:19px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed)}header a{color:white;text-decoration:none;font-weight:bold}main{width:min(92%,540px);margin:28px auto}.card{background:#fff;padding:25px 22px;border-radius:20px;box-shadow:0 10px 28px #35106f12}.intro{text-align:center}h1{font-size:23px;margin:5px 0 8px;color:#4c1d95}p{font-size:14px;line-height:1.7;color:#75658f}.status{display:inline-block;padding:8px 13px;border-radius:20px;background:#e9f8ef;color:#176b3a;font-size:12px;font-weight:bold}form{margin-top:20px;padding:18px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}label{display:block;margin:14px 0 7px;font-size:13px;font-weight:bold}input,select{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}button{width:100%;padding:14px;border:0;border-radius:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white;font-weight:bold;margin-top:16px}.secondary{background:#eee7ff;color:#4c1d95}.error{color:#b42318;font-size:12px;min-height:17px}.hint{font-size:12px;color:#77698f;margin-top:7px}.verified{display:none;margin-top:10px;padding:12px;background:#e9f8ef;color:#176b3a;border-radius:10px;font-size:13px;line-height:1.5}.notice{margin-top:16px;padding:14px;background:#f3efff;color:#5b21b6;border-radius:12px;font-size:12px;line-height:1.7}footer{text-align:center;color:#9589ac;font-size:11px;padding:20px}</style><link rel="stylesheet" href="assets/ailat-theme.css?v=1"></head><body>
+<header><a href="dashboard.html">← Back to Dashboard</a></header><main><section class="card"><div class="intro"><h1>Exam PIN / Result Checker</h1><p>Buy WAEC, NECO, NABTEB and JAMB PINs securely</p><span class="status">LIVE CATALOGUE · SECURE PURCHASE</span></div>
 <form id="serviceForm" novalidate>
-<label for="exam">Examination product</label><select id="exam" required><option value="">Loading exam catalogue…</option></select>
-<div id="price" class="hint" aria-live="polite"></div>
+<label for="exam">Examination product</label><select id="exam" required><option value="">Loading exam catalogue…</option></select><div id="price" class="hint" aria-live="polite"></div>
 <div id="quantityWrap"><label for="quantity">Quantity (1–10)</label><select id="quantity"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
-<div id="profileWrap" hidden><label for="profile">JAMB profile / registration ID</label><input id="profile" inputmode="numeric" maxlength="15" placeholder="Enter 8–15 digit profile ID"><div class="hint">JAMB verification is not enabled here. Check the ID carefully with the examination candidate before proceeding.</div></div>
+<div id="profileWrap" hidden><label for="profile">JAMB profile / registration ID</label><input id="profile" inputmode="numeric" maxlength="15" placeholder="Enter 8–15 digit profile ID"><button id="verifyProfile" type="button" class="secondary">Verify JAMB Profile</button><div id="verifiedBox" class="verified"></div></div>
 <div id="jambTypeWrap" hidden><label for="jambType">JAMB type</label><select id="jambType"><option value="UTME">UTME</option><option value="MOCK">MOCK</option><option value="DE">Direct Entry (DE)</option></select></div>
 <label for="phone">Phone number (optional)</label><input id="phone" inputmode="numeric" maxlength="11" placeholder="08012345678">
-<div class="error" id="error" role="alert"></div><button type="submit">Review Exam Request</button><button type="reset" class="secondary">Clear Form</button>
-</form>
-<div class="notice"><strong>Important:</strong> Live PIN purchase is disabled. This page loads catalogue information only and prepares a local review; it does not send a purchase request, issue PINs, charge a wallet, or verify JAMB profile IDs. WAEC, NECO and NABTEB quantities are limited to 1–10. JAMB uses one profile-code PIN per request.</div></section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
+<div class="error" id="error" role="alert"></div><button type="submit">Review Exam Purchase</button><button type="reset" class="secondary">Clear Form</button></form>
+<div class="notice"><strong>Important:</strong> JAMB profile must be verified before payment. Review the live price before approving with fingerprint or Transaction PIN. Your wallet is charged only after approval. PINs are shown after supplier confirmation and are also emailed by Bilalsadasub.</div></section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
-const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=exam_plans";
-const form=document.getElementById("serviceForm"),examSelect=document.getElementById("exam"),errorBox=document.getElementById("error");
-let exams=[];
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const form=document.getElementById("serviceForm"),examSelect=document.getElementById("exam"),errorBox=document.getElementById("error"),verifyBtn=document.getElementById("verifyProfile");
+let exams=[],verifiedProfile=null;
 function selected(){return exams.find(x=>String(x.exam_id)===examSelect.value);}
-function updateMode(){
- const item=selected(),isJamb=item?.mode==="profile_code";
- document.getElementById("quantityWrap").hidden=isJamb;
- document.getElementById("profileWrap").hidden=!isJamb;
- document.getElementById("jambTypeWrap").hidden=!isJamb;
- document.getElementById("price").textContent=item?"Catalogue price: ₦"+item.amount.toLocaleString("en-NG")+" per PIN": "";
-}
-async function loadCatalogue(){
- try{
-  const response=await fetch(CATALOG_URL,{headers:{"Accept":"application/json"}});
-  const data=await response.json();
-  if(!response.ok||!data.success||!Array.isArray(data.exams))throw new Error(data.error||"Catalogue unavailable");
-  exams=data.exams;
-  examSelect.replaceChildren(new Option("Choose examination product",""));
-  exams.forEach(item=>examSelect.add(new Option(item.exam_name+" — ₦"+item.amount.toLocaleString("en-NG"),String(item.exam_id))));
-  updateMode();
- }catch(err){examSelect.replaceChildren(new Option("Could not load catalogue — refresh page",""));errorBox.textContent=err.message||"Could not load exam catalogue.";}
-}
+function updateMode(){const item=selected(),isJamb=item?.mode==="profile_code";document.getElementById("quantityWrap").hidden=isJamb;document.getElementById("profileWrap").hidden=!isJamb;document.getElementById("jambTypeWrap").hidden=!isJamb;document.getElementById("price").textContent=item?"Catalogue price: ₦"+Number(item.amount).toLocaleString("en-NG")+" per PIN":"";verifiedProfile=null;document.getElementById("verifiedBox").style.display="none";}
+async function loadCatalogue(){try{const r=await fetch(API+"?action=exam_plans",{headers:{"Accept":"application/json"}});const d=await r.json();if(!r.ok||!d.success||!Array.isArray(d.exams))throw new Error(d.error||"Catalogue unavailable");exams=d.exams;examSelect.replaceChildren(new Option("Choose examination product",""));exams.forEach(x=>examSelect.add(new Option(x.exam_name+" — ₦"+Number(x.amount).toLocaleString("en-NG"),String(x.exam_id))));updateMode();}catch(e){examSelect.replaceChildren(new Option("Could not load catalogue — refresh page",""));errorBox.textContent=e.message||"Could not load exam catalogue.";}}
 examSelect.addEventListener("change",updateMode);
-form.addEventListener("submit",e=>{
- e.preventDefault();errorBox.textContent="";
- const item=selected(),phone=document.getElementById("phone").value.trim(),qty=Number(document.getElementById("quantity").value),profile=document.getElementById("profile").value.trim(),jambType=document.getElementById("jambType").value;
- if(!item){errorBox.textContent="Choose an exam product.";return;}
- if(phone&&!/^0[789][01]\d{8}$/.test(phone)){errorBox.textContent="Enter a valid 11-digit Nigerian phone number.";return;}
- const isJamb=item.mode==="profile_code";
- if(isJamb&&!/^\d{8,15}$/.test(profile)){errorBox.textContent="Enter the 8–15 digit JAMB profile ID.";return;}
- if(!isJamb&&(!Number.isInteger(qty)||qty<1||qty>10)){errorBox.textContent="Choose a quantity from 1 to 10.";return;}
- const quantity=isJamb?1:qty;
- const total=item.amount*quantity;
- const review={exam_id:item.exam_id,exam_name:item.exam_name,mode:item.mode,amount:item.amount,quantity,phone,profile_code:isJamb?profile:"",jamb_type:isJamb?jambType:"",total,source:"Bilalsadasub"};
- try{sessionStorage.setItem("ailat_exam_review",JSON.stringify(review));location.href="exam_order_summary.html";}
- catch(err){errorBox.textContent="This browser could not prepare the review. Please try again.";}
-});
-form.addEventListener("reset",()=>setTimeout(updateMode,0));
-loadCatalogue();
-</script>
-<script type="module">
-import { protectPage } from "./firebase.js";
-await protectPage();
-</script>
-</body></html>
+document.getElementById("profile").addEventListener("input",()=>{verifiedProfile=null;document.getElementById("verifiedBox").style.display="none";});
+document.getElementById("jambType").addEventListener("change",()=>{verifiedProfile=null;document.getElementById("verifiedBox").style.display="none";});
+verifyBtn.addEventListener("click",async()=>{const profile=document.getElementById("profile").value.trim();if(!/^\d{8,15}$/.test(profile)){errorBox.textContent="Enter the candidate's 8–15 digit JAMB profile ID.";return;}verifyBtn.disabled=true;verifyBtn.textContent="Verifying profile…";errorBox.textContent="";try{const r=await fetch(API+"?action=verify_jamb",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({profile_id:profile})});const d=await r.json();if(!r.ok||!d.success||!d.verified)throw new Error(d.error||"JAMB profile could not be verified.");verifiedProfile={profile_id:d.profile_id,name:d.name};const box=document.getElementById("verifiedBox");box.textContent="Verified candidate: "+d.name;box.style.display="block";}catch(e){verifiedProfile=null;errorBox.textContent=e.message||"Verification failed. No payment was taken.";}finally{verifyBtn.disabled=false;verifyBtn.textContent="Verify JAMB Profile";}});
+form.addEventListener("submit",e=>{e.preventDefault();errorBox.textContent="";const item=selected(),phone=document.getElementById("phone").value.trim(),qty=Number(document.getElementById("quantity").value),profile=document.getElementById("profile").value.trim(),jambType=document.getElementById("jambType").value;if(!item){errorBox.textContent="Choose an exam product.";return;}if(phone&&!/^0[789][01]\d{8}$/.test(phone)){errorBox.textContent="Enter a valid 11-digit Nigerian phone number.";return;}const isJamb=item.mode==="profile_code";if(isJamb&&(!verifiedProfile||verifiedProfile.profile_id!==profile)){errorBox.textContent="Verify the JAMB profile ID before continuing.";return;}if(!isJamb&&(!Number.isInteger(qty)||qty<1||qty>10)){errorBox.textContent="Choose a quantity from 1 to 10.";return;}const quantity=isJamb?1:qty,total=Number(item.amount)*quantity;const review={exam_id:Number(item.exam_id),exam_name:item.exam_name,mode:item.mode,amount:Number(item.amount),quantity,phone,profile_code:isJamb?profile:"",jamb_type:isJamb?jambType:"",verified_name:isJamb?verifiedProfile.name:"",total,source:"Bilalsadasub"};try{sessionStorage.setItem("ailat_exam_review",JSON.stringify(review));location.href="exam_order_summary.html";}catch(e){errorBox.textContent="Could not prepare the purchase review. Please try again.";}});form.addEventListener("reset",()=>{verifiedProfile=null;document.getElementById("verifiedBox").style.display="none";setTimeout(updateMode,0);});loadCatalogue();
+</script><script type="module">import { protectPage } from "./firebase.js";await protectPage();</script></body></html>

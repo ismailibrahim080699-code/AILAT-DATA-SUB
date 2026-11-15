@@ -5,7 +5,7 @@
 <div class="item"><span class="label">Provider</span><span class="value" id="v0">—</span></div>
 <div class="item"><span class="label">Smartcard / IUC number</span><span class="value" id="v1">—</span></div>
 <div class="item"><span class="label">Verified customer name</span><span class="value" id="vCustomer">—</span></div>
-<div class="item"><span class="label">Package</span><span class="value" id="v2">—</span></div><div class="item"><span class="label">Supplier price</span><span class="value" id="v3">—</span></div>
+<div class="item"><span class="label">Package</span><span class="value" id="v2">—</span></div><div class="item"><span class="label">Supplier price</span><span class="value" id="v3">—</span></div><div class="item"><span class="label">AILAT DATA service charge</span><span class="value" id="vMarkup">—</span></div><div class="item"><span class="label">Total wallet debit</span><span class="value" id="vTotal">—</span></div>
 </section><div class="notice">Bilalsadasub will re-verify the IUC and live package price immediately before payment. Your wallet is charged only after secure approval. If the supplier confirms failure, the wallet is refunded. If the supplier response is pending, do not submit again.</div><button id="submitRequest" type="button" disabled>Confirm with Fingerprint</button><p id="requestStatus" role="status" aria-live="polite"></p><button type="button" style="margin-top:10px;background:#eee7ff;color:#4c1d95" onclick="location.href='tv.html'">Back to Service</button></main>
 <script type="module">
 import { app } from "./firebase.js";
@@ -14,11 +14,11 @@ const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-req
 const KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let review={};try{review=JSON.parse(sessionStorage.getItem("ailat_tv_review")||"{}");}catch(e){}
 const labels={dstv:"DStv",gotv:"GOtv",startimes:"StarTimes"};
-const provider=String(review.provider||""),account=String(review.account||""),planId=String(review.plan_id||""),planName=String(review.plan_name||""),customerName=String(review.customer_name||""),amount=Number(review.amount);
-const valid=Object.prototype.hasOwnProperty.call(labels,provider)&&/^\d{10}$/.test(account)&&/^\d+$/.test(planId)&&planName.length>1&&customerName.length>1&&Number.isFinite(amount)&&amount>0;
+const provider=String(review.provider||""),account=String(review.account||""),planId=String(review.plan_id||""),planName=String(review.plan_name||""),customerName=String(review.customer_name||""),supplierAmount=Number(review.supplier_amount??review.amount),markupAmount=Math.min(500,Math.max(100,Math.round(supplierAmount*0.03))),sellingAmount=Math.round((supplierAmount+markupAmount)*100)/100;
+const valid=Object.prototype.hasOwnProperty.call(labels,provider)&&/^\d{10}$/.test(account)&&/^\d+$/.test(planId)&&planName.length>1&&customerName.length>1&&Number.isFinite(supplierAmount)&&supplierAmount>0;
 const details=document.getElementById("details"),button=document.getElementById("submitRequest"),status=document.getElementById("requestStatus");
 if(!valid){const box=document.createElement("div");box.className="error";const strong=document.createElement("strong");strong.textContent="Invalid or incomplete Cable TV details.";const p=document.createElement("p");p.textContent="Return to the service page and choose a currently verified package.";box.append(strong,p);details.replaceChildren(box);}
-else{document.getElementById("v0").textContent=labels[provider];document.getElementById("v1").textContent=account;document.getElementById("v2").textContent=planName;document.getElementById("vCustomer").textContent=customerName;document.getElementById("v3").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});button.disabled=true;button.textContent="Checking login…";}
+else{document.getElementById("v0").textContent=labels[provider];document.getElementById("v1").textContent=account;document.getElementById("v2").textContent=planName;document.getElementById("vCustomer").textContent=customerName;document.getElementById("v3").textContent="₦"+supplierAmount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});document.getElementById("vMarkup").textContent="₦"+markupAmount.toLocaleString("en-NG");document.getElementById("vTotal").textContent="₦"+sellingAmount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});button.disabled=true;button.textContent="Checking login…";}
 const auth=getAuth(app);let currentUser=null;
 onAuthStateChanged(auth,user=>{currentUser=user;if(!user){location.replace("login.html");return;}if(valid){button.disabled=false;button.textContent="Confirm with Fingerprint";}});
 function fromB64url(value){const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));}
@@ -44,7 +44,7 @@ button.addEventListener("click",async()=>{
   await currentUser.reload();if(!currentUser.emailVerified)throw new Error("Verify your email before purchasing.");
   const token=await currentUser.getIdToken(true),storageKey="ailat_cable_request:"+encodeURIComponent([provider,account,planId].join("|"));
   let requestKey=sessionStorage.getItem(storageKey);if(!requestKey||!/^[0-9a-f-]{36}$/i.test(requestKey)){requestKey=crypto.randomUUID();sessionStorage.setItem(storageKey,requestKey);}
-  const intent={service_key:"cable_tv",idempotency_key:requestKey,details:{provider,smart_card_number:account,catalog_plan_id:Number(planId),supplier_amount:amount,customer_name:customerName}};
+  const intent={service_key:"cable_tv",idempotency_key:requestKey,details:{provider,smart_card_number:account,catalog_plan_id:Number(planId),supplier_amount:supplierAmount,markup_amount:markupAmount,selling_amount:sellingAmount,customer_name:customerName}};
   status.textContent="Re-checking your order and waiting for fingerprint / PIN…";
   const authorizationToken=await approveCableOrder(token,intent);
   status.textContent="Approval received. Submitting your order securely…";button.textContent="Processing purchase…";

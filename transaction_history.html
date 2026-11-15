@@ -277,8 +277,8 @@ function renderTransactions(items){
    item.is_request ? `<div>Supplier Dispatch: ${safe(dispatchState === "disabled_safe_mode" || dispatchState === "not_sent" ? "Not sent (safe mode)" : dispatchState)}</div>` : "",
    customer.amount !== undefined ? `<div>Airtime Amount: ${formatAmount(customer.amount)}</div>` : ""
   ].join("");
-  const statusClass = ["completed","success","received","pending","processing","failed","rejected","cancelled"].includes(rawStatus)
-   ? (rawStatus === "received" ? "request-recorded" : rawStatus)
+  const statusClass = ["completed","success","successful","received","pending","processing","failed","rejected","cancelled"].includes(rawStatus)
+   ? (rawStatus === "received" ? "request-recorded" : rawStatus === "successful" ? "success" : rawStatus)
    : "unknown";
   const statusLabel = ({
    received:"Request Recorded",
@@ -286,6 +286,7 @@ function renderTransactions(items){
    processing:"Processing",
    completed:"Completed",
    success:"Successful",
+   successful:"Successful",
    failed:"Failed",
    rejected:"Rejected",
    cancelled:"Cancelled",
@@ -340,11 +341,11 @@ function renderTransactions(items){
     const card = button.closest(".transaction");
     if(card){
      const status = String(order.status || "unknown").toLowerCase();
-     const statusClass = ["completed","success","received","pending","processing","failed","rejected","cancelled"].includes(status)
-      ? (status === "received" ? "request-recorded" : status) : "unknown";
+     const statusClass = ["completed","success","successful","received","pending","processing","failed","rejected","cancelled"].includes(status)
+      ? (status === "received" ? "request-recorded" : status === "successful" ? "success" : status) : "unknown";
      const statusLabel = ({
       received:"Request Recorded", pending:"Pending", processing:"Processing",
-      completed:"Completed", success:"Successful", failed:"Failed",
+      completed:"Completed", success:"Successful", successful:"Successful", failed:"Failed",
       rejected:"Rejected", cancelled:"Cancelled"
      })[status] || "Status Unavailable";
      const statusElement = card.querySelector(".status");

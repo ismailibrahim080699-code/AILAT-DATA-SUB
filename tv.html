@@ -22,7 +22,7 @@ provider.addEventListener("change",clearVerification);account.addEventListener("
 verifyButton.addEventListener("click",async()=>{
  error.textContent="";clearVerification();
  if(!providerKey[provider.value]){error.textContent="Choose a TV provider first.";return;}
- if(!/^\\d{10}$/.test(account.value.trim())){error.textContent="Enter the 10-digit IUC / smart-card number.";account.focus();return;}
+ if(!/^\d{10}$/.test(account.value.trim())){error.textContent="Enter the 10-digit IUC / smart-card number.";account.focus();return;}
  const user=getAuth(app).currentUser;if(!user){error.textContent="Please log in first.";return;}
  verifyButton.disabled=true;verifyButton.textContent="Verifying…";
  try{await user.reload();if(!user.emailVerified)throw new Error("Verify your email before using this service.");const token=await user.getIdToken(true);const cable={dstv:2,gotv:1,startimes:3}[providerKey[provider.value]];const url=API+"?action=cable_validate&cable="+cable+"&iuc="+encodeURIComponent(account.value.trim());const response=await fetch(url,{headers:{"apikey":KEY,"Authorization":"Bearer "+token}});const result=await response.json().catch(()=>({}));if(!response.ok||!result.success||!result.name)throw new Error(result.error||"IUC could not be verified.");verifiedCustomerName=String(result.name).trim();customerResult.textContent="Verified customer: "+verifiedCustomerName+" · "+result.cable;customerResult.style.display="block";verifyButton.textContent="IUC Verified";}

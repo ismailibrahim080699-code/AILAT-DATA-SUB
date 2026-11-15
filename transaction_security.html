@@ -232,9 +232,11 @@ onAuthStateChanged(auth,async user=>{
   }catch(e){if(e.name==="AbortError")throw new Error("Device security check timed out. Try again.");throw e;}
   finally{clearTimeout(timeout);}
  }
+ let deviceAuthAvailable=false;
  function showPasskeys(items){
   const list=$("passkeyList");list.replaceChildren();
   $("passkeyControl").textContent=items.length?items.length+" device(s) enrolled":"Not enrolled";
+  $("testBiometricBtn").disabled=!deviceAuthAvailable||!items.length;
   if(!items.length){const p=document.createElement("p");p.className="sub";p.textContent="No device has been registered yet.";list.append(p);return;}
   items.forEach(item=>{
    const row=document.createElement("div");row.className="row";
@@ -263,10 +265,11 @@ onAuthStateChanged(auth,async user=>{
     PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(),
     new Promise((_,reject)=>setTimeout(()=>reject(new Error("Device check took too long. Try again later.")),5000))
    ]);
+   deviceAuthAvailable=!!available;
    status.textContent=available?"Device authentication available":"Device authentication not detected";
    detail.textContent=available?"You can register this phone. Your device will ask for fingerprint, face unlock, or its screen lock. AILAT DATA will not receive your biometric data.":"This browser did not detect a built-in authenticator. Check your phone's screen lock and browser support.";
    registerBtn.disabled=!available;
-   $("testBiometricBtn").disabled=!available;
+   $("testBiometricBtn").disabled=!available||!document.querySelector("#passkeyList .row");
   }catch(e){status.textContent="Device support check unavailable";detail.textContent=e.message;registerBtn.disabled=true;}
  }
  $("testBiometricBtn").addEventListener("click",async()=>{

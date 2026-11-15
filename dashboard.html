@@ -391,6 +391,7 @@ footer{
   <a href="support.html"><i data-lucide="life-buoy"></i>Customer Support</a>
   <a href="dashboard.html"><i data-lucide="house"></i>Dashboard</a>
   <a href="admin_profit.html" id="adminProfitLink" hidden><i data-lucide="chart-no-axes-combined"></i>Business Profit (Admin)</a>
+  <a href="admin_withdrawals.html" id="adminWithdrawalLink" hidden><i data-lucide="wallet"></i>Withdrawal Approval (Admin)</a>
  </div>
 
 </div>
@@ -482,6 +483,25 @@ async function checkAdminProfitAccess(user){
  }
 }
 
+async function checkAdminWithdrawalAccess(user){
+ const link=document.getElementById("adminWithdrawalLink");
+ if(!link)return;
+ link.hidden=true;
+ try{
+  const token=await user.getIdToken(true);
+  const response=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-withdrawal-requests",{
+   method:"GET",
+   headers:{"Authorization":"Bearer "+token}
+  });
+  if(response.ok){
+   const result=await response.json();
+   if(result.success)link.hidden=false;
+  }
+ }catch(error){
+  console.warn("Admin withdrawal access check unavailable.");
+ }
+}
+
 async function loadWalletFromBackend(user){
  const status = document.getElementById("walletStatus");
  const refresh = document.getElementById("refreshWallet");
@@ -564,6 +584,7 @@ onAuthStateChanged(auth,async(user)=>{
 
   loadSavedPhoto(user.uid);
   checkAdminProfitAccess(user);
+  checkAdminWithdrawalAccess(user);
 
   try{
    await loadWalletFromBackend(user);

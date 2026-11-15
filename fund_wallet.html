@@ -34,7 +34,7 @@ button:disabled{opacity:.55;cursor:wait}
 <label for="recoveryReference">Existing Paystack reference</label>
 <input id="recoveryReference" type="text" autocomplete="off" placeholder="AILATFUND...">
 <button id="verifyButton" type="button">Verify Existing Payment</button>
-<button id="payButton" type="button" disabled>New funding temporarily paused</button>
+<button id="payButton" type="button">Continue to Paystack</button>
 <div class="notice"><strong>Important:</strong> Minimum funding is ₦100. Do not close the Paystack page before completing payment. Never share your password, OTP, card PIN, or secret keys with anyone.</div>
 <div id="status" class="status" role="status" aria-live="polite">Checking your verified account…</div>
 <a class="link secondary" href="transaction_history.html">View Transaction History</a>
@@ -94,7 +94,7 @@ async function verifyReturnedPayment(user) {
     console.error("Paystack verification error:", error);
     statusBox.textContent = "We could not verify the payment right now. Your wallet has not been credited by this page. Keep this reference for support: " + reference;
   } finally {
-    payButton.disabled = true;
+    payButton.disabled = false;
     verifyButton.disabled = false;
     processingCallback = false;
   }
@@ -150,13 +150,11 @@ verifyButton.addEventListener("click", async () => {
   } finally {
     processingCallback = false;
     verifyButton.disabled = false;
-    payButton.disabled = true;
+    payButton.disabled = false;
   }
 });
 
 payButton.addEventListener("click", async () => {
-  statusBox.textContent = "New funding is paused until the two previous payments are reconciled.";
-  return;
   if (!currentUser) {
     statusBox.textContent = "Please wait while your account is checked.";
     return;

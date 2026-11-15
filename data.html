@@ -372,6 +372,7 @@ const AILAT_NETWORK_IDS = Object.freeze({
  airtel:2,
  glo:3,
  t2:4,
+ "9mobile":4,
  vitel:5
 });
 function getInternalNetworkId(network){
@@ -399,7 +400,7 @@ function clearSelectedPlan(){
 function updateContinueButton(){
  const button=document.getElementById("continueDataBtn");
  if(!button) return;
- const selected=DATA_PLANS.some(item=>String(item.id)===selectedPlanId && item.network.toLowerCase()===selectedNetwork.toLowerCase() && normalizedType(item.type)===selectedPurchaseType);
+ const selected=DATA_PLANS.some(item=>String(item.id)===selectedPlanId && (item.network.toLowerCase()===(selectedNetwork.toLowerCase()==="t2"?"9mobile":selectedNetwork.toLowerCase())) && normalizedType(item.type)===selectedPurchaseType);
  button.disabled=!selected;
  button.textContent=selected?"Continue":"Choose a data bundle";
 }
@@ -483,7 +484,7 @@ function continuePurchase(){
  }
  if(!selected){ alert("Please select a data bundle."); return; }
  const orderDraft={
-  network:selectedNetwork,
+  network:selectedNetwork.toLowerCase()==="t2"?"9mobile":selectedNetwork,
   internal_network_id:getInternalNetworkId(selectedNetwork),
   phone,
   plan_id:String(selected.id),

@@ -39,7 +39,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>Verified Customer</span><strong id="customerName">-</strong></div>
 <div class="item" id="customerAddressRow" hidden><span>Customer Address</span><strong id="customerAddress">-</strong></div>
 <div class="total"><span>Requested Amount</span><strong id="amount">₦0.00</strong></div>
-<div class="notice"><strong>Not accepting orders yet:</strong> AILAT DATA has not connected a verified electricity provider and payment flow. Meter validation is active through Bilalsadasub. This page records a safe request only; live bill payment is not enabled. No payment is collected and no electricity token or receipt is issued. Do not use this page as proof of payment.</div>
+<div class="notice"><strong>Live payment is not enabled yet:</strong> Your Transaction PIN will approve and record this electricity request. This does not debit your wallet or pay the electricity bill. No token or receipt will be issued until live payment is activated.</div>
 <button type="button" id="submitRequest" disabled>Submit Electricity Request</button>
 <button type="button" id="newRequest" class="secondary" hidden>Record a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite">Sign in with a verified email to record this request.</p>
@@ -93,17 +93,28 @@ onAuthStateChanged(auth,async currentUser=>{
 
 button.addEventListener("click",async()=>{
  if(!valid||!user||saved||button.disabled)return;
- button.disabled=true;button.textContent="Recording request...";updateStatus("Please wait while AILAT DATA records your request.");
+ const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity request.");
+ if(pin===null)return;
+ if(!/^\\d{4}$/.test(pin)){updateStatus("Enter your correct 4-digit Transaction PIN.",true);return;}
+ button.disabled=true;button.textContent="Verifying PIN...";updateStatus("Verifying your Transaction PIN. No wallet debit will occur.");
  try{
   await user.reload();
   if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
   const idToken=await user.getIdToken(true);
-  const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify({idempotency_key:requestKey,customer_data:{disco:Number(disco),meter_type:type,meter_number:meter,amount}})});
+  const intent={service_key:"electricity",idempotency_key:requestKey,details:{disco:Number(disco),meter_type:type,meter,amount}};
+  const approvalResponse=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys",{
+   method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},
+   body:JSON.stringify({action:"authorize_with_pin",pin,intent})
+  });
+  const approval=await approvalResponse.json().catch(()=>({}));
+  if(!approvalResponse.ok||!approval.success||!approval.authorization_token)throw new Error(approval.error||"Transaction PIN approval failed.");
+  button.textContent="Recording approved request...";
+  const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify({idempotency_key:requestKey,authorization_token:approval.authorization_token,customer_data:{disco:Number(disco),meter_type:type,meter_number:meter,amount}})});
   const result=await response.json().catch(()=>({}));
   if(!response.ok||!result.success)throw new Error(result.error||"Could not record this request.");
   saved=true;button.textContent="Request Recorded";newButton.hidden=false;
   const order=result.order_request||{};
-  updateStatus("Request recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". Verified customer: "+customerName+". No payment was taken, no bill was paid and no token was issued.");
+  updateStatus("PIN approved. Request recorded. Reference: "+(order.reference||"saved")+". Status: "+(order.status||"received")+". No payment was taken, no bill was paid and no token was issued.");
  }catch(error){button.disabled=false;button.textContent="Try Again";updateStatus(error.message||"Could not record the request. Please try again.",true);}
 });
 newButton.addEventListener("click",()=>{

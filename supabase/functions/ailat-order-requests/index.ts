@@ -72,7 +72,6 @@ Deno.serve(async (req: Request) => {
         .from("data_plan_catalog")
         .select("id,network,purchase_type,bundle_name,supplier_amount,validity,supplier_plan_id,supplier_network_id,supplier_mapping_status")
         .eq("active", true)
-        .eq("supplier_mapping_status", "verified")
         .not("supplier_plan_id", "is", null)
         .not("supplier_network_id", "is", null)
         .order("supplier_amount", { ascending: true });

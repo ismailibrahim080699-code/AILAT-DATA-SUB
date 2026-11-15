@@ -6,7 +6,7 @@
 <div class="item"><span class="label">Smartcard / IUC number</span><span class="value" id="v1">—</span></div>
 <div class="item"><span class="label">Verified customer name</span><span class="value" id="vCustomer">—</span></div>
 <div class="item"><span class="label">Package</span><span class="value" id="v2">—</span></div><div class="item"><span class="label">Supplier price</span><span class="value" id="v3">—</span></div>
-</section><div class="notice">Bilalsadasub live package listing and free IUC verification are connected. Subscription purchase is not enabled yet: this page will not debit your wallet or send an order.</div><button id="submitRequest" type="button" disabled>Subscription Purchase Not Enabled Yet</button><p id="requestStatus" role="status" aria-live="polite"></p><button type="button" style="margin-top:10px;background:#eee7ff;color:#4c1d95" onclick="location.href='tv.html'">Back to Service</button></main>
+</section><div class="notice">Bilalsadasub live package listing and free IUC verification are connected. Subscription purchase is not enabled yet: this page will not debit your wallet or send an order.</div><button id="submitRequest" type="button" disabled>Record Verified Request (No Payment)</button><p id="requestStatus" role="status" aria-live="polite"></p><button type="button" style="margin-top:10px;background:#eee7ff;color:#4c1d95" onclick="location.href='tv.html'">Back to Service</button></main>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -15,12 +15,12 @@ const KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let review={};try{review=JSON.parse(sessionStorage.getItem("ailat_tv_review")||"{}");}catch(e){}
 const labels={dstv:"DStv",gotv:"GOtv",startimes:"StarTimes"};
 const provider=String(review.provider||""),account=String(review.account||""),planId=String(review.plan_id||""),planName=String(review.plan_name||""),customerName=String(review.customer_name||""),amount=Number(review.amount);
-const valid=Object.prototype.hasOwnProperty.call(labels,provider)&&/^\d{6,20}$/.test(account)&&/^\d+$/.test(planId)&&planName.length>1&&customerName.length>1&&Number.isFinite(amount)&&amount>0;
+const valid=Object.prototype.hasOwnProperty.call(labels,provider)&&/^\d{10}$/.test(account)&&/^\d+$/.test(planId)&&planName.length>1&&customerName.length>1&&Number.isFinite(amount)&&amount>0;
 const details=document.getElementById("details"),button=document.getElementById("submitRequest"),status=document.getElementById("requestStatus");
 if(!valid){const box=document.createElement("div");box.className="error";const strong=document.createElement("strong");strong.textContent="Invalid or incomplete Cable TV details.";const p=document.createElement("p");p.textContent="Return to the service page and choose a currently verified package.";box.append(strong,p);details.replaceChildren(box);}
-else{document.getElementById("v0").textContent=labels[provider];document.getElementById("v1").textContent=account;document.getElementById("v2").textContent=planName;document.getElementById("vCustomer").textContent=customerName;document.getElementById("v3").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});button.disabled=true;button.textContent="Subscription Purchase Not Enabled Yet";}
+else{document.getElementById("v0").textContent=labels[provider];document.getElementById("v1").textContent=account;document.getElementById("v2").textContent=planName;document.getElementById("vCustomer").textContent=customerName;document.getElementById("v3").textContent="₦"+amount.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});button.disabled=true;button.textContent="Checking login…";}
 const auth=getAuth(app);let currentUser=null;
-onAuthStateChanged(auth,user=>{currentUser=user;if(!user){location.replace("login.html");return;}});
+onAuthStateChanged(auth,user=>{currentUser=user;if(!user){location.replace("login.html");return;}if(valid){button.disabled=false;button.textContent="Record Verified Request (No Payment)";}});
 button.addEventListener("click",async()=>{
  if(!valid||!currentUser||button.disabled)return;
  button.disabled=true;button.textContent="Recording request…";status.textContent="Please wait.";
@@ -30,7 +30,7 @@ button.addEventListener("click",async()=>{
   let requestKey=sessionStorage.getItem(storageKey);if(!requestKey||!/^[0-9a-f-]{36}$/i.test(requestKey)){requestKey=crypto.randomUUID();sessionStorage.setItem(storageKey,requestKey);}
   const response=await fetch(API,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({service_key:"cable_tv",idempotency_key:requestKey,customer_data:{provider,smart_card_number:account,customer_name:customerName,iuc_validation_status:"verified",catalog_plan_id:Number(planId)}})});
   const result=await response.json().catch(()=>({}));if(!response.ok||!result.success)throw new Error(result.error||"Could not record Cable TV request.");
-  button.textContent="Request Recorded";status.textContent="Reference: "+result.order_request.reference+". Status: "+result.order_request.status+". No payment was taken and no subscription was delivered.";
+  button.textContent="Request Recorded";button.disabled=true;status.textContent="Reference: "+result.order_request.reference+". Status: "+result.order_request.status+". Customer and package were re-verified live. No payment was taken and no subscription was delivered.";
  }catch(e){button.disabled=false;button.textContent="Try Again";status.textContent=e.message||"Request could not be recorded.";}
 });
 </script>

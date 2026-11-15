@@ -362,7 +362,7 @@ Please check your phone number and selected data bundle before continuing.
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
-const SUPABASE_FUNCTION_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const SUPPLIER_CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/bilalsadasub-data-catalog";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS=[];
 
@@ -512,19 +512,57 @@ async function getVerifiedUser(){
   },error=>{unsubscribe();reject(error);});
  });
 }
+function findPlanArray(payload){
+ if(Array.isArray(payload)) return payload;
+ if(!payload || typeof payload!=="object") return null;
+ for(const key of ["data","plans","results","bundles","items"]){
+  const found=findPlanArray(payload[key]);
+  if(found) return found;
+ }
+ return null;
+}
+function normalizeSupplierPlan(raw,network){
+ if(!raw || typeof raw!=="object") return null;
+ const id=raw.id ?? raw.plan_id ?? raw.planId ?? raw.plan_code ?? raw.code;
+ const name=raw.plan ?? raw.name ?? raw.bundle_name ?? raw.plan_name ?? raw.title ?? raw.size;
+ const amount=raw.amount ?? raw.price ?? raw.api_price ?? raw.plan_amount;
+ const validity=raw.validity ?? raw.duration ?? raw.validity_period ?? "As listed by supplier";
+ const rawType=raw.type ?? raw.plan_type ?? raw.planType ?? raw.category ?? "";
+ const typeText=String(rawType).toUpperCase();
+ const type=typeText.includes("CORPORATE") || typeText.includes("COOPERATE") ? "CORPORATE" : typeText;
+ if(id===undefined || !name || !Number.isFinite(Number(amount)) || Number(amount)<=0 || !type) return null;
+ return {
+  id:String(id),
+  network:network==="9mobile"?"9mobile":network.toLowerCase(),
+  internal_network_id:getInternalNetworkId(network),
+  type,
+  name:String(name),
+  validity:String(validity),
+  amount:Number(amount),
+  supplier_plan_id:String(id),
+  supplier:"Bilalsadasub"
+ };
+}
 async function loadPlans(){
  try{
   const user=await getVerifiedUser();
   await user.reload();
   if(!user.emailVerified) throw new Error("Please verify your email before using Buy Data.");
   const token=await user.getIdToken(true);
-  const response=await fetch(SUPABASE_FUNCTION_URL+"?action=plans",{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}});
+  const supplierNetwork=selectedNetwork.toLowerCase()==="9mobile"?"T2":selectedNetwork.toUpperCase();
+  const response=await fetch(SUPPLIER_CATALOG_URL+"?action=plans&network="+encodeURIComponent(supplierNetwork),{
+   headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}
+  });
   const result=await response.json();
-  if(!response.ok || !result.success || !Array.isArray(result.plans)) throw new Error(result.error||"Could not load Bilalsadasub data bundles.");
-  DATA_PLANS=result.plans;
+  if(!response.ok || !result.success) throw new Error(result.error||"Could not load Bilalsadasub data bundles.");
+  const rawPlans=findPlanArray(result.data);
+  if(!rawPlans) throw new Error("Bilalsadasub returned an unknown plan format. No unverified bundles were shown.");
+  DATA_PLANS=rawPlans.map(plan=>normalizeSupplierPlan(plan,selectedNetwork)).filter(Boolean);
+  if(!DATA_PLANS.length) throw new Error("No verified plan details were returned for "+selectedNetwork+".");
   renderPlans();
  }catch(error){
-  bundleGrid.textContent="Data bundles are temporarily unavailable. Please refresh the page.";
+  DATA_PLANS=[];
+  bundleGrid.textContent="Bilalsadasub data bundles are temporarily unavailable. Please refresh the page.";
   bundleCount.textContent="Unavailable";
   const continueButton=document.getElementById("continueDataBtn");
   if(continueButton){continueButton.disabled=true;continueButton.textContent="Bundles unavailable";}

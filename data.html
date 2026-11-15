@@ -537,7 +537,7 @@ function normalizeSupplierPlan(raw,network){
  const id=raw.id ?? raw.plan_id ?? raw.planId ?? raw.plan_code ?? raw.code;
  const name=raw.plan ?? raw.name ?? raw.bundle_name ?? raw.plan_name ?? raw.title ?? raw.size;
  const amount=raw.amount ?? raw.price ?? raw.api_price ?? raw.plan_amount;
- const validity=raw.validity ?? raw.duration ?? raw.validity_period ?? "As listed by supplier";
+ const validity=raw.validity ?? raw.duration ?? raw.validity_period ?? raw.plan_day ?? "As listed by supplier";
  const rawType=raw.type ?? raw.plan_type ?? raw.planType ?? raw.category ?? "";
  const typeText=String(rawType).toUpperCase();
  const type=typeText.includes("CORPORATE") || typeText.includes("COOPERATE") ? "CORPORATE" : typeText;
@@ -578,7 +578,17 @@ async function loadPlans(networkToLoad=selectedNetwork){
   if(!verifiedPlans.length) throw new Error("No verified plan details were returned for "+networkToLoad+".");
   if(requestId!==catalogRequestId) return;
   DATA_PLANS=verifiedPlans;
-  if(selectedNetwork===networkToLoad) renderPlans();
+  if(selectedNetwork===networkToLoad){
+   const availableTypes=[...new Set(verifiedPlans.map(item=>normalizedType(item.type)))];
+   if(!availableTypes.includes(selectedPurchaseType)){
+    selectedPurchaseType=["SME","GIFTING","CORPORATE"].find(type=>availableTypes.includes(type))||availableTypes[0];
+    document.querySelectorAll(".type-option").forEach(item=>{
+     const onclick=item.getAttribute("onclick")||"";
+     item.classList.toggle("active",onclick.includes("'"+selectedPurchaseType+"'"));
+    });
+   }
+   renderPlans();
+  }
  }catch(error){
   if(requestId!==catalogRequestId) return;
   DATA_PLANS=[];

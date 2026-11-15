@@ -62,10 +62,42 @@ import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
 const SUPABASE_FUNCTION_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const SUPPLIER_CATALOG_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/bilalsadasub-data-catalog";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS = [];
 let plansLoadError = false;
+let catalogDraft = null;
+try { catalogDraft = JSON.parse(sessionStorage.getItem("ailat_data_order_draft") || "null"); } catch {}
 const auth = getAuth(app);
+function findPlanArray(payload){
+ if(Array.isArray(payload)) return payload;
+ if(!payload || typeof payload!=="object") return null;
+ for(const key of ["data","plans","results","bundles","items"]){
+  const found=findPlanArray(payload[key]);
+  if(found) return found;
+ }
+ return null;
+}
+function getDataSizeGb(name){
+ const match=String(name||"").match(/(\\d+(?:\\.\\d+)?)\\s*(MB|GB)\\b/i);
+ if(!match) return null;
+ const size=Number(match[1]);
+ return Number.isFinite(size)&&size>0?(match[2].toUpperCase()==="MB"?size/1000:size):null;
+}
+function normalizeCatalogPlan(raw, network){
+ if(!raw || typeof raw!=="object") return null;
+ const id=raw.id ?? raw.plan_id ?? raw.planId ?? raw.plan_code ?? raw.code;
+ const name=raw.plan ?? raw.name ?? raw.bundle_name ?? raw.plan_name ?? raw.title ?? raw.size;
+ const amount=raw.amount ?? raw.price ?? raw.api_price ?? raw.plan_amount;
+ const validity=raw.validity ?? raw.duration ?? raw.validity_period ?? raw.plan_day ?? "As listed by supplier";
+ const rawType=String(raw.type ?? raw.plan_type ?? raw.planType ?? raw.category ?? "").toUpperCase();
+ const type=rawType.includes("CORPORATE")||rawType.includes("COOPERATE")?"CORPORATE":rawType;
+ if(id===undefined || !name || !Number.isFinite(Number(amount)) || Number(amount)<=0 || !type) return null;
+ const sizeGb=getDataSizeGb(name);
+ if(sizeGb===null) return null;
+ const profit=Math.round(sizeGb*50*100)/100;
+ return {id:String(id),network:network.toLowerCase()==="t2"?"9mobile":network.toLowerCase(),internal_network_id:({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5})[network.toLowerCase()]??null,type,name:String(name),validity:String(validity),supplier_amount:Number(amount),data_size_gb:sizeGb,profit,amount:Math.round((Number(amount)+profit)*100)/100,supplier_plan_id:String(id),supplier:"Bilalsadasub"};
+}
 try {
  const user = await new Promise((resolve,reject)=>{
   const unsubscribe=onAuthStateChanged(auth,u=>{unsubscribe();if(!u)reject(new Error("Please log in."));else resolve(u);},reject);
@@ -73,10 +105,16 @@ try {
  await user.reload();
  if(!user.emailVerified) throw new Error("Please verify your email.");
  const token=await user.getIdToken(true);
- const plansResponse=await fetch(SUPABASE_FUNCTION_URL+"?action=plans",{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}});
+ const requestedNetwork=String(catalogDraft?.network||"").toUpperCase();
+ const supplierNetwork=requestedNetwork==="9MOBILE"?"T2":requestedNetwork;
+ if(!["MTN","AIRTEL","GLO","T2","VITEL"].includes(supplierNetwork)) throw new Error("Invalid selected network.");
+ const plansResponse=await fetch(SUPPLIER_CATALOG_URL+"?action=plans&network="+encodeURIComponent(supplierNetwork),{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}});
  const plansResult=await plansResponse.json().catch(()=>({}));
- if(!plansResponse.ok||!plansResult.success||!Array.isArray(plansResult.plans)) throw new Error(plansResult.error||"Bilalsadasub data plan details could not be loaded.");
- DATA_PLANS=plansResult.plans;
+ if(!plansResponse.ok||!plansResult.success) throw new Error(plansResult.error||"Bilalsadasub data plan details could not be loaded.");
+ const rawPlans=findPlanArray(plansResult.data);
+ if(!rawPlans) throw new Error("Supplier returned an unknown plan format.");
+ DATA_PLANS=rawPlans.map(item=>normalizeCatalogPlan(item,supplierNetwork)).filter(Boolean);
+ if(!DATA_PLANS.length) throw new Error("No verified plans were returned.");
 } catch(error) {
  plansLoadError=true;
  console.error("Buy Data plan loading error:",error);

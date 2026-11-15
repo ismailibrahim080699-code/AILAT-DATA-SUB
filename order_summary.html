@@ -47,7 +47,7 @@ button:disabled{opacity:.65;cursor:wait}
 <div class="item"><span>Data Bundle</span><strong id="bundle">-</strong></div>
 <div class="total"><span>AILAT DATA Selling Price</span><strong id="amount">Not available</strong></div>
 <div class="notice">
-<strong>Price information:</strong> The displayed amount is AILAT DATA’s selling price. This step only records a request; no payment is taken, no wallet balance is deducted, and no data is delivered.
+<strong>Payment and delivery:</strong> The displayed amount is AILAT DATA’s selling price. When you approve the order, your wallet will be charged. If Bilalsadasub confirms that delivery failed, AILAT DATA will automatically refund the charge. If the supplier response is pending, do not submit the order again.
 </div>
 <button id="confirmButton" type="button">Submit Order Request</button>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
@@ -262,13 +262,35 @@ if(button) button.addEventListener("click", async()=>{
    body:JSON.stringify({service_key:"data",idempotency_key:requestKey,authorization_token:authorizationToken,customer_data:{network,internal_network_id:expectedNetworkId,phone,bundle:selectedPlan.name+" ("+selectedPlan.validity+")",purchase_type:purchaseType,catalog_plan_id:selectedPlan.id,supplier_plan_id:selectedPlan.id}})
   });
   const result = await response.json().catch(()=>({}));
-  if(!response.ok || !result.success) throw new Error(result.error || "Could not save your request. Please try again.");
+  if(result.order_request?.reference){
+   requestSaved = true;
+   button.disabled = true;
+   button.textContent = "Order Submitted";
+   newRequestButton.hidden = false;
+   const referenceText = "Reference: "+result.order_request.reference+". ";
+   if(result.payment_status === "refunded" || result.fulfillment_status === "failed"){
+    statusBox.textContent = referenceText+"Supplier could not deliver the data. Your wallet charge has been refunded. Supplier response: "+(result.supplier_message || result.error || "No additional supplier detail was returned.")+" Please do not pay again until the issue is checked.";
+    statusBox.style.color = "#b42318";
+    return;
+   }
+   if(result.fulfillment_status === "success"){
+    statusBox.textContent = referenceText+"Data purchase completed successfully. "+(result.supplier_message || "");
+    statusBox.style.color = "#18794e";
+    return;
+   }
+   if(result.payment_status === "charged" || result.fulfillment_status === "processing" || response.status === 202){
+    statusBox.textContent = referenceText+"Payment was taken and supplier confirmation is pending. Do not submit this order again. Check Transaction History for updates.";
+    statusBox.style.color = "#805600";
+    return;
+   }
+  }
+  if(!response.ok || !result.success) throw new Error(result.error || "Could not submit the order. Please try again.");
   requestSaved = true;
-  // Keep the idempotency key after success so a refresh cannot create a duplicate.
-  button.textContent = "Request Recorded";
+  button.textContent = "Order Submitted";
   button.disabled = true;
   newRequestButton.hidden = false;
-  statusBox.textContent = "Your request has been recorded. Reference: "+result.order_request.reference+". Status: "+result.order_request.status+". No payment was taken and no data was delivered.";
+  statusBox.textContent = "Order submitted. Reference: "+result.order_request.reference+". Payment status: "+(result.payment_status || "pending")+". Fulfillment status: "+(result.fulfillment_status || result.order_request.status)+".";
+  statusBox.style.color = "#18794e";
  }catch(error){
   button.disabled = false;
   button.textContent = "Try Again";

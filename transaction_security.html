@@ -115,7 +115,7 @@ main>.card:last-of-type .row{padding:14px 2px}
 <button class="action secondary" id="testBiometricBtn" type="button" disabled>Test fingerprint / device unlock</button>
 <div id="passkeyList" style="margin-top:12px"></div>
 <p class="message" id="bioMessage" role="status" aria-live="polite"></p>
-<div class="note">Your fingerprint or face template must remain on your device. AILAT DATA must never collect biometric images or templates. Passkey enrollment will be added separately after its server-side challenge verification is implemented.</div>
+<div class="note">Your fingerprint or face template must remain on your device. AILAT DATA must never collect biometric images or templates. Biometric templates stay on your device; AILAT DATA stores only a cryptographic passkey.</div>
 </div>
 </section>
 <section class="card"><h2>Security controls</h2>
@@ -267,7 +267,7 @@ onAuthStateChanged(auth,async user=>{
   const testBtn=$("testBiometricBtn");testBtn.disabled=true;$("bioMessage").textContent="Waiting for device verification…";
   try{
    const begin=await passkeyRequest("POST",{action:"start_authentication"});
-   const { startAuthentication } = await import("https://esm.sh/@simplewebauthn/browser@14.1.0");
+   const { startAuthentication } = await import("https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@14.1.0/+esm");
    const response=await startAuthentication({optionsJSON:begin.options});
    const result=await passkeyRequest("POST",{action:"finish_authentication",response});
    $("bioMessage").textContent=result.message||"Device verified successfully.";
@@ -279,7 +279,7 @@ onAuthStateChanged(auth,async user=>{
   registerBtn.disabled=true;$("bioMessage").textContent="Preparing secure device registration…";
   try{
    const begin=await passkeyRequest("POST",{action:"start_registration"});
-   const { startRegistration } = await import("https://esm.sh/@simplewebauthn/browser@14.1.0");
+   const { startRegistration } = await import("https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@14.1.0/+esm");
    const response=await startRegistration({optionsJSON:begin.options});
    const result=await passkeyRequest("POST",{action:"finish_registration",response,friendly_name:"My phone"});
    $("bioMessage").textContent=result.message||"Device registered.";

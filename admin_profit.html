@@ -151,7 +151,7 @@ withdrawalForm.addEventListener("submit",async event=>{
  const accountNumber=document.getElementById("withdrawAccountNumber").value.trim();
  const cashConfirmed=document.getElementById("cashConfirmed").checked;
  if(!cashConfirmed){withdrawalStatus.textContent="Confirm cleared business cash is available before continuing.";return;}
- if(!Number.isFinite(amount)||amount<=0||!/^\\d{10}$/.test(accountNumber)){withdrawalStatus.textContent="Check the amount and 10-digit account number.";return;}
+ if(!Number.isFinite(amount)||amount<=0||!/^\d{10}$/.test(accountNumber)){withdrawalStatus.textContent="Check the amount and 10-digit account number.";return;}
  try{
   submit.disabled=true;withdrawalStatus.textContent="Submitting secure withdrawal request…";
   const result=await postAction({action:"create",amount,bank_name:bank,account_name:accountName,account_number:accountNumber,cash_confirmed:true,admin_note:document.getElementById("withdrawNote").value.trim()});

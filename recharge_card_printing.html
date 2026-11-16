@@ -39,7 +39,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a provider recharge-card plan and prepare a printable request summary.</p><span class="status">PRICING CONFIRMED · PIN GENERATION NOT ENABLED</span></div>
+<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a plan, request a secure quote, and print your quote summary.</p><span class="status">PRICING CONFIRMED · PIN GENERATION NOT ENABLED</span></div>
 <h2 style="font-size:16px;margin:14px 0 8px">Available provider plans</h2>
 <div class="catalogue">
 <div class="plan"><strong>MTN · Plan ID 1</strong><small>Load *556# · Check balance *556#</small><b>Provider charge: ₦97.00</b></div>
@@ -61,10 +61,10 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <label for="quantity">Number of pins (1–100)</label><input id="quantity" type="number" min="1" max="100" step="1" value="1" required>
 <div class="summary" id="estimate">Choose a plan to view its details and estimated provider charge.</div>
 <div class="error" id="formError" role="alert" aria-live="polite"></div>
-<div class="actions no-print"><button class="primary" type="submit">Prepare Print Preview</button><button class="secondary" type="reset">Clear</button></div>
+<div class="actions no-print"><button class="primary" type="submit">Get Secure Quote</button><button class="secondary" type="reset">Clear</button></div>
 </div></form>
-<section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Recharge Card Request Summary</h2><div id="previewText"></div><p><strong>Recharge PINs:</strong> Not generated. This is only a local request/print preview.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
-<div class="notice"><strong>Important:</strong> Face values and customer selling prices have now been confirmed for these five plans. AILAT profit is calculated separately for each plan as selling price minus supplier cost. The provider recharge-card endpoint is a paid POST operation that can debit the supplier wallet. No order, payment request or PIN-generation request is sent from this page; this remains a pricing and print-preview screen only.</div>
+<section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Recharge Card Request Summary</h2><div id="previewText"></div><p><strong>Recharge PINs:</strong> Not generated. This is a secure quote. No PIN has been generated.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
+<div class="notice"><strong>Important:</strong> Face values and customer selling prices have now been confirmed for these five plans. AILAT profit is calculated separately for each plan as selling price minus supplier cost. The provider recharge-card endpoint is a paid POST operation that can debit the supplier wallet. This page can create a secure quote only. It does not debit your wallet, contact the paid supplier purchase endpoint, or generate PINs.</div>
 </section></main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
@@ -97,8 +97,10 @@ form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
-const BACKEND_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const BACKEND_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-recharge-cards";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+let signedInUser=null;
+let quoteBusy=false;
 
 function renderProviderCatalogue(plans){
  const catalogue=document.querySelector(".catalogue");
@@ -107,16 +109,16 @@ function renderProviderCatalogue(plans){
  select.replaceChildren(new Option("Choose a plan",""));
  for(const item of plans){
   const network=String(item.network||"").toUpperCase();
-  const id=Number(item.plan_id), price=Number(item.provider_amount);
+  const id=Number(item.plan_id), price=Number(item.provider_unit_cost);
   if(!Number.isSafeInteger(id)||!Number.isFinite(price)||price<=0)continue;
+  const face=Number(item.face_value), selling=Number(item.customer_unit_price), profit=selling-price;
   const card=document.createElement("div");card.className="plan";
-  const face=Number(item.face_value), selling=Number(item.selling_price), profit=Number(item.profit);
   const title=document.createElement("strong");title.textContent=network+" · Plan ID "+id;
   const details=document.createElement("small");details.textContent="Load "+item.load_code+" · Check balance "+item.balance_code;
   const amount=document.createElement("b");amount.textContent="Card value / selling price: "+naira(selling);
   const margin=document.createElement("small");margin.textContent="Supplier: "+naira(price)+" · AILAT profit: "+naira(profit);
   card.append(title,details,amount,margin);catalogue.append(card);
-  const option=new Option(network+" · Plan ID "+id+" — "+naira(price)+" provider charge",String(id));
+  const option=new Option(network+" · Plan ID "+id+" — "+naira(selling)+" selling price",String(id));
   option.dataset.network=network;option.dataset.price=String(price);
   option.dataset.face=String(face);option.dataset.selling=String(selling);option.dataset.profit=String(profit);
   option.dataset.load=String(item.load_code||"");option.dataset.check=String(item.balance_code||"");
@@ -125,13 +127,70 @@ function renderProviderCatalogue(plans){
  updateEstimate();
 }
 
+async function requestSecureQuote(event){
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ if(quoteBusy)return;
+ const errorBox=document.getElementById("formError");
+ errorBox.textContent="";
+ const plan=document.getElementById("plan");
+ const quantity=document.getElementById("quantity");
+ const id=Number(plan.value),q=Number(quantity.value);
+ if(!Number.isSafeInteger(id)){errorBox.textContent="Please choose a valid recharge card plan.";return;}
+ if(!Number.isSafeInteger(q)||q<1||q>100){errorBox.textContent="Quantity must be a whole number from 1 to 100.";return;}
+ if(!signedInUser){errorBox.textContent="Your secure login is not ready. Refresh and sign in again.";return;}
+ quoteBusy=true;
+ const submit=document.querySelector('#serviceForm button[type="submit"]');
+ const oldLabel=submit.textContent;submit.disabled=true;submit.textContent="Preparing secure quote…";
+ try{
+  const token=await signedInUser.getIdToken();
+  const idempotencyKey=crypto.randomUUID().replaceAll("-","");
+  const response=await fetch(BACKEND_URL,{
+   method:"POST",
+   headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+   body:JSON.stringify({plan_id:id,quantity:q,idempotency_key:idempotencyKey})
+  });
+  const result=await response.json();
+  if(!response.ok||!result.success||!result.quote)throw new Error(result.error||"Could not create secure quote.");
+  const quote=result.quote;
+  const rows=[
+   ["Secure reference",quote.reference],
+   ["Network",quote.network],
+   ["Provider Plan ID",quote.plan_id],
+   ["Quantity",quote.quantity],
+   ["Card denomination",naira(quote.face_value)],
+   ["Customer selling price per PIN",naira(quote.customer_unit_price)],
+   ["Supplier estimated cost per PIN",naira(Number(quote.provider_expected_total)/Number(quote.quantity))],
+   ["Customer total",naira(quote.customer_total)],
+   ["Estimated supplier cost",naira(quote.provider_expected_total)],
+   ["Estimated AILAT profit",naira(quote.expected_profit)],
+   ["Quote status",quote.status]
+  ];
+  previewText.replaceChildren();
+  rows.forEach(([k,v])=>{const line=document.createElement("p"),strong=document.createElement("strong");strong.textContent=k+": ";line.append(strong,document.createTextNode(String(v)));previewText.append(line);});
+  const note=document.createElement("p");note.textContent="QUOTE ONLY — no wallet debit, no supplier purchase request, and no PIN has been generated.";previewText.append(note);
+  preview.style.display="block";preview.scrollIntoView({behavior:"smooth",block:"nearest"});
+  errorBox.textContent="Secure quote created successfully. Save the reference above.";
+ }catch(error){
+  console.error("Secure recharge quote failed:",error);
+  errorBox.textContent=error instanceof Error?error.message:"Secure quote failed. Please try again.";
+ }finally{
+  quoteBusy=false;submit.disabled=false;submit.textContent=oldLabel;
+ }
+}
+
+document.getElementById("serviceForm").addEventListener("submit",requestSecureQuote,true);
+document.querySelector('#serviceForm button[type="submit"]').textContent="Get Secure Quote";
+document.querySelector("#preview .preview, #preview p")?.setAttribute("aria-live","polite");
+
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}
  try{
   await user.reload();
   if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html");return;}
+  signedInUser=user;
   const token=await user.getIdToken(true);
-  const response=await fetch(BACKEND_URL+"?action=recharge_card_plans",{
+  const response=await fetch(BACKEND_URL,{
    method:"GET",
    headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token}
   });
@@ -140,7 +199,7 @@ onAuthStateChanged(auth,async user=>{
   renderProviderCatalogue(result.plans);
  }catch(error){
   console.error("Recharge-card catalogue load failed:",error);
-  document.getElementById("formError").textContent="Could not refresh the provider catalogue. The displayed plans are only the last supplied documentation snapshot.";
+  document.getElementById("formError").textContent="Could not load the secure provider catalogue. Refresh the page or try again later.";
  }
 });
 </script>

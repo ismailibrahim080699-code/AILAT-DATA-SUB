@@ -99,7 +99,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
  <div class="summary" id="orderLookupResult" role="status" aria-live="polite">PINs appear here only after the supplier confirms successful generation.</div>
 </section>
 
-<div class="notice"><strong>Secure purchase:</strong> Prices include AILAT DATA's ₦50-per-GB markup. A quote does not charge your wallet. A real PIN order is sent only after you confirm with your Transaction PIN. If the supplier response is pending, do not submit or pay again; check the same reference.</div>
+<div class="notice"><strong>Secure purchase:</strong> Prices are AILAT DATA's configured selling prices. A quote does not charge your wallet. A real PIN order is sent only after you confirm with your Transaction PIN. If the supplier response is pending, do not submit or pay again; check the same reference.</div>
 </section></main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 
@@ -130,7 +130,7 @@ function updateEstimate(){
  if(!$("plan").value){$("estimate").textContent="Choose a plan to see your selling price and total.";return;}
  if(!Number.isInteger(q)||q<1||q>50){$("estimate").textContent="Quantity must be a whole number from 1 to 50.";return;}
  const unit=Number(option.dataset.price);
- $("estimate").innerHTML="<strong>"+option.dataset.network+" "+option.dataset.bundle+"</strong><br>Price per PIN: "+naira(unit)+"<br>Quantity: "+q+"<br><strong>Total: "+naira(unit*q)+"</strong><br>AILAT markup: ₦50 per GB";
+ $("estimate").innerHTML="<strong>"+option.dataset.network+" "+option.dataset.bundle+"</strong><br>Price per PIN: "+naira(unit)+"<br>Quantity: "+q+"<br><strong>Total: "+naira(unit*q)+"</strong><br>AILAT selling price";
 }
 function renderPlans(items,ready,canPurchase){
  plans=items;purchaseAvailable=canPurchase===true;
@@ -140,7 +140,7 @@ function renderPlans(items,ready,canPurchase){
   const title=document.createElement("strong");title.textContent=p.network+" · "+p.bundle+" · "+p.plan_type;
   const details=document.createElement("small");details.textContent="Plan ID "+p.plan_id+" · Validity "+p.validity+" · Load "+p.load_code+" · Check "+p.check_code;
   const price=document.createElement("b");price.textContent=naira(p.customer_unit_price)+" per PIN";
-  const markup=document.createElement("small");markup.textContent="Includes ₦50 per GB AILAT markup";
+  const markup=document.createElement("small");markup.textContent="AILAT selling price";
   card.append(title,details,price,markup);$("catalogue").append(card);
   const option=new Option(p.network+" "+p.bundle+" ("+p.plan_type+") — "+naira(p.customer_unit_price),String(p.plan_id));
   option.dataset.network=p.network;option.dataset.bundle=p.bundle;option.dataset.price=String(p.customer_unit_price);

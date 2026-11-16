@@ -178,13 +178,13 @@ $("serviceForm").addEventListener("submit",async e=>{
  const planId=Number($("plan").value),quantity=Number($("quantity").value);
  if(!Number.isSafeInteger(planId)){ $("formError").textContent="Please select a data card plan.";return; }
  if(!Number.isSafeInteger(quantity)||quantity<1||quantity>50){$("formError").textContent="Quantity must be a whole number from 1 to 50.";return;}
- quoteBusy=true;$("formError").textContent="Ana aika secure quote…";
+ quoteBusy=true;$("formError").textContent="Preparing secure quote…";
  const button=$('#serviceForm button[type="submit"]');button.disabled=true;button.textContent="Preparing secure quote…";
  try{
   const result=await api(BACKEND_URL,{method:"POST",body:JSON.stringify({
    plan_id:planId,quantity,idempotency_key:newIdempotencyKey()
   })});
-  if(!result.quote)throw new Error("Secure quote was not returned.");$("formError").textContent="An ƙirƙiri secure quote cikin nasara.";
+  if(!result.quote)throw new Error("Secure quote was not returned.");$("formError").textContent="Secure quote created successfully.";
   showQuote(result.quote);
   if(result.purchase_enabled!==true){$("purchasePanel").hidden=true;$("purchaseResult").textContent="Secure purchase is temporarily unavailable. No payment was taken.";}
  }catch(err){$("formError").textContent=err.message||"Could not create quote.";}

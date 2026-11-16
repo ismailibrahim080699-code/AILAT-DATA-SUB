@@ -56,9 +56,9 @@ form.addEventListener("submit",async event=>{
  event.preventDefault();errorBox.textContent="";preview.style.display="none";
  const id=sender.value.trim(),raw=normalizedNumbers(),body=message.value.trim();
  if(!id){errorBox.textContent="Enter your approved Sender ID.";sender.focus();return}
- if(id.length>11||/^\\d+$/.test(id)||!/^[A-Za-z0-9 ]+$/.test(id)){errorBox.textContent="Sender ID must be approved, plain text and no more than 11 characters.";sender.focus();return}
+ if(id.length>11||/^\d+$/.test(id)||!/^[A-Za-z0-9 ]+$/.test(id)){errorBox.textContent="Sender ID must be approved, plain text and no more than 11 characters.";sender.focus();return}
  if(!raw.length){errorBox.textContent="Enter at least one recipient number.";recipients.focus();return}
- const invalid=raw.filter(n=>!/^0[789][01]\\d{8}$/.test(n));
+ const invalid=raw.filter(n=>!/^0[789][01]\d{8}$/.test(n));
  if(invalid.length){errorBox.textContent="Invalid number(s): "+invalid.slice(0,3).join(", ")+". Use valid 11-digit Nigerian mobile numbers.";recipients.focus();return}
  const unique=[...new Set(raw)];
  if(unique.length!==raw.length){errorBox.textContent="Duplicate phone numbers found. Remove duplicates before reviewing.";recipients.focus();return}
@@ -81,9 +81,6 @@ form.addEventListener("submit",async event=>{
   document.querySelector("#preview .notice").textContent=quote.message+" No supplier request or payment was made.";
  }catch(error){errorBox.textContent=error.message||"Secure campaign validation failed."}
  finally{quoteButton.disabled=false;quoteButton.textContent="Review Campaign"}
- return;
- document.getElementById("pSender").textContent=id;
-
 });
 form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";setTimeout(updateStats,0)});
 updateStats();

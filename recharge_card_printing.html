@@ -39,7 +39,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a plan, request a secure quote, and print your quote summary.</p><span class="status">PRICING CONFIRMED · PIN GENERATION NOT ENABLED</span><p id="pinCryptoStatus" style="font-size:12px;font-weight:700;color:#79530b;margin:4px 0 10px">PIN ENCRYPTION SELF-TEST: CHECKING…</p></div>
+<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a plan, request a secure quote, and print your quote summary.</p><span class="status">PRICING CONFIRMED · SECURE PIN DELIVERY</span><p id="pinCryptoStatus" style="font-size:12px;font-weight:700;color:#79530b;margin:4px 0 10px">PIN ENCRYPTION SELF-TEST: CHECKING…</p></div>
 <h2 style="font-size:16px;margin:14px 0 8px">Available provider plans</h2>
 <div class="catalogue">
 <div class="plan"><strong>MTN · Plan ID 1</strong><small>Load *556# · Check balance *556#</small><b>Provider charge: ₦97.00</b></div>
@@ -83,7 +83,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <div class="actions no-print"><button class="secondary" id="checkOrderButton" type="button">Check Order / PIN Status</button></div>
 <div id="orderLookupResult" class="summary" role="status" aria-live="polite">PINs are shown only after a verified successful order.</div>
 </section>
-<div class="notice"><strong>Important:</strong> Face values and customer selling prices have now been confirmed for these five plans. AILAT profit is calculated separately for each plan as selling price minus supplier cost. The provider recharge-card endpoint is a paid POST operation that can debit the supplier wallet. This page can create a secure quote only. It does not debit your wallet, contact the paid supplier purchase endpoint, or generate PINs.</div>
+<div class="notice"><strong>Important:</strong> Face values and customer selling prices have now been confirmed for these five plans. AILAT profit is calculated separately for each plan as selling price minus supplier cost. The provider recharge-card endpoint is a paid POST operation that can debit the supplier wallet. This page creates secure quotes. A supplier purchase occurs only after you explicitly confirm the exact ₦100 MTN test with your Transaction PIN.</div>
 </section></main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
@@ -203,7 +203,7 @@ async function requestSecureQuote(event){
   ];
   previewText.replaceChildren();
   rows.forEach(([k,v])=>{const line=document.createElement("p"),strong=document.createElement("strong");strong.textContent=k+": ";line.append(strong,document.createTextNode(String(v)));previewText.append(line);});
-  const note=document.createElement("p");note.textContent="QUOTE ONLY — no wallet debit, no supplier purchase request, and no PIN has been generated.";previewText.append(note);
+  const note=document.createElement("p");note.textContent="QUOTE ONLY — no wallet debit or supplier request has occurred yet. Use the separate secure confirmation below only when ready to purchase.";previewText.append(note);
   preview.style.display="block";preview.scrollIntoView({behavior:"smooth",block:"nearest"});
   errorBox.textContent="Secure quote created successfully. Save the reference above.";
  }catch(error){

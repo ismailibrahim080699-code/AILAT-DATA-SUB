@@ -194,15 +194,25 @@ $("serviceForm").addEventListener("submit",async e=>{
  if(!Number.isSafeInteger(quantity)||quantity<1||quantity>50){$("formError").textContent="Quantity must be a whole number from 1 to 50.";return;}
  quoteBusy=true;$("formError").textContent="Creating your secure quote. Please wait…";
  const button=$('#serviceForm button[type="submit"]');button.disabled=true;button.textContent="Creating Secure Quote…";
+ let quoteWatchdog;
  try{
-  const result=await api(BACKEND_URL,{method:"POST",body:JSON.stringify({
+  $("formError").textContent="Verifying your secure login…";
+  const request=api(BACKEND_URL,{method:"POST",body:JSON.stringify({
    plan_id:planId,quantity,idempotency_key:newIdempotencyKey()
   })});
-  if(!result.quote)throw new Error("Secure quote was not returned.");$("formError").textContent="Secure quote created successfully.";
+  const timeout=new Promise((_,reject)=>{quoteWatchdog=setTimeout(()=>reject(new Error("The quote request did not finish within 30 seconds. No purchase was made. Refresh the page and check the same reference before retrying.")),30000);});
+  const result=await Promise.race([request,timeout]);
+  if(!result.quote)throw new Error("Secure quote was not returned.");
+  $("formError").textContent="Secure quote created successfully.";
   showQuote(result.quote);
   if(result.purchase_enabled!==true){$("purchasePanel").hidden=true;$("purchaseResult").textContent="Secure purchase is temporarily unavailable. No payment was taken.";}
- }catch(err){$("formError").textContent=err.message||"Could not create quote.";}
- finally{quoteBusy=false;button.disabled=false;button.textContent="Get Secure Quote";}
+ }catch(err){
+  $("formError").textContent=err?.message||"Could not create quote. No purchase was made.";
+  console.error("AILAT secure quote failed:",err);
+ }finally{
+  clearTimeout(quoteWatchdog);
+  quoteBusy=false;button.disabled=false;button.textContent="Get Secure Quote";
+ }
 });
 
 $("confirmPurchaseButton").addEventListener("click",async()=>{

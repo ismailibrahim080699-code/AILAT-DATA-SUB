@@ -64,6 +64,13 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <div class="actions no-print"><button class="primary" type="submit">Get Secure Quote</button><button class="secondary" type="reset">Clear</button></div>
 </div></form>
 <section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Recharge Card Request Summary</h2><div id="previewText"></div><p><strong>Recharge PINs:</strong> Not generated. This is a secure quote. No PIN has been generated.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
+<section class="form-section" style="margin-top:18px">
+<h2 style="font-size:16px;margin:0 0 8px">Check a recharge-card order</h2>
+<label for="orderReference">Secure order reference</label>
+<input id="orderReference" type="text" maxlength="32" placeholder="AIL-RC-XXXXXXXXXXXX" autocomplete="off">
+<div class="actions no-print"><button class="secondary" id="checkOrderButton" type="button">Check Order / PIN Status</button></div>
+<div id="orderLookupResult" class="summary" role="status" aria-live="polite">PINs are shown only after a verified successful order.</div>
+</section>
 <div class="notice"><strong>Important:</strong> Face values and customer selling prices have now been confirmed for these five plans. AILAT profit is calculated separately for each plan as selling price minus supplier cost. The provider recharge-card endpoint is a paid POST operation that can debit the supplier wallet. This page can create a secure quote only. It does not debit your wallet, contact the paid supplier purchase endpoint, or generate PINs.</div>
 </section></main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
@@ -186,6 +193,45 @@ async function requestSecureQuote(event){
 
 document.getElementById("serviceForm").addEventListener("submit",requestSecureQuote,true);
 document.querySelector('#serviceForm button[type="submit"]').textContent="Get Secure Quote";
+
+async function checkRechargeCardOrder(){
+ const box=document.getElementById("orderLookupResult");
+ const ref=document.getElementById("orderReference").value.trim().toUpperCase();
+ const button=document.getElementById("checkOrderButton");
+ if(!/^AIL-RC-[A-F0-9]{12}$/.test(ref)){box.textContent="Enter a valid AIL-RC reference.";return;}
+ if(!signedInUser){box.textContent="Sign in to check this order.";return;}
+ button.disabled=true;button.textContent="Checking securely…";box.textContent="Checking order status…";
+ try{
+  const token=await signedInUser.getIdToken();
+  const response=await fetch(BACKEND_URL+"?reference="+encodeURIComponent(ref),{
+   headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token}
+  });
+  const result=await response.json();
+  if(!response.ok||!result.success)throw new Error(result.error||"Order lookup failed.");
+  box.replaceChildren();
+  const line=(label,value)=>{const p=document.createElement("p"),b=document.createElement("strong");b.textContent=label+": ";p.append(b,document.createTextNode(String(value)));box.append(p);};
+  line("Reference",result.order.reference);
+  line("Network",result.order.network+" · Plan "+result.order.plan_id);
+  line("Quantity",result.order.quantity);
+  line("Status",result.order.status);
+  if(result.pin_delivery_status==="delivered"&&Array.isArray(result.pins)&&result.pins.length){
+   const heading=document.createElement("p");heading.textContent="Your recharge PINs";box.append(heading);
+   for(const item of result.pins){
+    line("PIN "+item.pin_index,item.pin);
+    line("Load code",item.load_code);
+   }
+  }else if(result.pin_delivery_status==="under_review"){
+   line("PIN delivery","The order is under secure review. PINs are not available yet.");
+  }else{
+   line("PIN delivery","Not available until supplier success is verified.");
+  }
+ }catch(error){
+  box.textContent=error instanceof Error?error.message:"Could not check this order.";
+ }finally{
+  button.disabled=false;button.textContent="Check Order / PIN Status";
+ }
+}
+document.getElementById("checkOrderButton").addEventListener("click",checkRechargeCardOrder);
 
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}

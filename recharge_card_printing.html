@@ -39,7 +39,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a provider recharge-card plan and prepare a printable request summary.</p><span class="status">CATALOGUE PREVIEW · PIN GENERATION NOT ENABLED</span></div>
+<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a provider recharge-card plan and prepare a printable request summary.</p><span class="status">PRICING CONFIRMED · PIN GENERATION NOT ENABLED</span></div>
 <h2 style="font-size:16px;margin:14px 0 8px">Available provider plans</h2>
 <div class="catalogue">
 <div class="plan"><strong>MTN · Plan ID 1</strong><small>Load *556# · Check balance *556#</small><b>Provider charge: ₦97.00</b></div>
@@ -64,7 +64,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <div class="actions no-print"><button class="primary" type="submit">Prepare Print Preview</button><button class="secondary" type="reset">Clear</button></div>
 </div></form>
 <section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Recharge Card Request Summary</h2><div id="previewText"></div><p><strong>Recharge PINs:</strong> Not generated. This is only a local request/print preview.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
-<div class="notice"><strong>Important:</strong> The provider documentation shows five plans and their provider charges, but does not state the voucher face denominations in the supplied table. Therefore this page does not guess or label a face value. The provider's recharge-card endpoint is a paid POST operation that can debit the supplier wallet. No order, payment request or PIN-generation request is sent from this page. The listed provider charges are catalogue figures and must be confirmed before any future production integration.</div>
+<div class="notice"><strong>Important:</strong> Face values and customer selling prices have now been confirmed for these five plans. AILAT profit is calculated separately for each plan as selling price minus supplier cost. The provider recharge-card endpoint is a paid POST operation that can debit the supplier wallet. No order, payment request or PIN-generation request is sent from this page; this remains a pricing and print-preview screen only.</div>
 </section></main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
@@ -75,7 +75,8 @@ function updateEstimate(){
  if(!plan.value){estimate.textContent="Choose a plan to view its details and estimated provider charge.";return;}
  if(!Number.isInteger(q)||q<1||q>100){estimate.textContent="Quantity must be between 1 and 100.";return;}
  const p=Number(o.dataset.price);
- estimate.innerHTML="<strong>"+o.dataset.network+" recharge card · Plan ID "+plan.value+"</strong><br>Provider charge per PIN: "+naira(p)+"<br><strong>Estimated provider charge for "+q+" PIN(s): "+naira(p*q)+"</strong>";
+ const selling=Number(o.dataset.selling),profit=Number(o.dataset.profit),face=Number(o.dataset.face);
+ estimate.innerHTML="<strong>"+o.dataset.network+" recharge card · Plan ID "+plan.value+"</strong><br>Card value / selling price: "+naira(selling)+"<br>Supplier cost per PIN: "+naira(p)+"<br>AILAT profit per PIN: "+naira(profit)+"<br><strong>Customer total ("+q+" PINs): "+naira(selling*q)+"</strong><br>Estimated supplier cost: "+naira(p*q)+" · Estimated profit: "+naira(profit*q);
 }
 plan.addEventListener("change",updateEstimate);quantity.addEventListener("input",updateEstimate);
 form.addEventListener("submit",e=>{
@@ -84,7 +85,8 @@ form.addEventListener("submit",e=>{
  const q=Number(quantity.value);
  if(!Number.isInteger(q)||q<1||q>100){errorBox.textContent="Quantity must be a whole number from 1 to 100.";quantity.focus();return;}
  const o=plan.selectedOptions[0],p=Number(o.dataset.price);
- const rows=[["Network",o.dataset.network],["Provider Plan ID",plan.value],["Quantity",q],["Provider charge per PIN",naira(p)],["Estimated provider charge",naira(p*q)],["Load code",o.dataset.load],["Balance check code",o.dataset.check],["Face denomination","Not specified in supplied provider table"]];
+ const selling=Number(o.dataset.selling),profit=Number(o.dataset.profit),face=Number(o.dataset.face);
+ const rows=[["Network",o.dataset.network],["Provider Plan ID",plan.value],["Quantity",q],["Card denomination",naira(face)],["Customer selling price per PIN",naira(selling)],["Supplier cost per PIN",naira(p)],["AILAT profit per PIN",naira(profit)],["Customer total",naira(selling*q)],["Estimated supplier cost",naira(p*q)],["Estimated AILAT profit",naira(profit*q)],["Load code",o.dataset.load],["Balance check code",o.dataset.check]];
  previewText.replaceChildren();
  rows.forEach(([k,v])=>{const line=document.createElement("p"),strong=document.createElement("strong");strong.textContent=k+": ";line.append(strong,document.createTextNode(String(v)));previewText.append(line);});
  preview.style.display="block";preview.scrollIntoView({behavior:"smooth",block:"nearest"});
@@ -108,12 +110,15 @@ function renderProviderCatalogue(plans){
   const id=Number(item.plan_id), price=Number(item.provider_amount);
   if(!Number.isSafeInteger(id)||!Number.isFinite(price)||price<=0)continue;
   const card=document.createElement("div");card.className="plan";
+  const face=Number(item.face_value), selling=Number(item.selling_price), profit=Number(item.profit);
   const title=document.createElement("strong");title.textContent=network+" · Plan ID "+id;
   const details=document.createElement("small");details.textContent="Load "+item.load_code+" · Check balance "+item.balance_code;
-  const amount=document.createElement("b");amount.textContent="Provider charge: "+naira(price);
-  card.append(title,details,amount);catalogue.append(card);
+  const amount=document.createElement("b");amount.textContent="Card value / selling price: "+naira(selling);
+  const margin=document.createElement("small");margin.textContent="Supplier: "+naira(price)+" · AILAT profit: "+naira(profit);
+  card.append(title,details,amount,margin);catalogue.append(card);
   const option=new Option(network+" · Plan ID "+id+" — "+naira(price)+" provider charge",String(id));
   option.dataset.network=network;option.dataset.price=String(price);
+  option.dataset.face=String(face);option.dataset.selling=String(selling);option.dataset.profit=String(profit);
   option.dataset.load=String(item.load_code||"");option.dataset.check=String(item.balance_code||"");
   select.add(option);
  }

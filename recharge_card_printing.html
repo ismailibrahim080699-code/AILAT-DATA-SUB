@@ -39,7 +39,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a plan, request a secure quote, and print your quote summary.</p><span class="status">PRICING CONFIRMED · PIN GENERATION NOT ENABLED</span></div>
+<div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a plan, request a secure quote, and print your quote summary.</p><span class="status">PRICING CONFIRMED · PIN GENERATION NOT ENABLED</span><p id="pinCryptoStatus" style="font-size:12px;font-weight:700;color:#79530b;margin:4px 0 10px">PIN ENCRYPTION SELF-TEST: CHECKING…</p></div>
 <h2 style="font-size:16px;margin:14px 0 8px">Available provider plans</h2>
 <div class="catalogue">
 <div class="plan"><strong>MTN · Plan ID 1</strong><small>Load *556# · Check balance *556#</small><b>Provider charge: ₦97.00</b></div>
@@ -103,7 +103,9 @@ let signedInUser=null;
 let quoteBusy=false;
 let pendingQuoteKey=null;
 
-function renderProviderCatalogue(plans){
+function renderProviderCatalogue(plans,pinStorageReady){
+ const cryptoStatus=document.getElementById("pinCryptoStatus");
+ if(cryptoStatus){cryptoStatus.textContent=pinStorageReady?"PIN ENCRYPTION SELF-TEST: PASSED":"PIN ENCRYPTION SELF-TEST: NOT VERIFIED";cryptoStatus.style.color=pinStorageReady?"#16803c":"#b42318";}
  const catalogue=document.querySelector(".catalogue");
  const select=document.getElementById("plan");
  catalogue.replaceChildren();
@@ -198,7 +200,7 @@ onAuthStateChanged(auth,async user=>{
   });
   const result=await response.json();
   if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Recharge-card catalogue unavailable");
-  renderProviderCatalogue(result.plans);
+  renderProviderCatalogue(result.plans,result.pin_storage_ready===true);
  }catch(error){
   console.error("Recharge-card catalogue load failed:",error);
   document.getElementById("formError").textContent="Could not load the secure provider catalogue. Refresh the page or try again later.";

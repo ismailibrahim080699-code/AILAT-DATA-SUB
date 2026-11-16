@@ -115,7 +115,7 @@ let signedInUser=null,plans=[],latestQuote=null,purchaseAvailable=false,quoteBus
 
 const $=id=>document.getElementById(id);
 const naira=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
-function newIdempotencyKey(){if(typeof crypto.randomUUID==="function")return newIdempotencyKey();const b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,"0")).join("");}
+function newIdempotencyKey(){if(typeof crypto.randomUUID==="function")return crypto.randomUUID();const b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,"0")).join("");}
 async function api(url,options={}){
  const token=await signedInUser.getIdToken();
  const response=await fetch(url,{...options,headers:{

@@ -64,6 +64,18 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 <div class="actions no-print"><button class="primary" type="submit">Get Secure Quote</button><button class="secondary" type="reset">Clear</button></div>
 </div></form>
 <section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Recharge Card Request Summary</h2><div id="previewText"></div><p><strong>Recharge PINs:</strong> Not generated. This is a secure quote. No PIN has been generated.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
+<section class="form-section" id="purchasePanel" hidden>
+<h2 style="font-size:16px;margin:0 0 8px">Secure purchase confirmation</h2>
+<p id="purchaseSummary">Review the amount before confirming.</p>
+<label for="transactionPin">Your 4-digit Transaction PIN</label>
+<input id="transactionPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="off" placeholder="Enter Transaction PIN">
+<label style="display:flex;align-items:flex-start;gap:9px;font-weight:600">
+<input id="purchaseConsent" type="checkbox" style="width:auto;margin-top:2px">
+<span>I confirm this exact ₦100 MTN PIN purchase. ₦100 will be deducted from my AILAT wallet.</span>
+</label>
+<div class="actions no-print"><button class="primary" id="confirmPurchaseButton" type="button">Confirm & Buy ₦100 PIN</button></div>
+<div id="purchaseResult" class="summary" role="status" aria-live="polite">No purchase has been made.</div>
+</section>
 <section class="form-section" style="margin-top:18px">
 <h2 style="font-size:16px;margin:0 0 8px">Check a recharge-card order</h2>
 <label for="orderReference">Secure order reference</label>
@@ -108,9 +120,12 @@ const BACKEND_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-r
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let signedInUser=null;
 let quoteBusy=false;
+let purchaseAvailable=false;
+let latestQuote=null;
 let pendingQuoteKey=null;
 
-function renderProviderCatalogue(plans,pinStorageReady){
+function renderProviderCatalogue(plans,pinStorageReady,canPurchase){
+ purchaseAvailable=canPurchase===true;
  const cryptoStatus=document.getElementById("pinCryptoStatus");
  if(cryptoStatus){cryptoStatus.textContent=pinStorageReady?"PIN ENCRYPTION SELF-TEST: PASSED":"PIN ENCRYPTION SELF-TEST: NOT VERIFIED";cryptoStatus.style.color=pinStorageReady?"#16803c":"#b42318";}
  const catalogue=document.querySelector(".catalogue");
@@ -164,6 +179,14 @@ async function requestSecureQuote(event){
   const result=await response.json();
   if(!response.ok||!result.success||!result.quote)throw new Error(result.error||"Could not create secure quote.");
   const quote=result.quote;
+  latestQuote=quote;
+  const purchasePanel=document.getElementById("purchasePanel");
+  const isApprovedPilot=Number(quote.plan_id)===1&&Number(quote.quantity)===1;
+  purchasePanel.hidden=!(purchaseAvailable&&isApprovedPilot);
+  document.getElementById("purchaseSummary").textContent="MTN ₦100 recharge PIN · Quantity 1 · Total ₦100.00. Supplier estimate ₦97.00. AILAT expected profit ₦3.00.";
+  document.getElementById("transactionPin").value="";
+  document.getElementById("purchaseConsent").checked=false;
+  document.getElementById("purchaseResult").textContent="No purchase has been made. Confirm below only when ready.";
   pendingQuoteKey=null;
   const rows=[
    ["Secure reference",quote.reference],
@@ -193,6 +216,76 @@ async function requestSecureQuote(event){
 
 document.getElementById("serviceForm").addEventListener("submit",requestSecureQuote,true);
 document.querySelector('#serviceForm button[type="submit"]').textContent="Get Secure Quote";
+
+async function confirmRechargePurchase(){
+ const pinInput=document.getElementById("transactionPin");
+ const consent=document.getElementById("purchaseConsent");
+ const resultBox=document.getElementById("purchaseResult");
+ const button=document.getElementById("confirmPurchaseButton");
+ const pin=pinInput.value.trim();
+ if(!latestQuote||latestQuote.status!=="quoted"){resultBox.textContent="Create a fresh secure quote first.";return;}
+ if(Number(latestQuote.plan_id)!==1||Number(latestQuote.quantity)!==1){resultBox.textContent="The first live test is limited to one MTN ₦100 PIN.";return;}
+ if(!/^\d{4}$/.test(pin)){resultBox.textContent="Enter your 4-digit Transaction PIN.";pinInput.focus();return;}
+ if(!consent.checked){resultBox.textContent="Confirm the ₦100 wallet deduction before proceeding.";return;}
+ if(!signedInUser){resultBox.textContent="Please sign in again.";return;}
+ button.disabled=true;button.textContent="Verifying authorization…";
+ try{
+  const token=await signedInUser.getIdToken();
+  const idempotencyKey=crypto.randomUUID();
+  const intent={
+   service_key:"recharge_card",
+   quote_reference:latestQuote.reference,
+   plan_id:Number(latestQuote.plan_id),
+   quantity:Number(latestQuote.quantity),
+   customer_total:Number(latestQuote.customer_total),
+   provider_expected_total:Number(latestQuote.provider_expected_total),
+   idempotency_key:idempotencyKey,
+   details:{
+    network:latestQuote.network,
+    plan_id:Number(latestQuote.plan_id),
+    quantity:Number(latestQuote.quantity),
+    customer_total:Number(latestQuote.customer_total),
+    provider_expected_total:Number(latestQuote.provider_expected_total),
+    quote_reference:latestQuote.reference
+   }
+  };
+  const authResponse=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys",{
+   method:"POST",
+   headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+   body:JSON.stringify({action:"authorize_with_pin",intent,pin})
+  });
+  const authResult=await authResponse.json();
+  if(!authResponse.ok||!authResult.success)throw new Error(authResult.error||"Transaction PIN verification failed.");
+  pinInput.value="";
+  button.textContent="Sending secure purchase…";
+  const response=await fetch(BACKEND_URL,{
+   method:"POST",
+   headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+   body:JSON.stringify({
+    action:"purchase",
+    quote_reference:latestQuote.reference,
+    authorization_id:authResult.authorization_id,
+    token_hash:authResult.token_hash,
+    intent_hash:authResult.intent_hash,
+    intent
+   })
+  });
+  const purchase=await response.json();
+  if(!response.ok||!purchase.success)throw new Error(purchase.error||"Purchase could not be completed.");
+  resultBox.textContent=purchase.message||("Order status: "+purchase.status);
+  if(purchase.status==="completed"){
+   document.getElementById("orderReference").value=purchase.reference;
+   await checkRechargeCardOrder();
+  }else{
+   document.getElementById("orderReference").value=purchase.reference||latestQuote.reference;
+  }
+ }catch(error){
+  resultBox.textContent=error instanceof Error?error.message:"Purchase could not be completed. Check the order reference before retrying.";
+ }finally{
+  button.disabled=false;button.textContent="Confirm & Buy ₦100 PIN";
+ }
+}
+document.getElementById("confirmPurchaseButton").addEventListener("click",confirmRechargePurchase);
 
 async function checkRechargeCardOrder(){
  const box=document.getElementById("orderLookupResult");
@@ -246,7 +339,7 @@ onAuthStateChanged(auth,async user=>{
   });
   const result=await response.json();
   if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Recharge-card catalogue unavailable");
-  renderProviderCatalogue(result.plans,result.pin_storage_ready===true);
+  renderProviderCatalogue(result.plans,result.pin_storage_ready===true,result.purchase_enabled===true);
  }catch(error){
   console.error("Recharge-card catalogue load failed:",error);
   document.getElementById("formError").textContent="Could not load the secure provider catalogue. Refresh the page or try again later.";

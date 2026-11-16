@@ -269,13 +269,18 @@ function renderTransactions(items){
   const examSellingTotal = Number(customer.selling_amount ?? item.amount);
   const examSupplierTotal = supplierUnit * examQuantity;
   const examProfitTotal = examSellingTotal - examSupplierTotal;
+  const isPaidExam = !item.is_request &&
+   ["completed","success","successful"].includes(rawStatus) &&
+   Number.isSafeInteger(examQuantity) && examQuantity > 0 &&
+   Number.isFinite(supplierUnit) && supplierUnit > 0 &&
+   Number.isFinite(examSellingTotal) && examSellingTotal > 0;
   const examRows = examName ? [
    `<div>Exam: ${safe(examName)}</div>`,
    Number.isSafeInteger(examQuantity) && examQuantity > 0 ? `<div>Quantity: ${examQuantity}</div>` : "",
-   Number.isFinite(supplierUnit) && supplierUnit > 0 ? `<div>Supplier price per PIN: ${formatAmount(supplierUnit)}</div>` : "",
-   Number.isFinite(examSellingTotal) && examSellingTotal > 0 && Number.isSafeInteger(examQuantity) && examQuantity > 0 ? `<div>Customer price per PIN: ${formatAmount(examSellingTotal / examQuantity)}</div>` : "",
-   Number.isFinite(examSupplierTotal) && examSupplierTotal > 0 ? `<div>Total supplier cost: ${formatAmount(examSupplierTotal)}</div>` : "",
-   Number.isFinite(examProfitTotal) && examProfitTotal >= 0 ? `<div>AILAT DATA gross profit: ${formatAmount(examProfitTotal)}</div>` : ""
+   isPaidExam ? `<div>Supplier price per PIN: ${formatAmount(supplierUnit)}</div>` : "",
+   isPaidExam ? `<div>Customer price per PIN: ${formatAmount(examSellingTotal / examQuantity)}</div>` : "",
+   isPaidExam ? `<div>Total supplier cost: ${formatAmount(examSupplierTotal)}</div>` : "",
+   isPaidExam && Number.isFinite(examProfitTotal) && examProfitTotal >= 0 ? `<div>AILAT DATA gross profit: ${formatAmount(examProfitTotal)}</div>` : ""
   ].join("") : "";
   const providerPlanId = item.supplier_plan_id ?? customer.supplier_plan_id;
   const providerNetworkId = item.supplier_network_id ?? customer.provider_network_id;
@@ -310,7 +315,7 @@ function renderTransactions(items){
   const amount = item.amount === null || item.amount === undefined || item.amount === ""
    ? "—"
    : formatAmount(item.amount);
-  const amountDisplay = item.is_request && amount !== "—" ? "Requested: " + amount : amount;
+  const amountDisplay = item.is_request && amount !== "—" ? "Requested (not charged): " + amount : amount;
 
   return `
    <div class="transaction">

@@ -4,81 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#4c1d95">
-<meta name="description" content="AILAT DATA Bulk SMS service request preparation.">
+<meta name="description" content="AILAT DATA Bulk SMS campaign preparation.">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <title>AILAT DATA | Bulk SMS</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;display:flex;flex-direction:column}header{padding:20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}header a{color:white;text-decoration:none;font-weight:bold;font-size:14px}main{width:min(92%,560px);margin:28px auto;flex:1}.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:25px 22px;box-shadow:0 10px 28px #35106f12}.hero{text-align:center}.icon{width:68px;height:68px;margin:0 auto 15px;border-radius:20px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:29px}h1{font-size:24px;margin:0 0 8px}p{font-size:14px;line-height:1.7;color:#75658f}.status{display:inline-block;margin:10px 0;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:12px;font-weight:800}.form-section{margin-top:20px;padding:18px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}label{display:block;margin:15px 0 7px;font-size:13px;font-weight:700;color:#44345f}input,select,textarea{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}textarea{resize:vertical;min-height:95px}input:focus,select:focus,textarea:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}button{border:0;border-radius:11px;padding:14px;font-size:14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}.notice{margin-top:16px;padding:14px;border-radius:12px;background:#f3efff;color:#5b21b6;font-size:12px;line-height:1.7}.preview{display:none;margin-top:16px;padding:15px;border:1px solid #ddd1fa;border-radius:12px;background:#fff}.preview h2{font-size:15px;margin:0 0 10px}.preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Arial;color:#51446b;margin:0}.error{color:#b42318;font-size:12px;margin-top:10px;min-height:16px}footer{text-align:center;padding:20px;color:#9589ac;font-size:11px}@media(max-width:380px){.actions{grid-template-columns:1fr}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;display:flex;flex-direction:column}header{padding:19px max(4%,calc((100% - 650px)/2));background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}header a{color:white;text-decoration:none;font-weight:bold;font-size:14px}main{width:min(92%,600px);margin:26px auto;flex:1}.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:24px 21px;box-shadow:0 10px 28px #35106f12}.hero{text-align:center}.icon{width:66px;height:66px;margin:0 auto 14px;border-radius:19px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:29px}h1{font-size:24px;margin:0 0 7px}.sub{font-size:14px;line-height:1.7;color:#75658f;margin:0}.status{display:inline-block;margin:12px 0;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:11px;font-weight:800;letter-spacing:.3px}.section{margin-top:18px;padding:17px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}.section-title{font-size:14px;font-weight:800;margin:0 0 7px}label{display:block;margin:15px 0 7px;font-size:13px;font-weight:700;color:#44345f}input,textarea{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}textarea{resize:vertical;min-height:90px}input:focus,textarea:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}.hint{font-size:11px;color:#887b9f;line-height:1.6;margin:6px 0 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:white;border:1px solid #eee7ff;border-radius:11px;padding:11px 8px;text-align:center}.stat strong{display:block;font-size:18px;color:#5b21b6}.stat span{display:block;font-size:10px;color:#817394;margin-top:4px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}button{border:0;border-radius:11px;padding:14px;font-size:14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}.notice{margin-top:15px;padding:13px;border-radius:12px;background:#f3efff;color:#5b21b6;font-size:12px;line-height:1.7}.notice.warn{background:#fff7e6;color:#805300}.error{color:#b42318;font-size:12px;margin-top:10px;min-height:16px}.preview{display:none;margin-top:15px;padding:15px;border:1px solid #ddd1fa;border-radius:12px;background:#fff}.preview h2{font-size:15px;margin:0 0 10px}.preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Arial;color:#51446b;margin:0}.price-line{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:8px 0;border-bottom:1px solid #eee7ff}.price-line:last-child{border:0}footer{text-align:center;padding:20px;color:#9589ac;font-size:11px}@media(max-width:390px){.actions{grid-template-columns:1fr}.stats{gap:5px}.stat strong{font-size:16px}}
 </style>
 </head>
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">✉️</div><h1>Bulk SMS</h1><p>Prepare and check your SMS campaign</p><span class="status">LOCAL PREVIEW ONLY</span></div>
-<form id="serviceForm" novalidate><div class="form-section">
-<label for="sender">Approved Sender ID</label><input id="sender" type="text" required  placeholder="Enter approved sender ID (max 11 characters)">
-<label for="recipients">Recipient numbers</label><textarea id="recipients" required rows="4" placeholder="Enter numbers separated by commas or new lines"></textarea>
-<label for="message">Message</label><textarea id="message" required rows="4" placeholder="Write your message"></textarea>
+<div class="hero"><div class="icon" aria-hidden="true">✉</div><h1>Bulk SMS</h1><p class="sub">Create and review your SMS campaign</p><span class="status" id="serviceStatus">PRICING SETUP IN PROGRESS</span></div>
+<form id="serviceForm" novalidate>
+<div class="section">
+<p class="section-title">Campaign details</p>
+<label for="sender">Approved Sender ID</label><input id="sender" type="text" maxlength="11" autocomplete="off" placeholder="e.g. AILAT DATA">
+<p class="hint">Must already be approved by Bilalsadasub. Maximum 11 characters.</p>
+<label for="recipients">Recipient numbers</label><textarea id="recipients" rows="4" placeholder="Enter Nigerian numbers separated by commas or new lines"></textarea>
+<p class="hint">Use 11-digit Nigerian mobile numbers starting with 0.</p>
+<label for="message">SMS message</label><textarea id="message" rows="5" placeholder="Write your message here"></textarea>
+<div class="stats">
+ <div class="stat"><strong id="recipientCount">0</strong><span>Recipients</span></div>
+ <div class="stat"><strong id="charCount">0</strong><span>Characters</span></div>
+ <div class="stat"><strong id="pageCount">0</strong><span>Total SMS pages</span></div>
+</div>
 <div class="error" id="formError" role="alert" aria-live="polite"></div>
-<div class="actions"><button class="primary" type="submit">Preview Request</button><button class="secondary" type="reset">Clear Form</button></div>
-</div></form>
-<section class="preview" id="preview" aria-live="polite"><h2>Local Request Preview</h2><pre id="previewText"></pre></section>
-<div class="notice"><strong>Integration status:</strong> This page only validates and previews your message on this device. It does not connect to Bilalsadasub or send SMS. Sender IDs must already be approved. Marketing messages to DND numbers may be blocked. Send only to recipients who have consented.</div>
+<div class="actions"><button class="primary" type="submit">Review Campaign</button><button class="secondary" type="reset">Clear Form</button></div>
+</div>
+</form>
+<section class="preview" id="preview" aria-live="polite">
+<h2>Campaign review</h2>
+<div class="price-line"><span>Sender ID</span><strong id="pSender">—</strong></div>
+<div class="price-line"><span>Recipients</span><strong id="pRecipients">0</strong></div>
+<div class="price-line"><span>Message encoding</span><strong id="pEncoding">—</strong></div>
+<div class="price-line"><span>Pages per recipient</span><strong id="pPagesEach">0</strong></div>
+<div class="price-line"><span>Total SMS pages</span><strong id="pTotalPages">0</strong></div>
+<div class="price-line"><span>Customer charge</span><strong>Not available yet</strong></div>
+<div class="notice warn">NOT SENT. Bulk SMS pricing has not yet been confirmed by the supplier. No wallet charge or SMS delivery will happen from this review.</div>
+</section>
+<div class="notice"><strong>Integration:</strong> This page now validates campaign details and calculates estimated SMS pages. Supplier sending, wallet charging and final pricing remain disabled until Bilalsadasub confirms the rate and we complete the secure transaction flow. Send messages only to recipients who have consented.</div>
 </section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
-const form=document.getElementById("serviceForm");
-const errorBox=document.getElementById("formError");
-const preview=document.getElementById("preview");
-const previewText=document.getElementById("previewText");
-const sender=document.getElementById("sender");
-const recipients=document.getElementById("recipients");
-const message=document.getElementById("message");
+const form=document.getElementById("serviceForm"),errorBox=document.getElementById("formError"),preview=document.getElementById("preview");
+const sender=document.getElementById("sender"),recipients=document.getElementById("recipients"),message=document.getElementById("message");
+const count=document.getElementById("recipientCount"),chars=document.getElementById("charCount"),pages=document.getElementById("pageCount");
+function normalizedNumbers(){return recipients.value.split(/[\\s,;]+/).map(x=>x.trim()).filter(Boolean)}
+function encodingInfo(text){const gsm=/^[\\x00-\\x7F]*$/.test(text);const length=Array.from(text).length;const single=gsm?160:70;const multipart=gsm?153:67;return {gsm,length,pages:length===0?0:(length<=single?1:Math.ceil(length/multipart))}}
+function updateStats(){const list=normalizedNumbers(),info=encodingInfo(message.value);count.textContent=list.length;chars.textContent=info.length;pages.textContent=list.length*info.pages}
+recipients.addEventListener("input",updateStats);message.addEventListener("input",updateStats);
 form.addEventListener("submit",event=>{
- event.preventDefault();
- errorBox.textContent="";
- preview.style.display="none";
- const senderId=sender.value.trim();
- const rawNumbers=recipients.value.trim();
- const body=message.value.trim();
- if(!senderId){errorBox.textContent="Enter your approved Sender ID.";sender.focus();return;}
- if(senderId.length>11){errorBox.textContent="Sender ID must not exceed 11 characters.";sender.focus();return;}
- if(/^\d+$/.test(senderId)){errorBox.textContent="Sender ID cannot contain numbers only.";sender.focus();return;}
- if(!/^[A-Za-z0-9 ]+$/.test(senderId)){errorBox.textContent="Use plain text for Sender ID.";sender.focus();return;}
- if(!rawNumbers){errorBox.textContent="Enter at least one recipient number.";recipients.focus();return;}
- const numbers=rawNumbers.split(/[\s,;]+/).filter(Boolean);
- const invalid=numbers.filter(n=>!/^0[789][01]\d{8}$/.test(n));
- if(invalid.length){errorBox.textContent="Invalid number(s): "+invalid.slice(0,3).join(", ")+". Use valid 11-digit Nigerian mobile numbers.";recipients.focus();return;}
- if(!body){errorBox.textContent="Write your SMS message.";message.focus();return;}
- const unicode=/[^\u0000-\u007F]/.test(body);
- const chars=Array.from(body).length;
- const pages=chars<=(unicode?70:160)?1:Math.ceil(chars/(unicode?67:153));
- const lines=[
-  "Sender ID: "+senderId,
-  "Recipient count: "+numbers.length,
-  "Message: "+body,
-  "Characters: "+chars,
-  "Encoding estimate: "+(unicode?"Unicode":"GSM/basic text"),
-  "Pages per recipient (estimate): "+pages,
-  "Total SMS pages (estimate): "+(pages*numbers.length),
-  "Status: NOT SENT — local preview only"
- ];
- previewText.textContent=lines.join("\n");
+ event.preventDefault();errorBox.textContent="";preview.style.display="none";
+ const id=sender.value.trim(),raw=normalizedNumbers(),body=message.value.trim();
+ if(!id){errorBox.textContent="Enter your approved Sender ID.";sender.focus();return}
+ if(id.length>11||/^\\d+$/.test(id)||!/^[A-Za-z0-9 ]+$/.test(id)){errorBox.textContent="Sender ID must be approved, plain text and no more than 11 characters.";sender.focus();return}
+ if(!raw.length){errorBox.textContent="Enter at least one recipient number.";recipients.focus();return}
+ const invalid=raw.filter(n=>!/^0[789][01]\\d{8}$/.test(n));
+ if(invalid.length){errorBox.textContent="Invalid number(s): "+invalid.slice(0,3).join(", ")+". Use valid 11-digit Nigerian mobile numbers.";recipients.focus();return}
+ const unique=[...new Set(raw)];
+ if(unique.length!==raw.length){errorBox.textContent="Duplicate phone numbers found. Remove duplicates before reviewing.";recipients.focus();return}
+ if(!body){errorBox.textContent="Write your SMS message.";message.focus();return}
+ if(body.length>5000){errorBox.textContent="Message is too long. Please shorten it.";message.focus();return}
+ const info=encodingInfo(body),total=info.pages*unique.length;
+ document.getElementById("pSender").textContent=id;
+ document.getElementById("pRecipients").textContent=unique.length;
+ document.getElementById("pEncoding").textContent=info.gsm?"GSM/basic text":"Unicode";
+ document.getElementById("pPagesEach").textContent=info.pages;
+ document.getElementById("pTotalPages").textContent=total;
  preview.style.display="block";
+ updateStats();
 });
-form.addEventListener("reset",()=>{
- errorBox.textContent="";
- preview.style.display="none";
- previewText.textContent="";
-});
+form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";setTimeout(updateStats,0)});
+updateStats();
 </script>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
 onAuthStateChanged(auth,async user=>{
- if(!user){location.replace("login.html");return;}
- try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html");}}
- catch(error){console.error("Service access check failed:",error);location.replace("login.html");}
+ if(!user){location.replace("login.html");return}
+ try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html")}}
+ catch(error){console.error("Service access check failed:",error);location.replace("login.html")}
 });
 </script>
 </body></html>

@@ -4,103 +4,277 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#4c1d95">
-<meta name="description" content="AILAT DATA data card printing catalogue and request preview.">
+<meta name="description" content="Buy and print secure Bilalsadasub data-card PIN vouchers with AILAT DATA.">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <title>AILAT DATA | Data Card Printing</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}
-header{padding:20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}
-header a{color:white;text-decoration:none;font-weight:bold;font-size:14px}
-main{width:min(94%,680px);margin:24px auto}
-.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:22px;box-shadow:0 10px 28px #35106f12}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}
+header{padding:19px 20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:#fff}
+header a{color:#fff;text-decoration:none;font-weight:bold;font-size:14px}
+main{width:min(94%,720px);margin:24px auto}
+.card{background:#fff;border:1px solid #eee7ff;border-radius:22px;padding:22px;box-shadow:0 10px 28px #35106f12}
 .hero{text-align:center}.icon{width:64px;height:64px;margin:0 auto 13px;border-radius:19px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:28px}
-h1{font-size:24px;margin:0 0 8px}p{font-size:13px;line-height:1.6;color:#75658f}
-.status{display:inline-block;margin:8px 0 14px;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:11px;font-weight:800}
+h1{font-size:24px;margin:0 0 8px}h2{font-size:17px;color:#4c1d95;margin:0 0 10px}
+p{font-size:13px;line-height:1.6;color:#75658f}
+.status{display:inline-block;margin:8px 0 14px;padding:8px 13px;border-radius:20px;background:#e9f9ef;color:#176b37;font-size:11px;font-weight:800}
 .catalogue{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px;margin:18px 0}
 .plan{border:1px solid #e8defb;border-radius:14px;padding:14px;background:#fcfbff}
 .plan strong{display:block;color:#4c1d95;font-size:14px}.plan small{display:block;color:#85759e;font-size:11px;margin-top:5px;line-height:1.5}
-.plan b{display:block;margin-top:9px;font-size:16px}
+.plan b{display:block;margin-top:9px;font-size:16px;color:#24134d}
 .form-section{margin-top:18px;padding:17px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}
 label{display:block;margin:13px 0 7px;font-size:13px;font-weight:700;color:#44345f}
-select,input{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}
+select,input{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:#fff;color:#24134d;font:14px Arial}
 select:focus,input:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}
-.summary{margin-top:14px;padding:13px;border-radius:12px;background:#f1ebff;font-size:13px;line-height:1.7}
+.summary{margin-top:14px;padding:13px;border-radius:12px;background:#f1ebff;font-size:13px;line-height:1.7;color:#44345f;overflow-wrap:anywhere}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 button{border:0;border-radius:11px;padding:14px;font-size:13px;font-weight:700;cursor:pointer}
-.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}
+button:disabled{opacity:.55;cursor:not-allowed}
+.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff}.secondary{background:#eee7ff;color:#4c1d95}
 .notice{margin-top:16px;padding:14px;border-radius:12px;background:#fff7e6;color:#79530b;font-size:12px;line-height:1.7}
 .error{color:#b42318;font-size:12px;margin-top:9px;min-height:16px}
-.preview{display:none;margin-top:16px;padding:16px;border:1px dashed #a78bfa;border-radius:12px;background:white}
+.preview{display:none;margin-top:16px;padding:16px;border:1px dashed #a78bfa;border-radius:12px;background:#fff}
 .preview h2{font-size:16px;margin:0 0 10px;color:#4c1d95}.preview p{margin:5px 0;color:#51446b}
+.pin-card{border:1px dashed #9b83c9;border-radius:12px;padding:14px;margin:10px 0;break-inside:avoid}
+.pin-value{font-size:19px;font-weight:800;letter-spacing:1px;color:#35106f;overflow-wrap:anywhere}
 footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
+[hidden]{display:none!important}
 @media(max-width:380px){.actions{grid-template-columns:1fr}.card{padding:17px}}
-@media print{header,.hero,.catalogue,.form-section,.notice,footer,.no-print{display:none!important}body{background:white}main{width:100%;margin:0}.card{box-shadow:none;border:0}.preview{display:block!important;border:1px solid #aaa}}
+@media print{
+ header,.hero,.catalogue,#serviceForm,#purchasePanel,#lookupPanel,.notice,footer,.no-print{display:none!important}
+ body{background:#fff}.card{box-shadow:none;border:0;padding:0}main{width:100%;margin:0}
+ #preview{display:block!important;border:0}.pin-card{border:1px solid #aaa}
+}
 </style>
 </head>
 <body>
 <header><a href="dashboard.html">← Back to Dashboard</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">🖨️</div><h1>Data Card Printing</h1><p>Choose a data voucher plan and prepare a printable request summary.</p><span class="status">CATALOGUE PREVIEW · PIN GENERATION NOT ENABLED</span></div>
-<h2 style="font-size:16px;margin:14px 0 8px">Available plans from the supplied provider table</h2>
-<div class="catalogue" id="catalogue">
-<div class="plan"><strong>Airtel · 2GB · SME</strong><small>Plan ID 10 · Load *347*15# · Check *140# · Valid 30 days after redeeming</small><b>₦1,152.00</b></div>
-<div class="plan"><strong>Glo · 500MB · Corporate Gifting</strong><small>Plan ID 12 · Load *347*15# · Check *777# · Valid 30 days after redeeming</small><b>₦140.00</b></div>
-<div class="plan"><strong>Glo · 1GB · Corporate Gifting</strong><small>Plan ID 13 · Load *347*15# · Check *777# · Valid 30 days after redeeming</small><b>₦280.00</b></div>
-<div class="plan"><strong>MTN · 3GB · Corporate Gifting</strong><small>Plan ID 14 · Load *347*15# · Check *131*4# · Valid 30 days</small><b>₦1,350.00</b></div>
-<div class="plan"><strong>Airtel · 500MB · SME</strong><small>Plan ID 8 · Load *347*15# · Check *140# · Valid 30 days after redeeming</small><b>₦288.00</b></div>
-<div class="plan"><strong>Airtel · 1GB · SME</strong><small>Plan ID 9 · Load *347*15# · Check *140# · Valid 30 days after redeeming</small><b>₦576.00</b></div>
+<div class="hero">
+ <div class="icon" aria-hidden="true">🖨️</div>
+ <h1>Data Card Printing</h1>
+ <p>Generate real data-card PIN vouchers from Bilalsadasub and print them for your customers.</p>
+ <span class="status" id="serviceStatus">SECURE PROVIDER CONNECTION CHECKING…</span>
 </div>
-<form id="serviceForm" novalidate><div class="form-section">
-<label for="plan">Select data card plan</label>
-<select id="plan" required><option value="">Choose a plan</option>
-<option value="10" data-network="Airtel" data-bundle="2GB" data-type="SME" data-price="1152" data-load="*347*15#" data-check="*140#" data-validity="30 days after redeeming">Airtel 2GB — ₦1,152.00</option>
-<option value="12" data-network="Glo" data-bundle="500MB" data-type="Corporate Gifting" data-price="140" data-load="*347*15#" data-check="*777#" data-validity="30 days after redeeming">Glo 500MB — ₦140.00</option>
-<option value="13" data-network="Glo" data-bundle="1GB" data-type="Corporate Gifting" data-price="280" data-load="*347*15#" data-check="*777#" data-validity="30 days after redeeming">Glo 1GB — ₦280.00</option>
-<option value="14" data-network="MTN" data-bundle="3GB" data-type="Corporate Gifting" data-price="1350" data-load="*347*15#" data-check="*131*4#" data-validity="30 days">MTN 3GB — ₦1,350.00</option>
-<option value="8" data-network="Airtel" data-bundle="500MB" data-type="SME" data-price="288" data-load="*347*15#" data-check="*140#" data-validity="30 days after redeeming">Airtel 500MB — ₦288.00</option>
-<option value="9" data-network="Airtel" data-bundle="1GB" data-type="SME" data-price="576" data-load="*347*15#" data-check="*140#" data-validity="30 days after redeeming">Airtel 1GB — ₦576.00</option>
-</select>
-<label for="quantity">Number of cards (1–50)</label><input id="quantity" type="number" min="1" max="50" step="1" value="1" required>
-<div class="summary" id="estimate">Choose a plan to view its details and estimated total.</div>
-<div class="error" id="formError" role="alert" aria-live="polite"></div>
-<div class="actions no-print"><button class="primary" type="submit">Prepare Print Preview</button><button class="secondary" type="reset">Clear</button></div>
-</div></form>
-<section class="preview" id="preview" aria-live="polite"><h2>AILAT DATA — Data Card Request Summary</h2><div id="previewText"></div><p><strong>PINs:</strong> Not generated. This is only a local request/print preview.</p><button class="primary no-print" type="button" onclick="window.print()">Print Summary</button></section>
-<div class="notice"><strong>Important:</strong> This page uses the six plan rows supplied in the documentation. The provider endpoint shown for generating PINs is a paid POST operation that can debit the supplier wallet. No order or payment request is sent from this page, and no real PINs are generated. Plan prices should be refreshed and confirmed before any future production integration.</div>
+<h2>Available Data Card Plans</h2>
+<div class="catalogue" id="catalogue"><p>Loading verified plans…</p></div>
+
+<form id="serviceForm" novalidate>
+ <div class="form-section">
+  <h2>Create a Secure Quote</h2>
+  <label for="plan">Select data card plan</label>
+  <select id="plan" required><option value="">Loading plans…</option></select>
+  <label for="quantity">Number of PIN cards (1–50)</label>
+  <input id="quantity" type="number" min="1" max="50" step="1" value="1" required>
+  <div class="summary" id="estimate">Choose a plan to see your selling price and total.</div>
+  <div class="error" id="formError" role="alert" aria-live="polite"></div>
+  <div class="actions no-print"><button class="primary" type="submit">Get Secure Quote</button><button class="secondary" type="reset">Clear</button></div>
+ </div>
+</form>
+
+<section class="preview" id="preview" aria-live="polite">
+ <h2>AILAT DATA — Data Card Quote</h2>
+ <div id="previewText"></div>
+ <p><strong>PINs:</strong> Not generated yet. A quote does not debit your wallet.</p>
+</section>
+
+<section class="form-section" id="purchasePanel" hidden>
+ <h2>Confirm Secure Purchase</h2>
+ <p id="purchaseSummary">Review the exact amount before confirming.</p>
+ <label for="transactionPin">4-digit Transaction PIN</label>
+ <input id="transactionPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter your Transaction PIN">
+ <label style="display:flex;align-items:flex-start;gap:9px;font-weight:600">
+  <input id="purchaseConsent" type="checkbox" style="width:auto;margin-top:2px">
+  <span id="consentText">I approve this exact data-card purchase and wallet deduction.</span>
+ </label>
+ <div class="actions no-print"><button class="primary" id="confirmPurchaseButton" type="button">Confirm & Generate PINs</button></div>
+ <div class="summary" id="purchaseResult" role="status" aria-live="polite">No purchase has been made.</div>
+</section>
+
+<section class="form-section" id="lookupPanel">
+ <h2>Find / Print Your Data Card PINs</h2>
+ <label for="orderReference">Secure quote / order reference</label>
+ <input id="orderReference" type="text" maxlength="32" placeholder="AIL-DC-XXXXXXXXXXXX" autocomplete="off">
+ <div class="actions no-print"><button class="secondary" id="checkOrderButton" type="button">Check Order / PINs</button><button class="primary" id="printPinsButton" type="button" disabled>Print Data Cards</button></div>
+ <div class="summary" id="orderLookupResult" role="status" aria-live="polite">PINs appear here only after the supplier confirms successful generation.</div>
+</section>
+
+<div class="notice"><strong>Secure purchase:</strong> Prices include AILAT DATA's ₦50-per-GB markup. A quote does not charge your wallet. A real PIN order is sent only after you confirm with your Transaction PIN. If the supplier response is pending, do not submit or pay again; check the same reference.</div>
 </section></main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
-<script>
-const form=document.getElementById("serviceForm"),plan=document.getElementById("plan"),quantity=document.getElementById("quantity"),estimate=document.getElementById("estimate"),errorBox=document.getElementById("formError"),preview=document.getElementById("preview"),previewText=document.getElementById("previewText");
-const naira=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
-function updateEstimate(){
- const o=plan.selectedOptions[0],q=Number(quantity.value);
- if(!plan.value){estimate.textContent="Choose a plan to view its details and estimated total.";return;}
- if(!Number.isInteger(q)||q<1||q>50){estimate.textContent="Quantity must be between 1 and 50.";return;}
- const p=Number(o.dataset.price);
- estimate.innerHTML="<strong>"+o.dataset.network+" "+o.dataset.bundle+"</strong><br>Plan type: "+o.dataset.type+" · Plan ID: "+plan.value+"<br>Unit price: "+naira(p)+"<br><strong>Estimated total for "+q+" card(s): "+naira(p*q)+"</strong>";
-}
-plan.addEventListener("change",updateEstimate);quantity.addEventListener("input",updateEstimate);
-form.addEventListener("submit",e=>{
- e.preventDefault();errorBox.textContent="";
- if(!plan.value){errorBox.textContent="Please select a data card plan.";plan.focus();return;}
- const q=Number(quantity.value);
- if(!Number.isInteger(q)||q<1||q>50){errorBox.textContent="Quantity must be a whole number from 1 to 50.";quantity.focus();return;}
- const o=plan.selectedOptions[0],p=Number(o.dataset.price);
- const rows=[["Network",o.dataset.network],["Bundle",o.dataset.bundle],["Plan type",o.dataset.type],["Provider Plan ID",plan.value],["Quantity",q],["Unit price",naira(p)],["Estimated total",naira(p*q)],["Load code",o.dataset.load],["Balance check code",o.dataset.check],["Validity",o.dataset.validity]];
- previewText.replaceChildren();
- rows.forEach(([k,v])=>{const line=document.createElement("p"),strong=document.createElement("strong");strong.textContent=k+": ";line.append(strong,document.createTextNode(String(v)));previewText.append(line);});
- preview.style.display="block";preview.scrollIntoView({behavior:"smooth",block:"nearest"});
-});
-form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";previewText.replaceChildren();setTimeout(updateEstimate,0);});
-</script>
+
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+
 const auth=getAuth(app);
+const BACKEND_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-data-card-printing";
+const SECURITY_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+let signedInUser=null,plans=[],latestQuote=null,purchaseAvailable=false,quoteBusy=false,purchaseBusy=false,deliveredPins=false;
+
+const $=id=>document.getElementById(id);
+const naira=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+async function api(url,options={}){
+ const token=await signedInUser.getIdToken();
+ const response=await fetch(url,{...options,headers:{
+  "apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,
+  ...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})
+ }});
+ const result=await response.json();
+ if(!response.ok||result.success===false)throw new Error(result.error||"Request failed. Check the reference before retrying.");
+ return result;
+}
+function updateEstimate(){
+ const option=$("plan").selectedOptions[0],q=Number($("quantity").value);
+ if(!$("plan").value){$("estimate").textContent="Choose a plan to see your selling price and total.";return;}
+ if(!Number.isInteger(q)||q<1||q>50){$("estimate").textContent="Quantity must be a whole number from 1 to 50.";return;}
+ const unit=Number(option.dataset.price);
+ $("estimate").innerHTML="<strong>"+option.dataset.network+" "+option.dataset.bundle+"</strong><br>Price per PIN: "+naira(unit)+"<br>Quantity: "+q+"<br><strong>Total: "+naira(unit*q)+"</strong><br>AILAT markup: ₦50 per GB";
+}
+function renderPlans(items,ready,canPurchase){
+ plans=items;purchaseAvailable=canPurchase===true;
+ $("catalogue").replaceChildren();$("plan").replaceChildren(new Option("Choose a plan",""));
+ for(const p of plans){
+  const card=document.createElement("div");card.className="plan";
+  const title=document.createElement("strong");title.textContent=p.network+" · "+p.bundle+" · "+p.plan_type;
+  const details=document.createElement("small");details.textContent="Plan ID "+p.plan_id+" · Validity "+p.validity+" · Load "+p.load_code+" · Check "+p.check_code;
+  const price=document.createElement("b");price.textContent=naira(p.customer_unit_price)+" per PIN";
+  const markup=document.createElement("small");markup.textContent="Includes ₦50 per GB AILAT markup";
+  card.append(title,details,price,markup);$("catalogue").append(card);
+  const option=new Option(p.network+" "+p.bundle+" ("+p.plan_type+") — "+naira(p.customer_unit_price),String(p.plan_id));
+  option.dataset.network=p.network;option.dataset.bundle=p.bundle;option.dataset.price=String(p.customer_unit_price);
+  $("plan").add(option);
+ }
+ $("serviceStatus").textContent=ready?"SECURE PIN STORAGE VERIFIED":"PIN STORAGE NOT VERIFIED";
+ $("serviceStatus").style.background=ready?"#e9f9ef":"#fff4d6";
+ $("serviceStatus").style.color=ready?"#176b37":"#875500";
+ updateEstimate();
+}
+function showQuote(q){
+ latestQuote=q;
+ const rows=[
+  ["Reference",q.reference],["Network",q.network],["Bundle",q.bundle],
+  ["Plan type",q.plan_type],["Quantity",q.quantity],["Price per PIN",naira(q.customer_unit_price)],
+  ["Total customer payment",naira(q.customer_total)],["Quote status",q.status]
+ ];
+ $("previewText").replaceChildren();
+ for(const [k,v] of rows){const p=document.createElement("p"),b=document.createElement("strong");b.textContent=k+": ";p.append(b,document.createTextNode(String(v)));$("previewText").append(p);}
+ $("preview").style.display="block";$("orderReference").value=q.reference;
+ $("purchasePanel").hidden=!(purchaseAvailable&&q.status==="quoted");
+ $("purchaseSummary").textContent=q.network+" "+q.bundle+" · "+q.quantity+" PIN(s) · Total "+naira(q.customer_total)+". This exact amount will be deducted from your AILAT wallet after confirmation.";
+ $("consentText").textContent="I confirm "+q.quantity+" "+q.network+" "+q.bundle+" data card PIN(s). Deduct "+naira(q.customer_total)+" from my AILAT wallet.";
+ $("transactionPin").value="";$("purchaseConsent").checked=false;
+ $("purchaseResult").textContent="No purchase has been made. Confirm only when ready.";
+ $("preview").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("plan").addEventListener("change",updateEstimate);
+$("quantity").addEventListener("input",updateEstimate);
+$("serviceForm").addEventListener("reset",()=>{latestQuote=null;$("preview").style.display="none";$("purchasePanel").hidden=true;$("formError").textContent="";setTimeout(updateEstimate,0);});
+
+$("serviceForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(quoteBusy)return;
+ const planId=Number($("plan").value),quantity=Number($("quantity").value);
+ if(!Number.isSafeInteger(planId)){ $("formError").textContent="Please select a data card plan.";return; }
+ if(!Number.isSafeInteger(quantity)||quantity<1||quantity>50){$("formError").textContent="Quantity must be a whole number from 1 to 50.";return;}
+ quoteBusy=true;$("formError").textContent="";
+ const button=$('#serviceForm button[type="submit"]');button.disabled=true;button.textContent="Preparing secure quote…";
+ try{
+  const result=await api(BACKEND_URL,{method:"POST",body:JSON.stringify({
+   plan_id:planId,quantity,idempotency_key:crypto.randomUUID()
+  })});
+  if(!result.quote)throw new Error("Secure quote was not returned.");
+  showQuote(result.quote);
+  if(result.purchase_enabled!==true){$("purchasePanel").hidden=true;$("purchaseResult").textContent="Secure purchase is temporarily unavailable. No payment was taken.";}
+ }catch(err){$("formError").textContent=err.message||"Could not create quote.";}
+ finally{quoteBusy=false;button.disabled=false;button.textContent="Get Secure Quote";}
+});
+
+$("confirmPurchaseButton").addEventListener("click",async()=>{
+ if(purchaseBusy)return;
+ const pin=$("transactionPin").value.trim();
+ if(!latestQuote||latestQuote.status!=="quoted"){$("purchaseResult").textContent="Create a fresh secure quote first.";return;}
+ if(!/^\d{4}$/.test(pin)){$("purchaseResult").textContent="Enter your 4-digit Transaction PIN.";return;}
+ if(!$("purchaseConsent").checked){$("purchaseResult").textContent="Confirm the exact wallet deduction first.";return;}
+ purchaseBusy=true;const button=$("confirmPurchaseButton");button.disabled=true;button.textContent="Verifying Transaction PIN…";
+ try{
+  const idempotencyKey=crypto.randomUUID();
+  const intent={
+   service_key:"data_card",
+   quote_reference:latestQuote.reference,
+   plan_id:Number(latestQuote.plan_id),
+   quantity:Number(latestQuote.quantity),
+   customer_total:Number(latestQuote.customer_total),
+   idempotency_key:idempotencyKey,
+   details:{
+    network:latestQuote.network,bundle:latestQuote.bundle,
+    plan_id:Number(latestQuote.plan_id),quantity:Number(latestQuote.quantity),
+    customer_total:Number(latestQuote.customer_total),quote_reference:latestQuote.reference
+   }
+  };
+  const authResult=await api(SECURITY_URL,{method:"POST",body:JSON.stringify({action:"authorize_with_pin",intent,pin})});
+  $("transactionPin").value="";button.textContent="Generating data card PINs…";
+  const purchase=await api(BACKEND_URL,{method:"POST",body:JSON.stringify({
+   action:"purchase",quote_reference:latestQuote.reference,
+   authorization_id:authResult.authorization_id,token_hash:authResult.token_hash,
+   intent_hash:authResult.intent_hash,intent
+  })});
+  $("purchaseResult").textContent=purchase.message||("Order status: "+purchase.status);
+  $("orderReference").value=purchase.reference||latestQuote.reference;
+  if(purchase.status==="completed")await checkOrder();
+  else if(purchase.status==="processing"||purchase.status==="pending_review")$("orderLookupResult").textContent="Order status: "+purchase.status+". Use the same reference to check later. Do not submit again.";
+  latestQuote.status=purchase.status;
+ }catch(err){
+  $("purchaseResult").textContent=err.message||"Purchase result is not confirmed. Check the same reference before retrying.";
+ }finally{purchaseBusy=false;button.disabled=false;button.textContent="Confirm & Generate PINs";}
+});
+
+async function checkOrder(){
+ const ref=$("orderReference").value.trim().toUpperCase();
+ if(!/^AIL-DC-[A-F0-9]{12}$/.test(ref))throw new Error("Enter a valid AIL-DC reference.");
+ const result=await api(BACKEND_URL+"?reference="+encodeURIComponent(ref));
+ $("orderLookupResult").replaceChildren();deliveredPins=false;
+ const line=(label,value)=>{const p=document.createElement("p"),b=document.createElement("strong");b.textContent=label+": ";p.append(b,document.createTextNode(String(value)));$("orderLookupResult").append(p);};
+ line("Reference",result.quote.reference);line("Plan",result.quote.network+" "+result.quote.bundle);
+ line("Quantity",result.quote.quantity);line("Status",result.quote.status);
+ if(result.pin_delivery_status==="delivered"&&Array.isArray(result.pins)&&result.pins.length){
+  const heading=document.createElement("p");heading.textContent="Your generated data-card vouchers";$("orderLookupResult").append(heading);
+  result.pins.forEach(item=>{
+   const card=document.createElement("div");card.className="pin-card";
+   const title=document.createElement("p");title.textContent=result.quote.network+" "+result.quote.bundle+" · Card "+item.pin_index;
+   const pin=document.createElement("div");pin.className="pin-value";pin.textContent=item.pin;
+   const load=document.createElement("p");load.textContent="Load code: "+item.load_code;
+   const check=document.createElement("p");check.textContent="Check balance: "+item.check_code;
+   card.append(title,pin,load,check);$("orderLookupResult").append(card);
+  });
+  deliveredPins=true;$("printPinsButton").disabled=false;
+ }else{
+  $("printPinsButton").disabled=true;
+  line("PIN delivery",result.pin_delivery_status==="under_review"?"Under secure review. PINs are not available yet.":"PINs will appear here after the supplier confirms successful generation.");
+ }
+ return result;
+}
+$("checkOrderButton").addEventListener("click",async()=>{
+ const button=$("checkOrderButton");button.disabled=true;button.textContent="Checking securely…";
+ try{await checkOrder();}catch(err){$("orderLookupResult").textContent=err.message||"Could not check this reference.";}
+ finally{button.disabled=false;button.textContent="Check Order / PINs";}
+});
+$("printPinsButton").addEventListener("click",()=>{if(deliveredPins)window.print();});
+
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}
- try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html");}}
- catch(error){console.error("Service access check failed:",error);location.replace("login.html");}
+ try{
+  await user.reload();
+  if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html");return;}
+  signedInUser=user;
+  const result=await api(BACKEND_URL,{method:"GET"});
+  if(!Array.isArray(result.plans))throw new Error("Data-card catalogue is unavailable.");
+  renderPlans(result.plans,result.pin_storage_ready===true,result.purchase_enabled===true);
+ }catch(err){
+  console.error("Data-card page setup failed:",err);
+  $("serviceStatus").textContent="SERVICE TEMPORARILY UNAVAILABLE";
+  $("formError").textContent=err.message||"Could not load secure data-card service.";
+ }
 });
 </script>
 </body></html>

@@ -263,6 +263,20 @@ function renderTransactions(items){
   const bundle = customer.bundle ? String(customer.bundle) : "";
   const purchaseType = customer.purchase_type ? String(customer.purchase_type) : "";
   const validity = customer.validity ? String(customer.validity) : "";
+  const examName = customer.exam_name ? String(customer.exam_name) : "";
+  const examQuantity = Number(customer.quantity);
+  const supplierUnit = Number(customer.supplier_amount);
+  const examSellingTotal = Number(customer.selling_amount ?? item.amount);
+  const examSupplierTotal = supplierUnit * examQuantity;
+  const examProfitTotal = examSellingTotal - examSupplierTotal;
+  const examRows = examName ? [
+   `<div>Exam: ${safe(examName)}</div>`,
+   Number.isSafeInteger(examQuantity) && examQuantity > 0 ? `<div>Quantity: ${examQuantity}</div>` : "",
+   Number.isFinite(supplierUnit) && supplierUnit > 0 ? `<div>Supplier price per PIN: ${formatAmount(supplierUnit)}</div>` : "",
+   Number.isFinite(examSellingTotal) && examSellingTotal > 0 && Number.isSafeInteger(examQuantity) && examQuantity > 0 ? `<div>Customer price per PIN: ${formatAmount(examSellingTotal / examQuantity)}</div>` : "",
+   Number.isFinite(examSupplierTotal) && examSupplierTotal > 0 ? `<div>Total supplier cost: ${formatAmount(examSupplierTotal)}</div>` : "",
+   Number.isFinite(examProfitTotal) && examProfitTotal >= 0 ? `<div>AILAT DATA gross profit: ${formatAmount(examProfitTotal)}</div>` : ""
+  ].join("") : "";
   const providerPlanId = item.supplier_plan_id ?? customer.supplier_plan_id;
   const providerNetworkId = item.supplier_network_id ?? customer.provider_network_id;
   const dispatchState = item.provider_dispatch_status || customer.provider_dispatch_status || "not_sent";
@@ -272,6 +286,7 @@ function renderTransactions(items){
    bundle ? `<div>Bundle: ${safe(bundle)}</div>` : "",
    purchaseType ? `<div>Plan Type: ${safe(purchaseType)}</div>` : "",
    validity ? `<div>Validity: ${safe(validity)}</div>` : "",
+   examRows,
    providerNetworkId !== undefined && providerNetworkId !== null ? `<div>Supplier Network ID: ${safe(providerNetworkId)}</div>` : "",
    providerPlanId !== undefined && providerPlanId !== null ? `<div>Supplier Plan ID: ${safe(providerPlanId)}</div>` : "",
    item.is_request ? `<div>Supplier Dispatch: ${safe(dispatchState === "disabled_safe_mode" || dispatchState === "not_sent" ? "Not sent (safe mode)" : dispatchState)}</div>` : "",

@@ -117,12 +117,26 @@ const $=id=>document.getElementById(id);
 const naira=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 function newIdempotencyKey(){if(typeof crypto.randomUUID==="function")return crypto.randomUUID();const b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,"0")).join("");}
 async function api(url,options={}){
- const token=await signedInUser.getIdToken();
- const response=await fetch(url,{...options,headers:{
-  "apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,
-  ...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})
- }});
- const result=await response.json();
+ if(!signedInUser)throw new Error("Your secure login is not ready. Refresh the page and sign in again.");
+ let tokenTimer;
+ const token=await Promise.race([
+  signedInUser.getIdToken(),
+  new Promise((_,reject)=>{tokenTimer=setTimeout(()=>reject(new Error("Secure login verification timed out. Refresh the page and sign in again.")),12000);})
+ ]).finally(()=>clearTimeout(tokenTimer));
+ const controller=new AbortController();
+ const requestTimer=setTimeout(()=>controller.abort(),20000);
+ let response;
+ try{
+  response=await fetch(url,{...options,signal:controller.signal,headers:{
+   "apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,
+   ...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})
+  }});
+ }catch(error){
+  if(error?.name==="AbortError")throw new Error("The secure quote request timed out. Check the same reference before trying again.");
+  throw new Error("Could not reach the secure quote service. Check your connection and try again.");
+ }finally{clearTimeout(requestTimer);}
+ let result;
+ try{result=await response.json();}catch{throw new Error("The secure service returned an unreadable response. Please try again.");}
  if(!response.ok||result.success===false)throw new Error(result.error||"Request failed. Check the reference before retrying.");
  return result;
 }

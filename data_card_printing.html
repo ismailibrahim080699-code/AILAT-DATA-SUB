@@ -193,7 +193,7 @@ $("serviceForm").addEventListener("submit",async e=>{
  if(!Number.isSafeInteger(planId)){ $("formError").textContent="Please select a data card plan.";return; }
  if(!Number.isSafeInteger(quantity)||quantity<1||quantity>50){$("formError").textContent="Quantity must be a whole number from 1 to 50.";return;}
  quoteBusy=true;$("formError").textContent="Creating your secure quote. Please wait…";
- const button=$('#serviceForm button[type="submit"]');button.disabled=true;button.textContent="Creating Secure Quote…";
+ const button=document.querySelector('#serviceForm button[type="submit"]');if(!button){quoteBusy=false;$("formError").textContent="The quote button could not be initialized. Refresh the page and try again.";return;}button.disabled=true;button.textContent="Creating Secure Quote…";
  let quoteWatchdog;
  try{
   $("formError").textContent="Verifying your secure login…";

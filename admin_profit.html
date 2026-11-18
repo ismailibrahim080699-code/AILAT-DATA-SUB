@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#102a43">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
-<title>AILAT DATA | Business Profit</title>
+<title>AILAT DATA | Company Earnings & Profit</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#edf2f5;color:#172b3a;font-family:Arial,sans-serif}
 header{padding:22px 18px 28px;background:linear-gradient(135deg,#102a43,#0f766e,#155e75);color:#fff;border-radius:0 0 27px 27px}
@@ -25,13 +25,14 @@ button.secondary{background:#e1f0ef;color:#0f766e}
 </style>
 </head>
 <body>
-<header><a href="dashboard.html">← Dashboard</a><h1>Business Profit</h1><p>Private administrator report · AILAT DATA</p></header>
+<header><a href="dashboard.html">← Dashboard</a><h1>Company Earnings & Profit</h1><p>Private administrator report · AILAT DATA</p></header>
 <main class="wrap">
  <section class="card"><div id="status" class="status">Checking administrator access…</div><div class="actions"><button id="refresh" class="secondary" type="button" disabled>Refresh report</button></div></section>
  <section class="cards" aria-live="polite">
-  <div class="card primary"><small>Admin Profit Wallet Balance</small><div class="value" id="totalProfit">—</div></div>
+  <div class="card primary"><small>Available Verified Profit</small><div class="value" id="totalProfit">—</div></div>
   <div class="card"><small>Today's Profit</small><div class="value" id="todayProfit">—</div></div>
   <div class="card"><small>Verified Sales</small><div class="value" id="totalSales">—</div></div>
+  <div class="card"><small>Verified Supplier Costs</small><div class="value" id="supplierCosts">—</div></div>
   <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
   <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
   <div class="card"><small>Total Profit Credits</small><div class="value" id="profitCredits">—</div></div>
@@ -39,6 +40,7 @@ button.secondary{background:#e1f0ef;color:#0f766e}
   <div class="card"><small>Reserved for Withdrawals</small><div class="value" id="reservedWithdrawals">—</div></div>
   <div class="card"><small>Available Verified Profit</small><div class="value" id="availableProfit">—</div></div>
  </section>
+ <p class="note">Verified sales are customer payments for completed orders. Supplier costs are confirmed provider charges. The available profit is the net amount after costs and recorded withdrawals; it is an accounting balance, not a live bank balance.</p>
  <h2 class="section">Manual Profit Withdrawal</h2>
  <section class="card">
   <p class="note" style="margin-top:0">This is a manual bank-payment workflow, not an automatic Paystack transfer. Only request an amount after confirming the same cleared cash is available in the AILAT DATA business bank account. Customer wallet funds are never available here.</p>
@@ -182,6 +184,7 @@ async function loadReport(){
   else data.recent_ledger.forEach(item=>ledgerEl.append(addLedger(item)));
   document.getElementById("todayProfit").textContent=money(t.today_profit);
   document.getElementById("totalSales").textContent=money(t.verified_sales);
+  document.getElementById("supplierCosts").textContent=money(t.verified_supplier_cost);
   document.getElementById("successCount").textContent=String(t.successful_orders||0);
   document.getElementById("reviewCount").textContent=String(t.needs_review_orders||0);
   ordersEl.replaceChildren();

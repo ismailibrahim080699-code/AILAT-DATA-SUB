@@ -362,7 +362,7 @@ Please check your phone number and selected data bundle before continuing.
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
-const SUPPLIER_CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/bilalsadasub-data-catalog";
+const SUPPLIER_CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/legitdataway-data-catalog";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS=[];
 let catalogRequestId=0;
@@ -421,7 +421,7 @@ function chooseNetwork(element,network){
   bundleGrid.textContent="Loading "+network+" bundles...";
   bundleCount.textContent="Loading...";
   const note=document.getElementById("planAvailability");
-  if(note) note.textContent="Connecting securely to Bilalsadasub...";
+  if(note) note.textContent="Connecting securely to Legitdataway...";
   loadPlans(network);
 }
 function selectBundle(id){
@@ -556,7 +556,7 @@ function normalizeSupplierPlan(raw,network){
   profit:pricing.profit,
   amount:pricing.sellingAmount,
   supplier_plan_id:String(id),
-  supplier:"Bilalsadasub"
+  supplier:"Legitdataway"
  };
 }
 async function loadPlans(networkToLoad=selectedNetwork){
@@ -571,9 +571,9 @@ async function loadPlans(networkToLoad=selectedNetwork){
    headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}
   });
   const result=await response.json();
-  if(!response.ok || !result.success) throw new Error(result.error||"Could not load Bilalsadasub data bundles.");
+  if(!response.ok || !result.success) throw new Error(result.error||"Could not load Legitdataway data bundles.");
   const rawPlans=findPlanArray(result.data);
-  if(!rawPlans) throw new Error("Bilalsadasub returned an unknown plan format. No unverified bundles were shown.");
+  if(!rawPlans) throw new Error("Legitdataway returned an unknown plan format. No unverified bundles were shown.");
   const verifiedPlans=rawPlans.map(plan=>normalizeSupplierPlan(plan,networkToLoad)).filter(Boolean);
   if(!verifiedPlans.length) throw new Error("No verified plan details were returned for "+networkToLoad+".");
   if(requestId!==catalogRequestId) return;
@@ -592,7 +592,7 @@ async function loadPlans(networkToLoad=selectedNetwork){
  }catch(error){
   if(requestId!==catalogRequestId) return;
   DATA_PLANS=[];
-  bundleGrid.textContent="Bilalsadasub data bundles are temporarily unavailable. Please refresh the page.";
+  bundleGrid.textContent="Legitdataway data bundles are temporarily unavailable. Please refresh the page.";
   bundleCount.textContent="Unavailable";
   const continueButton=document.getElementById("continueDataBtn");
   if(continueButton){continueButton.disabled=true;continueButton.textContent="Bundles unavailable";}

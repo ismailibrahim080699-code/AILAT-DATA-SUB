@@ -34,7 +34,8 @@ button.secondary{background:#e1f0ef;color:#0f766e}
   <div class="card"><small>Verified Sales</small><div class="value" id="totalSales">—</div></div>
   <div class="card"><small>Company Gross Business Inflow</small><div class="value" id="businessGross">—</div></div>
   <div class="card"><small>Company Supplier Expenses</small><div class="value" id="businessCosts">—</div></div>
-  <div class="card"><small>Company Net Business Balance</small><div class="value" id="businessNet">—</div></div>
+  <div class="card"><small>Orders Awaiting Supplier Cost</small><div class="value" id="businessCostReview">—</div></div>
+  <div class="card"><small>Gross Less Verified Supplier Costs</small><div class="value" id="businessNet">—</div></div>
   <div class="card"><small>Verified Supplier Costs</small><div class="value" id="supplierCosts">—</div></div>
   <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
   <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
@@ -204,6 +205,7 @@ async function loadReport(){
   document.getElementById("businessGross").textContent=money(t.company_gross_inflow);
   document.getElementById("businessCosts").textContent=money(t.company_supplier_expenses);
   document.getElementById("businessNet").textContent=money(t.company_net_business_balance);
+  document.getElementById("businessCostReview").textContent=String(t.orders_awaiting_supplier_cost||0);
   businessLedgerEl.replaceChildren();
   if(!data.recent_business_ledger||!data.recent_business_ledger.length){
    const empty=document.createElement("div");empty.className="card status";empty.textContent="No company business ledger entries yet.";businessLedgerEl.append(empty);

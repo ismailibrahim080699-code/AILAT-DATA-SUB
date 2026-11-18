@@ -32,6 +32,9 @@ button.secondary{background:#e1f0ef;color:#0f766e}
   <div class="card primary"><small>Available Verified Profit</small><div class="value" id="totalProfit">—</div></div>
   <div class="card"><small>Today's Profit</small><div class="value" id="todayProfit">—</div></div>
   <div class="card"><small>Verified Sales</small><div class="value" id="totalSales">—</div></div>
+  <div class="card"><small>Company Gross Business Inflow</small><div class="value" id="businessGross">—</div></div>
+  <div class="card"><small>Company Supplier Expenses</small><div class="value" id="businessCosts">—</div></div>
+  <div class="card"><small>Company Net Business Balance</small><div class="value" id="businessNet">—</div></div>
   <div class="card"><small>Verified Supplier Costs</small><div class="value" id="supplierCosts">—</div></div>
   <div class="card"><small>Successful Orders</small><div class="value" id="successCount">—</div></div>
   <div class="card"><small>Needs Review</small><div class="value" id="reviewCount">—</div></div>
@@ -40,6 +43,9 @@ button.secondary{background:#e1f0ef;color:#0f766e}
   <div class="card"><small>Reserved for Withdrawals</small><div class="value" id="reservedWithdrawals">—</div></div>
   <div class="card"><small>Available Verified Profit</small><div class="value" id="availableProfit">—</div></div>
  </section>
+ <p class="note">Company Business Inflow is the full amount charged to customers on completed orders. Supplier expenses are costs verified from supplier records. Net business balance is an accounting figure, not proof of cleared bank cash. Do not withdraw or reuse funds unless matching cash has settled and customer wallet liabilities and other obligations are covered.</p>
+ <h2 class="section">Company Business Ledger</h2>
+ <section id="businessLedger"><div class="card status">Waiting for company business ledger…</div></section>
  <p class="note">Verified sales are customer payments for completed orders. Supplier costs are confirmed provider charges. The available profit is the net amount after costs and recorded withdrawals; it is an accounting balance, not a live bank balance.</p>
  <h2 class="section">Manual Profit Withdrawal</h2>
  <section class="card">
@@ -73,6 +79,7 @@ const statusEl=document.getElementById("status");
 const ordersEl=document.getElementById("orders");
 const ledgerEl=document.getElementById("ledger");
 const withdrawalsEl=document.getElementById("withdrawals");
+const businessLedgerEl=document.getElementById("businessLedger");
 const withdrawalStatus=document.getElementById("withdrawalStatus");
 const withdrawalForm=document.getElementById("withdrawalForm");
 const refresh=document.getElementById("refresh");
@@ -97,6 +104,16 @@ function addLedger(item){
  top.append(title,amount);
  const meta=document.createElement("div");meta.className="meta";
  meta.textContent=item.reference+" · "+new Date(item.created_at).toLocaleString("en-NG")+" · "+item.description;
+ card.append(top,meta);return card;
+}
+function addBusinessLedger(item){
+ const card=document.createElement("article");card.className="order";
+ const top=document.createElement("div");top.className="order-top";
+ const title=document.createElement("span");title.className="ref";title.textContent=item.entry_type.replaceAll("_"," ").toUpperCase();
+ const amount=document.createElement("span");amount.className="profit";amount.textContent=(item.direction==="debit"?"−":"+")+money(item.amount);
+ top.append(title,amount);
+ const meta=document.createElement("div");meta.className="meta";
+ meta.textContent=item.reference+" · "+new Date(item.created_at).toLocaleString("en-NG")+" · "+(item.description||"");
  card.append(top,meta);return card;
 }
 function addWithdrawal(item){
@@ -184,6 +201,14 @@ async function loadReport(){
   else data.recent_ledger.forEach(item=>ledgerEl.append(addLedger(item)));
   document.getElementById("todayProfit").textContent=money(t.today_profit);
   document.getElementById("totalSales").textContent=money(t.verified_sales);
+  document.getElementById("businessGross").textContent=money(t.company_gross_inflow);
+  document.getElementById("businessCosts").textContent=money(t.company_supplier_expenses);
+  document.getElementById("businessNet").textContent=money(t.company_net_business_balance);
+  businessLedgerEl.replaceChildren();
+  if(!data.recent_business_ledger||!data.recent_business_ledger.length){
+   const empty=document.createElement("div");empty.className="card status";empty.textContent="No company business ledger entries yet.";businessLedgerEl.append(empty);
+  }else data.recent_business_ledger.forEach(item=>businessLedgerEl.append(addBusinessLedger(item)));
+
   document.getElementById("supplierCosts").textContent=money(t.verified_supplier_cost);
   document.getElementById("successCount").textContent=String(t.successful_orders||0);
   document.getElementById("reviewCount").textContent=String(t.needs_review_orders||0);

@@ -47,7 +47,7 @@ button:disabled{opacity:.65;cursor:wait}
 <div class="item"><span>Data Bundle</span><strong id="bundle">-</strong></div>
 <div class="total"><span>AILAT DATA Selling Price</span><strong id="amount">Not available</strong></div>
 <div class="notice">
-<strong>Payment and delivery:</strong> The displayed amount is AILAT DATA’s selling price. When you approve the order, your wallet will be charged. If Bilalsadasub confirms that delivery failed, AILAT DATA will automatically refund the charge. If the supplier response is pending, do not submit the order again.
+<strong>Payment and delivery:</strong> The displayed amount is AILAT DATA’s selling price. When you approve the order, your wallet will be charged. If Legitdataway confirms that delivery failed, AILAT DATA will automatically refund the charge. If the supplier response is pending, do not submit the order again.
 </div>
 <button id="confirmButton" type="button">Submit Order Request</button>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
@@ -62,7 +62,7 @@ import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
 const SUPABASE_FUNCTION_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
-const SUPPLIER_CATALOG_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/bilalsadasub-data-catalog";
+const SUPPLIER_CATALOG_URL = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/legitdataway-data-catalog";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS = [];
 let plansLoadError = false;
@@ -96,7 +96,7 @@ function normalizeCatalogPlan(raw, network){
  const sizeGb=getDataSizeGb(name);
  if(sizeGb===null) return null;
  const profit=Math.round(sizeGb*50*100)/100;
- return {id:String(id),network:network.toLowerCase()==="t2"?"9mobile":network.toLowerCase(),internal_network_id:({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5})[network.toLowerCase()]??null,type,name:String(name),validity:String(validity),supplier_amount:Number(amount),data_size_gb:sizeGb,profit,amount:Math.round((Number(amount)+profit)*100)/100,supplier_plan_id:String(id),supplier:"Bilalsadasub"};
+ return {id:String(id),network:network.toLowerCase()==="t2"?"9mobile":network.toLowerCase(),internal_network_id:({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5})[network.toLowerCase()]??null,type,name:String(name),validity:String(validity),supplier_amount:Number(amount),data_size_gb:sizeGb,profit,amount:Math.round((Number(amount)+profit)*100)/100,supplier_plan_id:String(id),supplier:"Legitdataway"};
 }
 try {
  const user = await new Promise((resolve,reject)=>{
@@ -110,7 +110,7 @@ try {
  if(!["MTN","AIRTEL","GLO","T2","VITEL"].includes(supplierNetwork)) throw new Error("Invalid selected network.");
  const plansResponse=await fetch(SUPPLIER_CATALOG_URL+"?action=plans&network="+encodeURIComponent(supplierNetwork),{headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}});
  const plansResult=await plansResponse.json().catch(()=>({}));
- if(!plansResponse.ok||!plansResult.success) throw new Error(plansResult.error||"Bilalsadasub data plan details could not be loaded.");
+ if(!plansResponse.ok||!plansResult.success) throw new Error(plansResult.error||"Legitdataway data plan details could not be loaded.");
  const rawPlans=findPlanArray(plansResult.data);
  if(!rawPlans) throw new Error("Supplier returned an unknown plan format.");
  DATA_PLANS=rawPlans.map(item=>normalizeCatalogPlan(item,supplierNetwork)).filter(Boolean);

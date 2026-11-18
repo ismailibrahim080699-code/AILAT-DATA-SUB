@@ -220,7 +220,7 @@ onAuthStateChanged(auth,async(user)=>{
   }
  }catch(error){
   console.error(error);
-  showMessage("Unable to load referral information. Please try again.","red");
+  showMessage("Referral loading error: "+(error?.message||String(error)),"red");
  }
 });
 

@@ -130,6 +130,17 @@ import {
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+async function createShortReferralCode(uid){
+ for(let attempt=0;attempt<40;attempt++){
+  const bytes=new Uint32Array(1);
+  crypto.getRandomValues(bytes);
+  const code="AILAT"+String(bytes[0]%100000).padStart(5,"0");
+  const snap=await getDoc(doc(db,"referralCodes",code));
+  if(!snap.exists()||snap.data().ownerUid===uid)return code;
+ }
+ throw new Error("Could not create a unique referral code. Please try again.");
+}
+
 const form = document.getElementById("registerForm");
 const button = document.getElementById("registerBtn");
 const referralInput = document.getElementById("referralCode");
@@ -272,8 +283,7 @@ form.addEventListener("submit", async function(event){
    throw new Error("You cannot use your own referral code.");
   }
 
-  const myReferralCode =
-   "AILAT" + uid.substring(0,8).toUpperCase();
+  const myReferralCode = await createShortReferralCode(uid);
 
   // SAVE THE USER, PERSONAL CODE AND REFERRAL AS ONE ATOMIC WRITE.
   // This prevents a partial referral record if any write is rejected.

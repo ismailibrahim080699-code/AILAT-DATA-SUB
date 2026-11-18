@@ -99,7 +99,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-import { getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,where,getDocs,serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { getFirestore,doc,getDoc,writeBatch,collection,query,where,getDocs,serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const auth=getAuth(app);
 const db=getFirestore(app);
@@ -184,17 +184,19 @@ onAuthStateChanged(auth,async(user)=>{
   if(!referralCode || !/^AILAT[0-9]{5}$/.test(referralCode)){
    const oldCode=referralCode;
    referralCode=await createShortReferralCode(user.uid);
-   await setDoc(doc(db,"referralCodes",referralCode),{ownerUid:user.uid,createdAt:serverTimestamp()});
-   await updateDoc(userRef,{referralCode});
+   const batch=writeBatch(db);
+   batch.set(doc(db,"referralCodes",referralCode),{ownerUid:user.uid,createdAt:serverTimestamp()});
+   batch.update(userRef,{referralCode});
    if(oldCode){
     const oldCodeRef=doc(db,"referralCodes",oldCode);
     const oldCodeSnap=await getDoc(oldCodeRef);
     if(!oldCodeSnap.exists()){
-     await setDoc(oldCodeRef,{ownerUid:user.uid,createdAt:serverTimestamp(),legacyAlias:true});
+     batch.set(oldCodeRef,{ownerUid:user.uid,createdAt:serverTimestamp(),legacyAlias:true});
     }else if(oldCodeSnap.data().ownerUid!==user.uid){
      throw new Error("Existing referral code ownership could not be verified.");
     }
    }
+   await batch.commit();
   }else{
    const codeRef=doc(db,"referralCodes",referralCode);
    const codeSnap=await getDoc(codeRef);

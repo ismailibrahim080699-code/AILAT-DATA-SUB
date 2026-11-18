@@ -110,6 +110,17 @@ const countElement=document.getElementById("referralCount");
 const message=document.getElementById("message");
 let referralLink="";
 
+async function createShortReferralCode(uid){
+ for(let attempt=0;attempt<40;attempt++){
+  const bytes=new Uint32Array(1);
+  crypto.getRandomValues(bytes);
+  const code="AILAT"+String(bytes[0]%100000).padStart(5,"0");
+  const snap=await getDoc(doc(db,"referralCodes",code));
+  if(!snap.exists()||snap.data().ownerUid===uid)return code;
+ }
+ throw new Error("Could not create a unique referral code. Please try again.");
+}
+
 function showMessage(text,color="green"){
  message.style.color=color;
  message.textContent=text;
@@ -169,16 +180,29 @@ onAuthStateChanged(auth,async(user)=>{
   const userSnap=await getDoc(userRef);
   if(!userSnap.exists()){showMessage("User profile not found.","red");return;}
   let referralCode=userSnap.data().referralCode;
-  if(!referralCode){
-   referralCode="AILAT"+user.uid.substring(0,8).toUpperCase();
+  // Keep existing codes valid as aliases, but issue a short code for long legacy codes.
+  if(!referralCode || !/^AILAT[0-9]{5}$/.test(referralCode)){
+   const oldCode=referralCode;
+   referralCode=await createShortReferralCode(user.uid);
+   await setDoc(doc(db,"referralCodes",referralCode),{ownerUid:user.uid,createdAt:serverTimestamp()});
    await updateDoc(userRef,{referralCode});
-  }
-  const codeRef=doc(db,"referralCodes",referralCode);
-  const codeSnap=await getDoc(codeRef);
-  if(!codeSnap.exists()){
-   await setDoc(codeRef,{ownerUid:user.uid,createdAt:serverTimestamp()});
-  }else if(codeSnap.data().ownerUid!==user.uid){
-   throw new Error("Referral code ownership could not be verified.");
+   if(oldCode){
+    const oldCodeRef=doc(db,"referralCodes",oldCode);
+    const oldCodeSnap=await getDoc(oldCodeRef);
+    if(!oldCodeSnap.exists()){
+     await setDoc(oldCodeRef,{ownerUid:user.uid,createdAt:serverTimestamp(),legacyAlias:true});
+    }else if(oldCodeSnap.data().ownerUid!==user.uid){
+     throw new Error("Existing referral code ownership could not be verified.");
+    }
+   }
+  }else{
+   const codeRef=doc(db,"referralCodes",referralCode);
+   const codeSnap=await getDoc(codeRef);
+   if(!codeSnap.exists()){
+    await setDoc(codeRef,{ownerUid:user.uid,createdAt:serverTimestamp()});
+   }else if(codeSnap.data().ownerUid!==user.uid){
+    throw new Error("Referral code ownership could not be verified.");
+   }
   }
   codeElement.textContent=referralCode;
   referralLink="https://ismailibrahim080699-code.github.io/Ailat-data/register.html?ref="+encodeURIComponent(referralCode);

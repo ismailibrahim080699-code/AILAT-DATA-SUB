@@ -537,13 +537,13 @@ function normalizeSupplierPlan(raw,network){
  const id=raw.id ?? raw.plan_id ?? raw.planId ?? raw.plan_code ?? raw.code;
  const name=raw.plan ?? raw.name ?? raw.bundle_name ?? raw.plan_name ?? raw.title ?? raw.size;
  const amount=raw.amount ?? raw.price ?? raw.api_price ?? raw.plan_amount;
+ const supplierAmount=raw.supplier_amount ?? amount;
  const validity=raw.validity ?? raw.duration ?? raw.validity_period ?? raw.plan_day ?? "As listed by supplier";
  const rawType=raw.type ?? raw.plan_type ?? raw.planType ?? raw.category ?? "";
  const typeText=String(rawType).toUpperCase();
  const type=typeText.includes("CORPORATE") || typeText.includes("COOPERATE") ? "CORPORATE" : typeText;
- if(id===undefined || !name || !Number.isFinite(Number(amount)) || Number(amount)<=0 || !type) return null;
- const pricing=calculateAilatSellingPrice(Number(amount),name);
- if(!pricing) return null;
+ if(id===undefined || !name || !Number.isFinite(Number(amount)) || Number(amount)<=0 || !Number.isFinite(Number(supplierAmount)) || Number(supplierAmount)<=0 || Number(amount)<Number(supplierAmount) || !type) return null;
+ const dataSizeGb=getDataSizeGb(name);
  return {
   id:String(id),
   network:network==="9mobile"?"9mobile":network.toLowerCase(),
@@ -551,10 +551,10 @@ function normalizeSupplierPlan(raw,network){
   type,
   name:String(name),
   validity:String(validity),
-  supplier_amount:Number(amount),
-  data_size_gb:pricing.dataSizeGb,
-  profit:pricing.profit,
-  amount:pricing.sellingAmount,
+  supplier_amount:Number(supplierAmount),
+  data_size_gb:dataSizeGb,
+  profit:Math.round((Number(amount)-Number(supplierAmount))*100)/100,
+  amount:Number(amount),
   supplier_plan_id:String(id),
   supplier:"Legitdataway"
  };

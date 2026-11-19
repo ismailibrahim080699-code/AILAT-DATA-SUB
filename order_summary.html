@@ -143,7 +143,6 @@ const validNetworks = ["MTN","Airtel","Glo","T2","9mobile","Vitel"];
 // AILAT DATA identifiers are separate from LegitDataWay identifiers.
 const AILAT_NETWORK_IDS = Object.freeze({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5});
 // LegitDataWay network IDs documented by the supplier. Vitel is intentionally unmapped.
-const BILALSADASUB_NETWORK_IDS = Object.freeze({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5});
 const expectedNetworkId = AILAT_NETWORK_IDS[network.toLowerCase()] ?? null;
 const suppliedNetworkId = Number(orderDraft?.internal_network_id);
 const validPhone = /^0[789][01]\d{8}$/;

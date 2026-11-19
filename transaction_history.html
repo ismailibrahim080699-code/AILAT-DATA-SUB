@@ -16,6 +16,7 @@ body{
  color:#24134d;
 }
 header{
+ display:flex;align-items:center;gap:12px;
  background:linear-gradient(135deg,#4c1d95,#7c3aed);
  color:white;
  padding:25px 20px 30px;
@@ -141,7 +142,7 @@ header p{margin:8px 0 0;font-size:14px;opacity:.9}
  margin-top:20px;
 }
 .error{color:#b91c1c}
-.brand-mark{width:34px;height:34px;object-fit:contain;flex:0 0 34px;vertical-align:middle}
+.brand-mark{width:34px;height:34px;object-fit:contain;flex:0 0 34px;vertical-align:middle}.top-back{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:#ffffff18;color:white;text-decoration:none;font-size:32px;line-height:1}
 </style>
   <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
 </head>
@@ -149,6 +150,7 @@ header p{margin:8px 0 0;font-size:14px;opacity:.9}
 <body>
 
 <header>
+<a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a>
 <img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA">
  <h2>AILAT DATA</h2>
  <p>Transaction History</p>
@@ -170,7 +172,7 @@ header p{margin:8px 0 0;font-size:14px;opacity:.9}
   </div>
  </div>
 
- <a href="dashboard.html" class="back">← Back to Dashboard</a>
+ 
 </div>
 
 <script type="module">

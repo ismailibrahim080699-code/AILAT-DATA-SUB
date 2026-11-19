@@ -78,6 +78,10 @@ select:focus,input:focus{
  border-color:#6425c5;
 }
 
+.input-error{border-color:#dc2626!important;background:#fffafa}
+.field-error{display:none;color:#dc2626;font-size:12px;line-height:1.45;margin-top:7px}
+.field-error.show{display:block}
+
 .purchase-types{
  display:grid;
  grid-template-columns:repeat(3,minmax(0,1fr));
@@ -321,7 +325,9 @@ Choose your network and preferred data plan.
  id="phone"
  placeholder="Enter 11-digit phone number"
  maxlength="11"
- inputmode="numeric">
+ inputmode="numeric"
+ aria-describedby="phoneError">
+<p id="phoneError" class="field-error" role="alert">Please enter a valid 11-digit Nigerian phone number.</p>
 
 <div class="bundle-heading">
   <div>
@@ -462,11 +468,29 @@ function renderPlans(){
  if(note) note.textContent=matching.length+" bundles available for "+selectedNetwork+". Prices shown are AILAT DATA selling prices.";
  updateContinueButton();
 }
+const phoneInput=document.getElementById("phone");
+const phoneError=document.getElementById("phoneError");
+function validatePhone(showError=true){
+ const phone=phoneInput.value.trim();
+ const valid=/^0[789][01]\d{8}$/.test(phone);
+ phoneInput.classList.toggle("input-error",showError && !valid);
+ phoneInput.setAttribute("aria-invalid",String(showError && !valid));
+ phoneError.classList.toggle("show",showError && !valid);
+ return valid;
+}
+phoneInput.addEventListener("input",()=>{
+ phoneInput.value=phoneInput.value.replace(/\D/g,"").slice(0,11);
+ if(phoneInput.value.length===11) validatePhone(true);
+ else {phoneInput.classList.remove("input-error");phoneInput.setAttribute("aria-invalid","false");phoneError.classList.remove("show");}
+});
+
 function continuePurchase(){
- const phone=document.getElementById("phone").value.trim();
+ const phone=phoneInput.value.trim();
  const selected=DATA_PLANS.find(item=>String(item.id)===selectedPlanId && item.network.toLowerCase()===selectedNetwork.toLowerCase() && normalizedType(item.type)===selectedPurchaseType);
- if(!/^0[789][01]\d{8}$/.test(phone)){
-  alert("Please enter a valid 11-digit Nigerian phone number."); return;
+ if(!validatePhone(true)){
+  phoneInput.focus();
+  phoneInput.scrollIntoView({behavior:"smooth",block:"center"});
+  return;
  }
  if(!selected){ alert("Please select a data bundle."); return; }
  const orderDraft={

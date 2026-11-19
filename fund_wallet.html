@@ -24,7 +24,7 @@ button:disabled{opacity:.55;cursor:wait}
 </style>
 </head>
 <body>
-<header><a href="dashboard.html">← Back to Dashboard</a></header>
+<header><a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a></header>
 <main><section class="card">
 <h1>Fund Wallet</h1>
 <p>Add money securely to your AILAT DATA wallet using Paystack. Your wallet is credited only after the payment is verified directly with Paystack.</p>
@@ -34,7 +34,7 @@ button:disabled{opacity:.55;cursor:wait}
 <div class="notice"><strong>Important:</strong> Minimum funding is ₦100. Do not close the Paystack page before completing payment. Never share your password, OTP, card PIN, or secret keys with anyone.</div>
 <div id="status" class="status" role="status" aria-live="polite">Checking your verified account…</div>
 <a class="link secondary" href="transaction_history.html">View Transaction History</a>
-<a class="link secondary" href="dashboard.html">Return to Dashboard</a>
+
 </section></main>
 <script type="module">
 import { app } from "./firebase.js";

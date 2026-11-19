@@ -93,15 +93,17 @@ function normalizeCatalogPlan(raw, network){
  if(!raw || typeof raw!=="object") return null;
  const id=raw.id ?? raw.plan_id ?? raw.planId ?? raw.plan_code ?? raw.code;
  const name=raw.plan ?? raw.name ?? raw.bundle_name ?? raw.plan_name ?? raw.title ?? raw.size;
- const amount=raw.amount ?? raw.price ?? raw.api_price ?? raw.plan_amount;
+ const sellingValue=raw.selling_price ?? raw.amount ?? raw.price ?? raw.api_price ?? raw.plan_amount;
+ const supplierValue=raw.supplier_amount ?? sellingValue;
  const validity=raw.validity ?? raw.duration ?? raw.validity_period ?? raw.plan_day ?? "As listed by supplier";
  const rawType=String(raw.type ?? raw.plan_type ?? raw.planType ?? raw.category ?? "").toUpperCase();
  const type=rawType.includes("CORPORATE")||rawType.includes("COOPERATE")?"CORPORATE":rawType;
- if(id===undefined || !name || !Number.isFinite(Number(amount)) || Number(amount)<=0 || !type) return null;
+ const sellingAmount=Number(sellingValue);
+ const supplierAmount=Number(supplierValue);
+ if(id===undefined || !name || !Number.isFinite(sellingAmount) || sellingAmount<=0 || !Number.isFinite(supplierAmount) || supplierAmount<=0 || sellingAmount<supplierAmount || !type) return null;
  const sizeGb=getDataSizeGb(name);
- if(sizeGb===null) return null;
- const profit=Math.round(sizeGb*50*100)/100;
- return {id:String(id),network:network.toLowerCase()==="t2"?"9mobile":network.toLowerCase(),internal_network_id:({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5})[network.toLowerCase()]??null,type,name:String(name),validity:String(validity),supplier_amount:Number(amount),data_size_gb:sizeGb,profit,amount:Math.round((Number(amount)+profit)*100)/100,supplier_plan_id:String(id),supplier:"Legitdataway"};
+ const profit=Math.round((sellingAmount-supplierAmount)*100)/100;
+ return {id:String(id),network:network.toLowerCase()==="t2"?"9mobile":network.toLowerCase(),internal_network_id:({mtn:1,airtel:2,glo:3,t2:4,"9mobile":4,vitel:5})[network.toLowerCase()]??null,type,name:String(name),validity:String(validity),supplier_amount:supplierAmount,data_size_gb:sizeGb,profit,amount:Math.round(sellingAmount*100)/100,supplier_plan_id:String(id),supplier:"Legitdataway"};
 }
 try {
  const user = await new Promise((resolve,reject)=>{

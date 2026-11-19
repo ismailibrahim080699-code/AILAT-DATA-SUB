@@ -179,7 +179,7 @@ newRequestButton.addEventListener("click",()=>{
  try{ sessionStorage.setItem(requestStorageKey,requestKey); }catch(error){}
  requestSaved = false;
  button.disabled = false;
- button.textContent = selectedApprovalMethod==="pin" ? "Continue with Transaction PIN" : "Continue with Fingerprint";
+ button.textContent = selectedApprovalMethod==="pin" ? "Continue with Transaction PIN" : "Approve securely";
  newRequestButton.hidden = true;
  statusBox.textContent = "A new request has been prepared. Review the details before submitting.";
 });

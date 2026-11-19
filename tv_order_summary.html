@@ -31,7 +31,7 @@ function toB64url(buffer){const bytes=new Uint8Array(buffer);let raw="";for(cons
 async function approveCableOrder(token,intent,method){
  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
  const call=async body=>{const r=await fetch(endpoint,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success)throw new Error(d.error||"Transaction approval failed.");return d;};
- if(method==="pin"){const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this exact purchase.");if(pin===null)throw new Error("Transaction approval cancelled.");if(!/^\\d{4}$/.test(pin.trim()))throw new Error("Enter your 4-digit Transaction PIN.");const done=await call({action:"authorize_with_pin",intent,pin:pin.trim()});if(!done.authorization_token)throw new Error("PIN approval failed.");return done.authorization_token;}
+ if(method==="pin"){const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this exact purchase.");if(pin===null)throw new Error("Transaction approval cancelled.");if(!/^\d{4}$/.test(pin.trim()))throw new Error("Enter your 4-digit Transaction PIN.");const done=await call({action:"authorize_with_pin",intent,pin:pin.trim()});if(!done.authorization_token)throw new Error("PIN approval failed.");return done.authorization_token;}
  try{
   const begin=await call({action:"start_transaction",intent});
   const options={...begin.options,challenge:fromB64url(begin.options.challenge),allowCredentials:(begin.options.allowCredentials||[]).map(x=>({...x,id:fromB64url(x.id)}))};

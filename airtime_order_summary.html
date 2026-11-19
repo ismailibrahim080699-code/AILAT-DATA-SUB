@@ -48,9 +48,9 @@ button:disabled{opacity:.65;cursor:wait}
 <div class="item"><span>Phone Number</span><strong id="phone">-</strong></div>
 <div class="total"><span>Requested Airtime Value</span><strong id="amount">₦0.00</strong></div>
 <div class="notice">
-<strong>Live airtime purchase:</strong> Confirming will debit the displayed amount from your AILAT DATA wallet and send your VTU or SNS airtime request to Bilalsadasub. If the supplier confirms failure, the system will refund your wallet. If the supplier response is delayed, the order will remain under processing—do not submit it again.
+<strong>Safe testing mode:</strong> This is a review-only request. No wallet payment will be taken and no airtime will be sent. Legitdataway is the selected supplier.
 </div>
-<button id="confirmButton" type="button">Pay Now</button><div class="pin-overlay" id="pinOverlay"><div class="pin-dialog"><h3>Enter AILAT DATA PIN</h3><p>Enter your existing 4-digit Transaction PIN.</p><div class="pin-boxes"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><p id="pinError" class="pin-error" role="alert"></p><div class="pin-actions"><button type="button" id="cancelPin">Cancel</button><button type="button" id="submitPin">Confirm PIN</button></div></div></div>
+<button id="confirmButton" type="button" disabled>Live purchase disabled</button><div class="pin-overlay" id="pinOverlay"><div class="pin-dialog"><h3>Enter AILAT DATA PIN</h3><p>Enter your existing 4-digit Transaction PIN.</p><div class="pin-boxes"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><p id="pinError" class="pin-error" role="alert"></p><div class="pin-actions"><button type="button" id="cancelPin">Cancel</button><button type="button" id="submitPin">Confirm PIN</button></div></div></div>
 <button type="button" class="pin-link" id="pinChoice">Use PIN</button>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite"></p>
@@ -80,6 +80,31 @@ const validPhone = /^0[789][01]\d{8}$/;
 const validAmount = Number.isSafeInteger(amount) && amount >= 50 && amount <= 50000;
 const button = document.getElementById("confirmButton");
 const statusBox = document.getElementById("requestStatus");
+const quoteBox = document.createElement("div");
+quoteBox.className = "notice";
+quoteBox.style.background = "#f3edff";
+quoteBox.style.color = "#4c1d95";
+quoteBox.innerHTML = "<strong>MTN pricing estimate</strong><br>Loading estimate…";
+document.getElementById("amount").closest(".total").insertAdjacentElement("afterend", quoteBox);
+async function loadAirtimeQuote(){
+  if(network !== "MTN"){
+    quoteBox.textContent = "A verified Legitdataway Airtime rate is not available for this network yet.";
+    return;
+  }
+  try{
+    const url = SUPABASE_FUNCTION_URL + "?action=airtime_quote&network=mtn&amount=" + encodeURIComponent(String(amount));
+    const response = await fetch(url, {method:"GET", headers:{"apikey":SUPABASE_PUBLISHABLE_KEY}});
+    const data = await response.json().catch(()=>({}));
+    if(!response.ok || !data.success) throw new Error(data.error || "Quote unavailable");
+    quoteBox.innerHTML = "<strong>MTN estimated breakdown</strong><br>Customer airtime value: ₦" + Number(data.customer_pays).toLocaleString("en-NG") +
+      "<br>Estimated Legitdataway cost: ₦" + Number(data.supplier_estimated_cost).toLocaleString("en-NG") +
+      "<br><strong>Estimated AILAT DATA gross profit: ₦" + Number(data.estimated_profit).toLocaleString("en-NG") + "</strong>" +
+      "<br><small>Estimate based on the confirmed ₦100 → ₦97 supplier debit sample. Final supplier cost must be verified before live vending.</small>";
+  }catch(error){
+    quoteBox.textContent = "MTN estimate could not be loaded. No transaction has been made.";
+  }
+}
+loadAirtimeQuote();
 // Keep the same request identifier across refreshes for this exact draft.
 // This prevents a refresh/retry from creating a second request record.
 const orderFingerprint = [network.toLowerCase(), phone, String(amount), planType].join("|");
@@ -164,6 +189,8 @@ function getSignedInUser(){
 }
 
 button.addEventListener("click",async()=>{
+ statusBox.textContent = "Live airtime purchases are disabled during safe testing. No payment was taken and no supplier request was sent.";
+ return;
  if(requestSaved || !validNetworks.includes(network) || !validPhone.test(phone) || !validAmount) return;
  button.disabled = true;
  button.textContent = selectedApprovalMethod==="pin" ? "Verifying Transaction PIN..." : "Waiting for fingerprint...";

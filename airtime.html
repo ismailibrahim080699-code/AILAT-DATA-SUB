@@ -91,6 +91,7 @@ label{display:block;font-size:13px;font-weight:bold;margin:19px 0 9px}
 }
 input{width:100%;padding:15px;border:1px solid #e5e1ed;border-radius:10px;font-size:14px;outline:none}
 input:focus{border-color:#6425c5}
+.input-error{border-color:#dc2626!important;background:#fffafa}.field-error{display:none;color:#dc2626;font-size:12px;line-height:1.45;margin-top:7px}.field-error.show{display:block}
 .amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .amount{padding:14px 5px;border:1px solid #e8e3f0;border-radius:10px;text-align:center;font-weight:bold;cursor:pointer}
 .amount.active{background:#f3ecff;border:2px solid #6425c5;color:#6425c5}
@@ -164,7 +165,8 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 </div>
 
 <label>Airtime Type</label><div class="amounts" id="airtimeTypes"><div class="amount active" onclick="chooseAirtimeType(this,'VTU')">VTU</div><div class="amount" onclick="chooseAirtimeType(this,'SNS')">Share &amp; Sell (SNS)</div></div><p class="note">VTU is regular transferable airtime. SNS is cheaper and cannot be transferred.</p><label>Phone Number</label>
-<input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="Enter 11-digit phone number" maxlength="11">
+<input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="Enter 11-digit phone number" maxlength="11" aria-describedby="phoneError">
+<p id="phoneError" class="field-error" role="alert">Please enter a valid 11-digit Nigerian phone number.</p>
 
 <label>Select Amount</label>
 
@@ -178,7 +180,8 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 </div>
 
 <label>Or Enter Amount</label>
-<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter amount (₦)" min="50" max="50000" step="1" oninput="customValue()">
+<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter amount (₦)" min="50" max="50000" step="1" oninput="customValue()" aria-describedby="amountError">
+<p id="amountError" class="field-error" role="alert">Enter a whole amount between ₦50 and ₦50,000.</p>
 
 <div class="total">
 <span>Requested Airtime Value</span>
@@ -241,17 +244,29 @@ document.getElementById('total').textContent=
 document.getElementById("phone").addEventListener("input",updateAirtimeContinue);
 updateAirtimeContinue();
 
-function continuePurchase(){
-let phone=document.getElementById('phone').value.trim();
-
-if(!/^0[789][01]\d{8}$/.test(phone)){
-alert('Please enter a valid 11-digit Nigerian phone number.');
-return;
+const phoneInput=document.getElementById("phone"),phoneError=document.getElementById("phoneError");
+const customAmountInput=document.getElementById("customAmount"),amountError=document.getElementById("amountError");
+function validateAirtimeFields(showErrors=true){
+ const validPhone=/^0[789][01]\d{8}$/.test(phoneInput.value.trim());
+ const validAmount=Number.isInteger(selectedAmount)&&selectedAmount>=50&&selectedAmount<=50000;
+ phoneInput.classList.toggle("input-error",showErrors&&!validPhone);
+ phoneInput.setAttribute("aria-invalid",String(showErrors&&!validPhone));
+ phoneError.classList.toggle("show",showErrors&&!validPhone);
+ customAmountInput.classList.toggle("input-error",showErrors&&!validAmount&&customAmountInput.value.trim()!=="");
+ customAmountInput.setAttribute("aria-invalid",String(showErrors&&!validAmount&&customAmountInput.value.trim()!==""));
+ amountError.classList.toggle("show",showErrors&&!validAmount&&customAmountInput.value.trim()!=="");
+ return validPhone&&validAmount;
 }
-
-if(!Number.isInteger(selectedAmount) || selectedAmount<50 || selectedAmount>50000){
-alert('Please enter a whole amount between ₦50 and ₦50,000.');
-return;
+phoneInput.addEventListener("input",()=>{
+ phoneInput.value=phoneInput.value.replace(/\D/g,"").slice(0,11);
+ if(phoneInput.value.length===11) validateAirtimeFields(true);
+ else {phoneInput.classList.remove("input-error");phoneInput.setAttribute("aria-invalid","false");phoneError.classList.remove("show");}
+});
+function continuePurchase(){
+let phone=phoneInput.value.trim();
+if(!validateAirtimeFields(true)){
+ const firstInvalid=!/^0[789][01]\d{8}$/.test(phone)?phoneInput:customAmountInput;
+ firstInvalid.focus();firstInvalid.scrollIntoView({behavior:"smooth",block:"center"});return;
 }
 
 // Keep customer details out of the URL, browser history and referrer logs.

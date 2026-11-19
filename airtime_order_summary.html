@@ -226,7 +226,7 @@ button.addEventListener("click",async()=>{
   const savedRequest = result.order_request || {};
   const referenceText = savedRequest.reference ? " Reference: " + savedRequest.reference + "." : "";
   const statusText = savedRequest.status ? " Status: " + savedRequest.status + "." : "";
-  statusBox.textContent = result.fulfillment_status === "success" ? "Bilalsadasub confirmed that your airtime was sent." + referenceText + statusText : "Your wallet payment was accepted and your airtime order is processing. Do not submit again." + referenceText + statusText;
+  statusBox.textContent = result.fulfillment_status === "success" ? "Legitdataway confirmed that your airtime was sent." + referenceText + statusText : "Your airtime request is processing. Do not submit it again." + referenceText + statusText;
  }catch(error){
   button.disabled = false;
   button.textContent = "Try Again";

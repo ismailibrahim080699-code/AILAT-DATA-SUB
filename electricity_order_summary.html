@@ -26,7 +26,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 .cancel{display:block;text-align:center;margin-top:18px;color:#6425c5;text-decoration:none;font-size:14px}
 .error{background:#fff0ef;color:#a52222;padding:16px;border-radius:12px;font-size:14px;line-height:1.7}
 
-.auth-choice{margin-top:18px;padding:15px;border:1px solid #e8e1f2;border-radius:13px;background:#fbf9ff}.auth-choice h4{font-size:13px;color:#352052;margin-bottom:6px}.auth-choice p{font-size:11px;color:#81758f;line-height:1.5;margin-bottom:10px}.auth-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.auth-option{margin:0;padding:12px 8px;border:1px solid #e4d9f3;border-radius:10px;background:#fff;color:#5425a8;font-size:12px}.auth-option.active{background:#f1eaff;border:2px solid #6425c5;padding:11px 7px}
+.pin-link{display:block;width:auto;margin:11px auto 0;padding:5px 10px;background:transparent;color:#6425c5;font-size:13px;text-decoration:underline;text-underline-offset:3px}.pin-overlay{position:fixed;inset:0;z-index:9999;background:#180c2dcc;display:none;align-items:center;justify-content:center;padding:20px}.pin-overlay.show{display:flex}.pin-dialog{width:100%;max-width:350px;background:#fff;border-radius:20px;padding:24px;text-align:center}.pin-dialog h3{color:#352052}.pin-dialog p{font-size:12px;color:#81758f;margin:12px 0}.pin-boxes{display:flex;justify-content:center;gap:9px}.pin-input{width:52px;height:58px;border:1px solid #d9cbea;border-radius:11px;text-align:center;font-size:23px;color:#352052}.pin-error{min-height:18px;color:#b42318}.pin-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.pin-actions button{margin:0;padding:12px 5px}
 </style>
 </head>
 <body>
@@ -44,7 +44,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <div class="item"><span>AILAT DATA service fee (10%)</span><strong id="serviceFee">₦0</strong></div>
 <div class="total"><span>Total Wallet Debit</span><strong id="customerTotal">₦0</strong></div>
 <div class="notice"><strong>Electricity payment:</strong> Your wallet is charged only after your Transaction PIN is approved. Confirm the meter and disco carefully. A 10% service fee is added to the electricity amount. If Bilalsadasub is still processing or the response is unclear, the order will remain pending; do not submit it again.</div>
-<div class="auth-choice"><h4>Choose transaction approval</h4><p>Select one method to authorize this payment. You only need one.</p><div class="auth-options"><button type="button" class="auth-option active" id="fingerprintChoice">◉ Fingerprint</button><button type="button" class="auth-option" id="pinChoice">▦ Use Transaction PIN</button></div></div><button type="button" id="submitRequest" disabled>Continue with Fingerprint</button>
+<button type="button" id="submitRequest" disabled>Pay Now</button><button type="button" class="pin-link" id="pinChoice">Use PIN</button>
 <button type="button" id="newRequest" class="secondary" hidden>Record a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite">Sign in with a verified email to record this request.</p>
 <a href="electricity.html" class="cancel">← Go Back and Edit</a>
@@ -64,9 +64,7 @@ const statusBox=document.getElementById("requestStatus");
 const button=document.getElementById("submitRequest");
 const newButton=document.getElementById("newRequest");
 let user=null,draft={},requestKey="",saved=false,selectedApprovalMethod="fingerprint";
-const fingerprintChoice=document.getElementById("fingerprintChoice"),pinChoice=document.getElementById("pinChoice");
-function setApprovalMethod(method){selectedApprovalMethod=method;fingerprintChoice.classList.toggle("active",method==="fingerprint");pinChoice.classList.toggle("active",method==="pin");button.textContent=method==="pin"?"Continue with Transaction PIN":"Continue with Fingerprint";}
-fingerprintChoice.addEventListener("click",()=>setApprovalMethod("fingerprint"));pinChoice.addEventListener("click",()=>setApprovalMethod("pin"));
+const pinChoice=document.getElementById("pinChoice");pinChoice.addEventListener("click",()=>{selectedApprovalMethod="pin";button.click();});
 
 try{draft=JSON.parse(sessionStorage.getItem("ailat_electricity_review")||"{}");}catch(error){}
 const disco=String(draft.disco||""),type=String(draft.type||""),meter=String(draft.meter||""),amountRaw=String(draft.amount||""),amount=Number(amountRaw),customerName=String(draft.customer_name||"").trim(),customerAddress=String(draft.customer_address||"").trim();
@@ -80,6 +78,7 @@ function showError(message){
 }
 function updateStatus(message,isError=false){statusBox.textContent=message;statusBox.style.color=isError?"#a52222":"#4c1d95";}
 
+function requestTransactionPin(){return new Promise(resolve=>{const overlay=document.getElementById("pinOverlay"),boxes=[...document.querySelectorAll(".pin-input")],error=document.getElementById("pinError");const finish=value=>{overlay.classList.remove("show");boxes.forEach(x=>x.value="");error.textContent="";resolve(value);};overlay.classList.add("show");boxes[0].focus();boxes.forEach((box,i)=>{box.oninput=()=>{box.value=box.value.replace(/\D/g,"").slice(-1);if(box.value&&i<3)boxes[i+1].focus();};box.onkeydown=e=>{if(e.key==="Backspace"&&!box.value&&i>0)boxes[i-1].focus();if(e.key==="Escape")finish(null);if(e.key==="Enter")document.getElementById("submitPin").click();};});document.getElementById("cancelPin").onclick=()=>finish(null);document.getElementById("submitPin").onclick=()=>{const pin=boxes.map(x=>x.value).join("");if(!/^\d{4}$/.test(pin)){error.textContent="Enter all four digits.";boxes.find(x=>!x.value)?.focus();return;}finish(pin);};});}
 onAuthStateChanged(auth,async currentUser=>{
  if(!currentUser){window.location.replace("login.html");return;}
  try{
@@ -103,10 +102,7 @@ onAuthStateChanged(auth,async currentUser=>{
 
 button.addEventListener("click",async()=>{
  if(!valid||!user||saved||button.disabled)return;
- const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity payment.");
- if(pin===null)return;
- if(!/^\d{4}$/.test(pin)){updateStatus("Enter your correct 4-digit Transaction PIN.",true);return;}
- button.disabled=true;button.textContent="Verifying PIN...";updateStatus("Verifying your Transaction PIN.");
+ button.disabled=true;button.textContent="Processing...";updateStatus(selectedApprovalMethod==="pin"?"Enter your 4-digit Transaction PIN.":"Approve with your fingerprint.");
  try{
   await user.reload();
   if(!user.emailVerified)throw new Error("Please verify your email before submitting.");
@@ -116,10 +112,9 @@ button.addEventListener("click",async()=>{
   const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
   const approveCall=async body=>{const r=await fetch(endpoint,{method:"POST",headers:{"Authorization":"Bearer "+idToken,"Content-Type":"application/json"},body:JSON.stringify(body)});const x=await r.json().catch(()=>({}));if(!r.ok||!x.success)throw new Error(x.error||"Transaction approval failed.");return x;};
   if(selectedApprovalMethod==="pin"){
-   const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity payment.");
+   const pin=await requestTransactionPin();
    if(pin===null)throw new Error("Transaction approval cancelled.");
-   if(!/^\d{4}$/.test(pin.trim()))throw new Error("Enter your correct 4-digit Transaction PIN.");
-   const approval=await approveCall({action:"authorize_with_pin",pin:pin.trim(),intent});
+   const approval=await approveCall({action:"authorize_with_pin",pin,intent});
    authorizationToken=approval.authorization_token;
   }else{
    const fromB64url=value=>{const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(raw,x=>x.charCodeAt(0));};
@@ -168,7 +163,7 @@ button.addEventListener("click",async()=>{
  }
 });
 newButton.addEventListener("click",()=>{
- requestKey=makeKey();saved=false;button.disabled=false;button.textContent=selectedApprovalMethod==="pin"?"Continue with Transaction PIN":"Continue with Fingerprint";newButton.hidden=true;
+ requestKey=makeKey();saved=false;button.disabled=false;button.textContent="Pay Now";newButton.hidden=true;
  updateStatus("A new request is ready. Review the details before submitting.");
 });
 </script>

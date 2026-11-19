@@ -23,6 +23,7 @@ input:focus{outline:none;border-color:#8b5cf6;background:white;box-shadow:0 0 0 
 .toggle-password:hover{background:#f2edff;box-shadow:none;transform:translateY(-50%)}
 .toggle-password svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .field-hint{font-size:11px;line-height:1.5;color:#9187a2;margin:7px 1px 0}
+.form-error{display:none;color:#b42318;background:#fff4f2;border:1px solid #fecaca;border-radius:10px;padding:11px 12px;font-size:12px;line-height:1.5;margin-top:16px}.form-error.show{display:block}input.input-error{border-color:#dc2626;background:#fffafa}
 button{width:100%;padding:15px;border:0;border-radius:11px;background:linear-gradient(110deg,#5b21b6,#7c3aed);color:white;font-size:14px;font-weight:700;letter-spacing:.2px;margin-top:23px;cursor:pointer;box-shadow:0 9px 20px #6d28d926;transition:transform .2s,box-shadow .2s}
 button:hover{transform:translateY(-1px);box-shadow:0 12px 24px #6d28d933}
 button:disabled{opacity:.6;cursor:not-allowed;transform:none}
@@ -91,6 +92,7 @@ aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s
 <input type="text" id="referralCode"
 placeholder="Enter referral code (if any)">
 
+<p id="formError" class="form-error" role="alert" aria-live="polite"></p>
 <button type="submit" id="registerBtn">
 Create Account
 </button>
@@ -143,7 +145,10 @@ async function createShortReferralCode(uid){
 
 const form = document.getElementById("registerForm");
 const button = document.getElementById("registerBtn");
+const errorBox = document.getElementById("formError");
 const referralInput = document.getElementById("referralCode");
+function showRegisterError(message,field){errorBox.textContent=message;errorBox.classList.add("show");document.querySelectorAll("#registerForm input").forEach(input=>input.classList.remove("input-error"));if(field){field.classList.add("input-error");field.focus();field.scrollIntoView({behavior:"smooth",block:"center"});}}
+
 
 const passwordInput = document.getElementById("password");
 const confirmInput = document.getElementById("confirmPassword");
@@ -216,30 +221,12 @@ form.addEventListener("submit", async function(event){
  const referralCode =
  referralInput.value.trim().toUpperCase();
 
- if(name.length < 2){
-  alert("Please enter your full name.");
-  return;
- }
-
- if(phone.length !== 11 || !/^\d{11}$/.test(phone)){
-  alert("Please enter a valid 11-digit phone number.");
-  return;
- }
-
- if(password.length < 6){
-  alert("Password must contain at least 6 characters.");
-  return;
- }
-
- if(password.length < 6){
-  alert("Password must contain at least 6 characters.");
-  return;
- }
-
- if(password !== confirmPassword){
-  alert("Passwords do not match.");
-  return;
- }
+ errorBox.textContent="";errorBox.classList.remove("show");
+ document.querySelectorAll("#registerForm input").forEach(input=>input.classList.remove("input-error"));
+ if(name.length < 2){showRegisterError("Please enter your full name.",document.getElementById("name"));return;}
+ if(!/^\d{11}$/.test(phone)){showRegisterError("Please enter a valid 11-digit phone number.",document.getElementById("phone"));return;}
+ if(password.length < 6){showRegisterError("Password must contain at least 6 characters.",passwordInput);return;}
+ if(password !== confirmPassword){showRegisterError("Passwords do not match.",confirmInput);return;}
 
  button.disabled = true;
  button.textContent = "Creating Account...";
@@ -330,6 +317,7 @@ form.addEventListener("submit", async function(event){
  }catch(error){
 
   console.error("Registration error:", error);
+  errorBox.textContent="";errorBox.classList.remove("show");
 
   if(createdUser && !profileSaved){
    // The Firestore batch did not save the profile; clean up the new Auth account.
@@ -348,30 +336,30 @@ form.addEventListener("submit", async function(event){
   }
 
   if(createdUser && profileSaved && error.code !== "auth/email-already-in-use"){
-   alert("Your account details were saved, but the verification email could not be sent. Open Login and use Resend Verification Email. Details: " + error.message);
+   showRegisterError("Your account details were saved, but the verification email could not be sent. Open Login and use Resend Verification Email.");
   }else if(error.code === "auth/email-already-in-use"){
 
-   alert("This email is already registered.");
+   showRegisterError("This email is already registered.",document.getElementById("email"));
 
   }else if(error.code === "auth/weak-password"){
 
-   alert("Password is too weak.");
+   showRegisterError("Password is too weak.",passwordInput);
 
   }else if(error.code === "auth/invalid-email"){
 
-   alert("Invalid email address.");
+   showRegisterError("Invalid email address.",document.getElementById("email"));
 
   }else if(error.code === "auth/too-many-requests"){
 
-   alert("Too many attempts. Please try again later.");
+   showRegisterError("Too many attempts. Please try again later.");
 
   }else if(error.code === "auth/operation-not-allowed"){
 
-   alert("Email verification is not available. Check Firebase Authentication settings.");
+   showRegisterError("Email verification is not available. Please contact support.");
 
   }else{
 
-   alert("Registration failed: " + error.message);
+   showRegisterError("Registration could not be completed. Please check your details and try again.");
 
   }
 

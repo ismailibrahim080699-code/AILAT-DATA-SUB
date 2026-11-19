@@ -300,15 +300,6 @@ Choose your network and preferred data plan.
 </div>
 
 <div class="network"
- onclick="chooseNetwork(this,'T2')">
-
-<div class="ninemobile-logo" style="color:#5b21b6;font-size:20px;letter-spacing:0">T2</div>
-
-<span class="network-name">T2</span>
-
-</div>
-
-<div class="network"
  onclick="chooseNetwork(this,'Vitel')">
  <img class="vitel-logo-img" src="https://mma.prnewswire.com/media/2609274/Vitel_Wireless_Logo.jpg" alt="Vitel Wireless official logo" onerror="this.style.display='none'">
  <span class="network-name">Vitel</span>
@@ -372,8 +363,6 @@ const AILAT_NETWORK_IDS = Object.freeze({
  mtn:1,
  airtel:2,
  glo:3,
- t2:4,
- "9mobile":4,
  vitel:5
 });
 function getInternalNetworkId(network){

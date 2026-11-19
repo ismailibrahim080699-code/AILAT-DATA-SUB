@@ -222,7 +222,7 @@ async function approveTransactionWithBiometric(token,intent,method){
  const fromB64url=value=>{const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
  const toB64url=buffer=>{const bytes=new Uint8Array(buffer);let raw="";for(const b of bytes)raw+=String.fromCharCode(b);return btoa(raw).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
  if(method==="pin"){const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this exact purchase.");if(pin===null)throw new Error("Transaction approval cancelled.");if(!/^\d{4}$/.test(pin.trim()))throw new Error("Enter your 4-digit Transaction PIN.");const approved=await call({action:"authorize_with_pin",intent,pin:pin.trim()});if(!approved.authorization_token)throw new Error("PIN approval failed.");return approved.authorization_token;}
- try { const begin=await call({action:"start_transaction",intent});
+ const begin=await call({action:"start_transaction",intent});
  const options={...begin.options,challenge:fromB64url(begin.options.challenge),allowCredentials:(begin.options.allowCredentials||[]).map(item=>({...item,id:fromB64url(item.id)}))};
  const credential=await navigator.credentials.get({publicKey:options});
  if(!credential)throw new Error("Biometric approval was cancelled.");
@@ -239,7 +239,7 @@ async function approveTransactionWithBiometric(token,intent,method){
  };
  const finished=await call({action:"finish_transaction",response});
  if(!finished.authorization_token)throw new Error("The server did not issue transaction approval.");
- return finished.authorization_token; }
+ return finished.authorization_token;
 }
 
 function getSignedInUser(){

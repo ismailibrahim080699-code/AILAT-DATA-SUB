@@ -118,7 +118,7 @@ button.addEventListener("click",async()=>{
   if(selectedApprovalMethod==="pin"){
    const pin=window.prompt("Enter your 4-digit Transaction PIN to approve this electricity payment.");
    if(pin===null)throw new Error("Transaction approval cancelled.");
-   if(!/^\\d{4}$/.test(pin.trim()))throw new Error("Enter your correct 4-digit Transaction PIN.");
+   if(!/^\d{4}$/.test(pin.trim()))throw new Error("Enter your correct 4-digit Transaction PIN.");
    const approval=await approveCall({action:"authorize_with_pin",pin:pin.trim(),intent});
    authorizationToken=approval.authorization_token;
   }else{

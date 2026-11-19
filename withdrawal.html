@@ -22,7 +22,7 @@ button:disabled{opacity:.55;cursor:wait}
 </style>
 </head>
 <body>
-<header><a href="dashboard.html">← Back to Dashboard</a></header>
+<header><a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a></header>
 <main><section class="card">
 <h1>Wallet Withdrawal</h1>
 <p>Submit a request to withdraw from your AILAT DATA wallet. Every request is reviewed before any payout is approved.</p>
@@ -42,7 +42,7 @@ button:disabled{opacity:.55;cursor:wait}
 <div class="notice"><strong>Important:</strong> This creates a request for manual review only. Your wallet is not debited and no bank transfer is made by submitting this form. Confirm your bank details carefully. Never enter your card PIN, ATM PIN, password or OTP.</div>
 <div id="status" class="status" role="status">Checking your signed-in account…</div>
 <a class="link" href="transaction_history.html">View Transaction History</a>
-<a class="link" href="dashboard.html">Return to Dashboard</a>
+
 </section></main>
 <script type="module">
 import { app } from "./firebase.js";

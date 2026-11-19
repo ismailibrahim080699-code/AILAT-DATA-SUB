@@ -254,7 +254,7 @@ function validateAirtimeFields(showErrors=true){
  phoneError.classList.toggle("show",showErrors&&!validPhone);
  customAmountInput.classList.toggle("input-error",showErrors&&!validAmount&&customAmountInput.value.trim()!=="");
  customAmountInput.setAttribute("aria-invalid",String(showErrors&&!validAmount&&customAmountInput.value.trim()!==""));
- amountError.classList.toggle("show",showErrors&&!validAmount&&customAmountInput.value.trim()!=="");
+ amountError.classList.toggle("show",showErrors&&!validAmount);
  return validPhone&&validAmount;
 }
 phoneInput.addEventListener("input",()=>{

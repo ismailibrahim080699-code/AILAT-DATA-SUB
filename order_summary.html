@@ -24,6 +24,7 @@ header .subtitle{color:#eee}
 .notice{background:#fff8e7;color:#805600;padding:14px;border-radius:11px;margin-top:20px;font-size:12px;line-height:1.6}
 button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;color:white;font-size:15px;font-weight:bold;margin-top:20px;cursor:pointer}
 button:disabled{opacity:.65;cursor:wait}
+.pin-link{display:block;width:auto;margin:13px auto 0;padding:4px 8px;background:transparent;color:#6425c5;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .new-request{background:#eee7ff;color:#4c1d95;margin-top:10px}
 .cancel{display:block;text-align:center;margin-top:18px;color:#6425c5;text-decoration:none;font-size:14px}
 .error{color:#b42318;background:#fff0ef;padding:15px;border-radius:10px;line-height:1.6}
@@ -52,7 +53,7 @@ button:disabled{opacity:.65;cursor:wait}
 <strong>Payment and delivery:</strong> The displayed amount is AILAT DATA’s selling price. When you approve the order, your wallet will be charged. If Legitdataway confirms that delivery failed, AILAT DATA will automatically refund the charge. If the supplier response is pending, do not submit the order again.
 </div>
 <button id="confirmButton" type="button">Pay Now</button>
-<button type="button" class="auth-switch" id="pinChoice">Use PIN instead</button>
+<button type="button" class="pin-link" id="pinChoice">Use PIN</button>
 <div class="pin-overlay" id="pinOverlay" role="dialog" aria-modal="true" aria-labelledby="pinDialogTitle"><div class="pin-dialog"><div class="pin-lock">⌑</div><h3 id="pinDialogTitle">Enter Transaction PIN</h3><p>Enter your existing 4-digit PIN to authorize this purchase securely.</p><div class="pin-boxes" id="pinBoxes"><input class="pin-input" id="pinBox1" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" id="pinBox2" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" id="pinBox3" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" id="pinBox4" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><div class="pin-error" id="pinError" role="alert"></div><div class="pin-actions"><button type="button" class="pin-cancel" id="cancelPin">Cancel</button><button type="button" id="submitPin">Confirm PIN</button></div><div class="pin-secure-note">Protected transaction authorization · AILAT DATA</div></div></div>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite"></p>

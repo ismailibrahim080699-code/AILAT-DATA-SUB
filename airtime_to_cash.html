@@ -12,6 +12,7 @@ header{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;padding:25
 header h2{margin:8px 0}header p{font-size:13px;margin:0}.brand-mark{width:34px;height:34px;object-fit:contain}
 .container{padding:18px;max-width:480px;margin:auto}.card{background:white;padding:20px;border-radius:16px;margin-bottom:17px;box-shadow:0 4px 15px #0000000d}
 label{display:block;margin:15px 0 7px;font-weight:bold;font-size:14px}input,select{width:100%;padding:14px;border:1px solid #ddd;border-radius:9px;font-size:15px;background:white}
+.input-error{border-color:#dc2626!important;background:#fffafa}.field-error{display:none;color:#dc2626;font-size:12px;line-height:1.45;margin:7px 0 0}.field-error.show{display:block}
 button{width:100%;padding:15px;margin-top:20px;background:#6d28d9;color:white;border:0;border-radius:10px;font-size:16px;font-weight:bold}
 button:disabled{opacity:.55}.result{background:#f1eafe;padding:15px;border-radius:10px;margin-top:15px}.result h2{color:#6d28d9;margin:8px 0}
 .note{font-size:12px;color:#777;line-height:1.6}.status{font-size:13px;margin-top:10px;color:#5b21b6}
@@ -30,9 +31,11 @@ a{display:block;text-align:center;color:#6d28d9;text-decoration:none;margin:20px
 <select id="network" required><option value="">Choose Network</option><option value="MTN">MTN</option><option value="AIRTEL">Airtel</option><option value="GLO">Glo</option><option value="T2">9mobile (T2)</option></select>
 <div id="rate" class="status">Loading current buyback rates…</div>
 <label>Phone Number</label>
-<input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="08012345678" maxlength="11" required>
+<input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="08012345678" maxlength="11" aria-describedby="phoneError" required>
+<p id="phoneError" class="field-error" role="alert">Please enter a valid 11-digit Nigerian phone number.</p>
 <label>Airtime Amount (₦)</label>
-<input type="number" id="amount" placeholder="Minimum ₦50" min="50" step="1" inputmode="numeric" required>
+<input type="number" id="amount" placeholder="Minimum ₦50" min="50" step="1" inputmode="numeric" aria-describedby="amountError" required>
+<p id="amountError" class="field-error" role="alert">Enter a whole amount of at least ₦50.</p>
 <div class="result"><p><strong>Estimated wallet credit</strong></p><h2 id="estimate">₦0.00</h2><p id="rateText" class="note">Select a supported network and enter amount.</p></div>
 <button id="reviewButton" type="submit" disabled>Review Details</button>
 </form>
@@ -74,9 +77,17 @@ onAuthStateChanged(auth,async user=>{
   update();
  }catch(error){console.error(error);rateBox.textContent="Could not load live rates. Please refresh and try again.";}
 });
+function showFieldError(input,error,show){input.classList.toggle("input-error",show);input.setAttribute("aria-invalid",String(show));error.classList.toggle("show",show);}
+phoneInput.addEventListener("input",()=>{phoneInput.value=phoneInput.value.replace(/\D/g,"").slice(0,11);if(/^0[789][01]\d{8}$/.test(phoneInput.value.trim()))showFieldError(phoneInput,document.getElementById("phoneError"),false);});
+amountInput.addEventListener("input",()=>{const n=Number(amountInput.value);if(Number.isSafeInteger(n)&&n>=50)showFieldError(amountInput,document.getElementById("amountError"),false);});
 document.getElementById("cashForm").addEventListener("submit",event=>{
  event.preventDefault();const network=networkInput.value,phone=phoneInput.value.trim(),amount=Number(amountInput.value),pct=rates[network];
- if(!rates[network]||!/^0[789][01]\d{8}$/.test(phone)||!Number.isSafeInteger(amount)||amount<50)return;
+ const phoneValid=/^0[789][01]\d{8}$/.test(phone),amountValid=Number.isSafeInteger(amount)&&amount>=50;
+ showFieldError(phoneInput,document.getElementById("phoneError"),!phoneValid);
+ showFieldError(amountInput,document.getElementById("amountError"),!amountValid);
+ if(!phoneValid||!amountValid||!rates[network]){
+  const target=!phoneValid?phoneInput:amountInput;target.focus();target.scrollIntoView({behavior:"smooth",block:"center"});return;
+ }
  sessionStorage.setItem("ailat_airtime_to_cash_review",JSON.stringify({network,phone,amount,buyback_pct:pct,estimated_credit:Math.round((amount*pct/100*0.9)*100)/100}));
  location.href="airtime_to_cash_summary.html";
 });

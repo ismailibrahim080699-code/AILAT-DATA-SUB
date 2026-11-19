@@ -10,7 +10,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}
 header{padding:20px;background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}
-header a{color:white;text-decoration:none;font-weight:bold;font-size:14px}
+header a{color:white;text-decoration:none;font-weight:bold}header .top-back{display:grid;place-items:center;width:40px;height:40px;font-size:32px;line-height:1;border-radius:12px;background:#ffffff18}
 main{width:min(94%,680px);margin:24px auto}
 .card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:22px;box-shadow:0 10px 28px #35106f12}
 .hero{text-align:center}.icon{width:64px;height:64px;margin:0 auto 13px;border-radius:19px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:28px}
@@ -37,7 +37,7 @@ footer{text-align:center;padding:22px;color:#9589ac;font-size:11px}
 </style>
 </head>
 <body>
-<header><a href="dashboard.html">← Back to Dashboard</a></header>
+<header><a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a></header>
 <main><section class="card">
 <div class="hero"><div class="icon" aria-hidden="true">🧾</div><h1>Recharge Card Printing</h1><p>Choose a plan, request a secure quote, and print your quote summary.</p><span class="status">PRICING CONFIRMED · SECURE PIN DELIVERY</span><p id="pinCryptoStatus" style="font-size:12px;font-weight:700;color:#79530b;margin:4px 0 10px">PIN ENCRYPTION SELF-TEST: CHECKING…</p></div>
 <h2 style="font-size:16px;margin:14px 0 8px">Available provider plans</h2>

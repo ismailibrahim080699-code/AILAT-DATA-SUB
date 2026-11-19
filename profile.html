@@ -74,8 +74,10 @@ button{
  background:#eee;
  color:#5b21b6;
 }
+.top-back{display:grid;place-items:center;width:40px;height:40px;margin-bottom:12px;border-radius:12px;background:#ffffff18;color:white;text-decoration:none;font-size:32px;line-height:1}
 </style>  <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
 </head><body><header>
+<a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a>
 <h2>AILAT DATA</h2>
 <p>My Profile</p>
 </header><div class="container"><div class="profile-card"><div class="avatar">👤</div><div class="profile-title">
@@ -96,9 +98,7 @@ button{
 </div><button class="back" onclick="location.href='settings.html'">
 Account Settings & Security
 </button>
-<button class="back" onclick="location.href='dashboard.html'">
-Back to Dashboard
-</button><button id="logoutBtn">
+<button id="logoutBtn">
 Logout
 </button></div>
 </div><script type="module">

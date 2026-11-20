@@ -121,7 +121,8 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
  const previewBtn=document.getElementById("previewBtn");
  const verifyResult=document.getElementById("verifyResult");
  const previewResult=document.getElementById("previewResult");
- let verifiedMeter=null;\n const amountSection=document.getElementById("amountSection");
+ let verifiedMeter=null;
+ const amountSection=document.getElementById("amountSection");
 
  function show(el,kind,message){
   el.className="result "+kind;
@@ -131,6 +132,8 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
  function hide(el){el.style.display="none";el.textContent="";}
  function resetVerification(){
   verifiedMeter=null;
+  amountSection.hidden=true;
+  amount.value="";
   amount.disabled=true;
   previewBtn.disabled=true;
   hide(previewResult);
@@ -160,6 +163,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
    if(!response.ok||!data.success)throw new Error(data.error||"Meter verification failed.");
    const v=data.validation||{};
    verifiedMeter={disco:selectedDisco,meterType:selectedType,meterNumber:number,name:String(v.name||""),discoName:String(v.disco_name||"")};
+   amountSection.hidden=false;
    amount.disabled=false;
    previewBtn.disabled=false;
    show(verifyResult,"success","Meter verified. Customer: "+(verifiedMeter.name||"Name not supplied")+". You can now enter an amount for a non-payment preview.");

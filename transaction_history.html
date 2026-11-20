@@ -266,6 +266,7 @@ function renderTransactions(items){
   const purchaseType = customer.purchase_type ? String(customer.purchase_type) : "";
   const validity = customer.validity ? String(customer.validity) : "";
   const examName = customer.exam_name ? String(customer.exam_name) : "";
+  const issuedPins = Array.isArray(customer.issued_pins) ? customer.issued_pins : [];
   const examQuantity = Number(customer.quantity);
   const supplierUnit = Number(customer.supplier_amount);
   const examSellingTotal = Number(customer.selling_amount ?? item.amount);
@@ -294,6 +295,11 @@ function renderTransactions(items){
    purchaseType ? `<div>Plan Type: ${safe(purchaseType)}</div>` : "",
    validity ? `<div>Validity: ${safe(validity)}</div>` : "",
    examRows,
+   ...issuedPins.slice(0,10).map((entry,index) => {
+    const pin = entry && typeof entry.pin === "string" ? entry.pin : "";
+    const serial = entry && typeof entry.serial === "string" ? entry.serial : "";
+    return pin ? `<div><strong>Exam PIN ${index+1}:</strong> ${safe(pin)}</div>` + (serial ? `<div><strong>Serial:</strong> ${safe(serial)}</div>` : "") : "";
+   }),
    providerNetworkId !== undefined && providerNetworkId !== null ? `<div>Supplier Network ID: ${safe(providerNetworkId)}</div>` : "",
    providerPlanId !== undefined && providerPlanId !== null ? `<div>Supplier Plan ID: ${safe(providerPlanId)}</div>` : "",
    item.is_request ? `<div>Supplier Dispatch: ${safe(dispatchState === "disabled_safe_mode" || dispatchState === "not_sent" ? "Not sent (safe mode)" : dispatchState)}</div>` : "",

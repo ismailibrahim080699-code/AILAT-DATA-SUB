@@ -99,7 +99,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   </div>
   <div class="field">
    <label for="amount">Amount (₦)</label>
-   <input id="amount" type="number" inputmode="decimal" min="1" step="1" placeholder="Enter amount e.g. 5000" disabled>
+   <input id="amount" type="number" inputmode="numeric" min="500" max="100000" step="1" placeholder="Enter amount e.g. 5000" disabled>
   </div>
   <button id="previewBtn" class="secondary" type="button" disabled>Preview Electricity Order</button>
   <div id="previewResult" class="result info" role="status" aria-live="polite"></div>
@@ -178,7 +178,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   hide(previewResult);
   if(!verifiedMeter){show(previewResult,"error","Please verify your meter first.");return;}
   const value=Number(amount.value);
-  if(!Number.isSafeInteger(value)||value<1||value>500000){show(previewResult,"error","Enter a whole-naira amount between ₦1 and ₦500,000.");return;}
+  if(!Number.isSafeInteger(value)||value<500||value>100000){show(previewResult,"error","Enter a whole-naira amount between ₦500 and ₦100,000.");return;}
   previewBtn.disabled=true;
   previewBtn.textContent="Preparing preview...";
   try{

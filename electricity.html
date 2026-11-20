@@ -40,7 +40,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .summary-row span:first-child{color:#75698a}
 .summary-row strong{text-align:right;overflow-wrap:anywhere}
 .pending{color:#8a5a00}
-.secure{display:flex;gap:9px;align-items:flex-start;margin-top:15px;padding:12px;border-radius:11px;background:#faf8ff;color:#65577e;font-size:11px;line-height:1.6}
+.pin-overlay{display:none;position:fixed;inset:0;z-index:50;background:#180b2dcc;align-items:center;justify-content:center;padding:20px}.pin-overlay.show{display:flex}.pin-panel{width:100%;max-width:360px;background:#fff;border-radius:18px;padding:22px;box-shadow:0 20px 60px #0004}.pin-boxes{display:flex;gap:10px;margin:18px 0}.pin-input{width:25%;text-align:center;font-size:22px;font-weight:800}.pin-actions{display:flex;gap:10px}.pin-actions button{margin:0}.pin-error{color:#be123c;font-size:12px;min-height:18px}.secure{display:flex;gap:9px;align-items:flex-start;margin-top:15px;padding:12px;border-radius:11px;background:#faf8ff;color:#65577e;font-size:11px;line-height:1.6}
 .secure b{color:#4c1d95}
 footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
 @media(min-width:480px){main{padding-top:22px}}
@@ -103,15 +103,31 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   </div>
   <button id="previewBtn" class="secondary" type="button" disabled>Preview Electricity Order</button>
   <div id="previewResult" class="result info" role="status" aria-live="polite"></div>
-  <p class="note">The preview uses AILAT DATA's 10% service margin. Supplier charges will be reconciled before live vending. This preview cannot take payment.</p>
+  <button id="buyElectricityBtn" type="button" hidden>Pay with Fingerprint</button>
+  <button id="pinElectricityBtn" class="secondary" type="button" hidden>Pay with Transaction PIN</button>
+  <div id="purchaseResult" class="result" role="status" aria-live="polite"></div>
+  <p class="note">The preview uses AILAT DATA's 10% service margin. Supplier charges are checked against the customer total before a successful order is confirmed.</p>
  </section>
 
  <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure order preparation</b><br>Electricity payment is not active yet. The purchase function remains disabled until supplier pricing and test-meter verification are confirmed.</div></div>
 </main>
+<div id="pinOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-label="Transaction PIN">
+ <div class="pin-panel">
+  <h2>Confirm Transaction PIN</h2><p class="sub">Enter your 4-digit transaction PIN to approve this electricity payment.</p>
+  <div class="pin-boxes"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div>
+  <div id="pinError" class="pin-error"></div>
+  <div class="pin-actions"><button id="cancelPin" class="secondary" type="button">Cancel</button><button id="submitPin" type="button">Approve</button></div>
+ </div>
+</div>
 <footer>AILAT DATA © 2026</footer>
-<script>
+<script type="module">
+import { app } from "./firebase.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 (function(){
  "use strict";
+ const auth=getAuth(app);
+ const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+ const passkeyEndpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
  const disco=document.getElementById("disco");
  const meterType=document.getElementById("meterType");
@@ -122,6 +138,12 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
  const verifyResult=document.getElementById("verifyResult");
  const previewResult=document.getElementById("previewResult");
  let verifiedMeter=null;
+ let lastQuote=null;
+ let purchaseSubmitted=false;
+ let requestKey=null;
+ const buyBtn=document.getElementById("buyElectricityBtn");
+ const pinBtn=document.getElementById("pinElectricityBtn");
+ const purchaseResult=document.getElementById("purchaseResult");
  const amountSection=document.getElementById("amountSection");
 
  function show(el,kind,message){
@@ -132,6 +154,9 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
  function hide(el){el.style.display="none";el.textContent="";}
  function resetVerification(){
   verifiedMeter=null;
+  lastQuote=null;
+  buyBtn.hidden=true;pinBtn.hidden=true;
+  hide(purchaseResult);
   amountSection.hidden=true;
   amount.value="";
   amount.disabled=true;
@@ -188,6 +213,8 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
    const response=await fetch(url.toString(),{method:"GET",headers:{Accept:"application/json"}});
    const quote=await response.json();
    if(!response.ok||!quote.success)throw new Error(quote.error||"Could not prepare electricity quote.");
+   lastQuote=quote;purchaseSubmitted=false;requestKey=null;
+   buyBtn.hidden=!quote.purchase_enabled;pinBtn.hidden=!quote.purchase_enabled;
    const money=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
    previewResult.className="result info";
    previewResult.style.display="block";
@@ -213,6 +240,43 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
   });
  }
+ function getSignedInUser(){return new Promise((resolve,reject)=>{const unsub=onAuthStateChanged(auth,u=>{unsub();if(!u)reject(new Error("Please log in first."));else resolve(u);},reject);});}
+ function requestTransactionPin(){return new Promise(resolve=>{const overlay=document.getElementById("pinOverlay"),boxes=[...document.querySelectorAll(".pin-input")],error=document.getElementById("pinError");const finish=value=>{overlay.classList.remove("show");boxes.forEach(x=>x.value="");error.textContent="";document.getElementById("submitPin").onclick=null;document.getElementById("cancelPin").onclick=null;resolve(value);};overlay.classList.add("show");boxes[0].focus();boxes.forEach((box,i)=>{box.oninput=()=>{box.value=box.value.replace(/\D/g,"").slice(-1);if(box.value&&i<3)boxes[i+1].focus();};box.onkeydown=e=>{if(e.key==="Backspace"&&!box.value&&i>0)boxes[i-1].focus();if(e.key==="Enter")document.getElementById("submitPin").click();if(e.key==="Escape")finish(null);};box.onpaste=e=>{const v=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"").slice(0,4);if(v){e.preventDefault();v.split("").forEach((d,j)=>boxes[j].value=d);boxes[Math.min(v.length,3)].focus();}};});document.getElementById("cancelPin").onclick=()=>finish(null);document.getElementById("submitPin").onclick=()=>{const pin=boxes.map(x=>x.value).join("");if(!/^\d{4}$/.test(pin)){error.textContent="Enter all four digits.";boxes.find(x=>!x.value)?.focus();return;}finish(pin);};});}
+ async function approveTransaction(token,intent,method){
+  const call=async body=>{const r=await fetch(passkeyEndpoint,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success)throw new Error(d.error||"Transaction approval failed.");return d;};
+  if(method==="pin"){const pin=await requestTransactionPin();if(pin===null)throw new Error("Transaction cancelled.");const d=await call({action:"authorize_with_pin",intent,pin});return d.authorization_token;}
+  const fromB64=s=>{s=String(s||"").replace(/-/g,"+").replace(/_/g,"/");const v=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(v,c=>c.charCodeAt(0));};
+  const toB64=b=>{const v=new Uint8Array(b);let s="";for(const x of v)s+=String.fromCharCode(x);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
+  const begin=await call({action:"start_transaction",intent});
+  const opts={...begin.options,challenge:fromB64(begin.options.challenge),allowCredentials:(begin.options.allowCredentials||[]).map(x=>({...x,id:fromB64(x.id)}))};
+  const credential=await navigator.credentials.get({publicKey:opts});if(!credential)throw new Error("Device approval cancelled.");
+  const response={id:credential.id,rawId:toB64(credential.rawId),type:credential.type,authenticatorAttachment:credential.authenticatorAttachment,clientExtensionResults:credential.getClientExtensionResults(),response:{clientDataJSON:toB64(credential.response.clientDataJSON),authenticatorData:toB64(credential.response.authenticatorData),signature:toB64(credential.response.signature),userHandle:credential.response.userHandle?toB64(credential.response.userHandle):null}};
+  const done=await call({action:"finish_transaction",response});return done.authorization_token;
+ }
+ async function processElectricityPurchase(method){
+  if(purchaseSubmitted||!verifiedMeter||!lastQuote||!lastQuote.purchase_enabled)return;
+  const base=Number(amount.value),total=Number(lastQuote.customer_total);
+  if(!Number.isSafeInteger(base)||base!==Number(lastQuote.requested_amount)||!Number.isSafeInteger(total)){show(purchaseResult,"error","Refresh the electricity quote before payment.");return;}
+  const fingerprint=[verifiedMeter.disco,verifiedMeter.meterType,verifiedMeter.meterNumber,String(base)].join("|");
+  const storageKey="ailat_electricity_order:"+encodeURIComponent(fingerprint);
+  if(!requestKey){try{requestKey=sessionStorage.getItem(storageKey)||crypto.randomUUID();sessionStorage.setItem(storageKey,requestKey);}catch{requestKey=crypto.randomUUID();}}
+  buyBtn.disabled=true;pinBtn.disabled=true;show(purchaseResult,"info","Please approve this electricity payment securely…");
+  try{
+   const user=await getSignedInUser();await user.reload();if(!user.emailVerified)throw new Error("Verify your email before making a purchase.");
+   const firebaseToken=await user.getIdToken(true);
+   const intent={service_key:"electricity",idempotency_key:requestKey,details:{disco:String(verifiedMeter.disco),meter_type:verifiedMeter.meterType,meter_number:verifiedMeter.meterNumber,amount:base,customer_total:total}};
+   const authorizationToken=await approveTransaction(firebaseToken,intent,method);
+   show(purchaseResult,"info","Approval successful. Submitting the order securely…");
+   const response=await fetch(endpoint,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+firebaseToken,"Content-Type":"application/json"},body:JSON.stringify({service_key:"electricity",idempotency_key:requestKey,authorization_token:authorizationToken,customer_data:{disco:String(verifiedMeter.disco),meter_type:verifiedMeter.meterType,meter_number:verifiedMeter.meterNumber,amount:base,customer_total:total,profit_markup_rate:10}})});
+   const result=await response.json().catch(()=>({}));
+   if(result.order_request?.reference){purchaseSubmitted=true;buyBtn.disabled=true;pinBtn.disabled=true;const ref="Reference: "+result.order_request.reference+". ";if(result.fulfillment_status==="success"&&result.electricity_token){show(purchaseResult,"success",ref+"Electricity payment successful. Token: "+result.electricity_token);return;}if(result.payment_status==="charged"||response.status===202){show(purchaseResult,"info",ref+"Payment is reserved and supplier confirmation is pending. Do not submit again; check Transaction History.");return;}}
+   if(!response.ok||!result.success)throw new Error(result.error||"Electricity order could not be submitted.");
+   show(purchaseResult,"success","Electricity request recorded. Reference: "+(result.order_request?.reference||"pending")+".");
+  }catch(error){show(purchaseResult,"error",error.message||"Payment failed.");}
+  finally{if(!purchaseSubmitted){buyBtn.disabled=false;pinBtn.disabled=false;}}
+ }
+ buyBtn.addEventListener("click",()=>processElectricityPurchase("fingerprint"));
+ pinBtn.addEventListener("click",()=>processElectricityPurchase("pin"));
 })();
 </script>
 </body>

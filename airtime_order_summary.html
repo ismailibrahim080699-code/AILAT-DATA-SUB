@@ -48,9 +48,9 @@ button:disabled{opacity:.65;cursor:wait}
 <div class="item"><span>Phone Number</span><strong id="phone">-</strong></div>
 <div class="total"><span>Requested Airtime Value</span><strong id="amount">₦0.00</strong></div>
 <div class="notice">
-<strong>Safe testing mode:</strong> This is a review-only request. No wallet payment will be taken and no airtime will be sent. Legitdataway is the selected supplier.
+<strong>Verified live purchase:</strong> Only MTN ₦100 VTU is currently approved for live vending. Other networks, amounts and SNS remain unavailable. Legitdataway is the selected supplier.
 </div>
-<button id="confirmButton" type="button" disabled>Airtime purchase temporarily unavailable</button><div class="pin-overlay" id="pinOverlay"><div class="pin-dialog"><h3>Enter AILAT DATA PIN</h3><p>Enter your existing 4-digit Transaction PIN.</p><div class="pin-boxes"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><p id="pinError" class="pin-error" role="alert"></p><div class="pin-actions"><button type="button" id="cancelPin">Cancel</button><button type="button" id="submitPin">Confirm PIN</button></div></div></div>
+<button id="confirmButton" type="button" disabled>Checking live availability…</button><div class="pin-overlay" id="pinOverlay"><div class="pin-dialog"><h3>Enter AILAT DATA PIN</h3><p>Enter your existing 4-digit Transaction PIN.</p><div class="pin-boxes"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><p id="pinError" class="pin-error" role="alert"></p><div class="pin-actions"><button type="button" id="cancelPin">Cancel</button><button type="button" id="submitPin">Confirm PIN</button></div></div></div>
 <button type="button" class="pin-link" id="pinChoice" hidden>Use PIN</button>
 <button id="newRequestButton" class="new-request" type="button" hidden>Start a New Request</button>
 <p id="requestStatus" role="status" aria-live="polite"></p>
@@ -103,7 +103,10 @@ async function loadAirtimeQuote(){
     quoteBox.innerHTML = "<strong>MTN ₦100 confirmed reference</strong><br>Customer airtime value: ₦" + Number(data.customer_pays).toLocaleString("en-NG") +
       "<br>Documented supplier debit: ₦" + Number(data.supplier_estimated_cost).toLocaleString("en-NG") +
       "<br><strong>Documented gross difference: ₦" + Number(data.estimated_profit).toLocaleString("en-NG") + "</strong>" +
-      "<br><small>This is the exact ₦100 reference only, not a price rule for other amounts. Live vending remains disabled.</small>";
+      "<br><small>This is the exact ₦100 reference only, not a price rule for other amounts.</small>" +
+      (data.live_purchase_enabled === true ? "<br><strong>Live purchase is available for this exact option.</strong>" : "<br>Live vending is disabled by the server.");
+    button.disabled = data.live_purchase_enabled !== true;
+    button.textContent = data.live_purchase_enabled === true ? "Pay ₦100 & Buy Airtime" : "Airtime purchase unavailable";
   }catch(error){
     quoteBox.textContent = "MTN estimate could not be loaded. No transaction has been made.";
   }

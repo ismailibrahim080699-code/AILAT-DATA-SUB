@@ -216,11 +216,41 @@ Deno.serve(async (req: Request) => {
         notice: plans.length ? "Read-only preview: provider IDs and cablename values are mapped from the supplied API details. Numeric Package Plan IDs remain provisional until Legitdataway confirms them, and Smart Card validation is not yet confirmed. No wallet charge or subscription request is possible." : "No Cable TV plans are available. No payment or subscription was made." });
     }
     if (req.method === "GET" && cableAction === "cable_validate") {
-      return reply({
-        success: false,
-        code: "CABLE_VALIDATION_PENDING",
-        error: "Smart Card validation is paused until Legitdataway confirms the official validation endpoint. No payment or subscription was made."
-      }, 503);
+      const iuc = (requestUrl.searchParams.get("iuc") ?? "").trim();
+      const cable = Number(requestUrl.searchParams.get("cable"));
+      if (!/^\\d{8,12}$/.test(iuc) || ![1, 2, 3].includes(cable)) {
+        return reply({ success: false, code: "INVALID_CABLE_DETAILS", error: "Enter a valid 8–12 digit IUC number and select GOtv, DStv or StarTimes." }, 400);
+      }
+      let accessToken: string;
+      try {
+        accessToken = await getLegitdatawayAccessToken();
+      } catch {
+        return reply({ success: false, code: "SUPPLIER_AUTH_FAILED", error: "Could not authenticate with Legitdataway. No payment or subscription was made." }, 502);
+      }
+      try {
+        const validationUrl = new URL("https://legitdataway.com/api/cable/cable-validation");
+        validationUrl.searchParams.set("iuc", iuc);
+        validationUrl.searchParams.set("cable", String(cable));
+        const supplierResponse = await fetch(validationUrl, {
+          method: "GET",
+          headers: { "Accept": "application/json", "Authorization": "Token " + accessToken },
+          signal: AbortSignal.timeout(20000),
+        });
+        const raw = await supplierResponse.text();
+        let supplierResult: Record<string, unknown> = {};
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) supplierResult = parsed;
+        } catch { /* Do not expose non-JSON supplier output to the client. */ }
+        if (!supplierResponse.ok) {
+          console.error("Legitdataway cable validation returned HTTP", supplierResponse.status);
+          return reply({ success: false, code: "SUPPLIER_VALIDATION_ERROR", error: "Legitdataway could not verify this decoder right now. Check the number and try again." }, 502);
+        }
+        return reply({ success: true, validation: supplierResult, verified_by: "Legitdataway", payment_taken: false, subscription_sent: false });
+      } catch (error) {
+        console.error("Legitdataway cable validation request failed:", error instanceof Error ? error.message : "network error");
+        return reply({ success: false, code: "VALIDATION_UNAVAILABLE", error: "Decoder verification is temporarily unavailable. No payment or subscription was made." }, 502);
+      }
     }
 
     // Legacy exam catalogue and JAMB verification are intentionally disabled during migration.

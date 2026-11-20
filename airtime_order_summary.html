@@ -84,11 +84,15 @@ const quoteBox = document.createElement("div");
 quoteBox.className = "notice";
 quoteBox.style.background = "#f3edff";
 quoteBox.style.color = "#4c1d95";
-quoteBox.innerHTML = "<strong>MTN pricing estimate</strong><br>Loading estimate…";
+quoteBox.innerHTML = "<strong>MTN pricing confirmation</strong><br>Checking the exact confirmed ₦100 reference…";
 document.getElementById("amount").closest(".total").insertAdjacentElement("afterend", quoteBox);
 async function loadAirtimeQuote(){
   if(network !== "MTN"){
-    quoteBox.textContent = "A verified Legitdataway Airtime rate is not available for this network yet.";
+    quoteBox.textContent = "A verified Legitdataway Airtime rate is not available for this network yet. No payment can be made.";
+    return;
+  }
+  if(amount !== 100){
+    quoteBox.textContent = "Only the MTN ₦100 supplier debit reference has been confirmed (₦97 cost). Other amounts are not yet priced. No payment can be made.";
     return;
   }
   try{
@@ -96,10 +100,10 @@ async function loadAirtimeQuote(){
     const response = await fetch(url, {method:"GET", headers:{"apikey":SUPABASE_PUBLISHABLE_KEY}});
     const data = await response.json().catch(()=>({}));
     if(!response.ok || !data.success) throw new Error(data.error || "Quote unavailable");
-    quoteBox.innerHTML = "<strong>MTN estimated breakdown</strong><br>Customer airtime value: ₦" + Number(data.customer_pays).toLocaleString("en-NG") +
-      "<br>Estimated Legitdataway cost: ₦" + Number(data.supplier_estimated_cost).toLocaleString("en-NG") +
-      "<br><strong>Estimated AILAT DATA gross profit: ₦" + Number(data.estimated_profit).toLocaleString("en-NG") + "</strong>" +
-      "<br><small>Estimate based on the confirmed ₦100 → ₦97 supplier debit sample. Final supplier cost must be verified before live vending.</small>";
+    quoteBox.innerHTML = "<strong>MTN ₦100 confirmed reference</strong><br>Customer airtime value: ₦" + Number(data.customer_pays).toLocaleString("en-NG") +
+      "<br>Documented supplier debit: ₦" + Number(data.supplier_estimated_cost).toLocaleString("en-NG") +
+      "<br><strong>Documented gross difference: ₦" + Number(data.estimated_profit).toLocaleString("en-NG") + "</strong>" +
+      "<br><small>This is the exact ₦100 reference only, not a price rule for other amounts. Live vending remains disabled.</small>";
   }catch(error){
     quoteBox.textContent = "MTN estimate could not be loaded. No transaction has been made.";
   }

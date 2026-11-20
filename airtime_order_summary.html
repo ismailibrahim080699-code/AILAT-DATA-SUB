@@ -196,8 +196,7 @@ function getSignedInUser(){
 }
 
 button.addEventListener("click",async()=>{
- statusBox.textContent = "Live airtime purchases are disabled during safe testing. No payment was taken and no supplier request was sent.";
- return;
+ if(button.disabled){ statusBox.textContent = "This airtime option is not enabled by the server. No payment was taken."; return; }
  if(requestSaved || !validNetworks.includes(network) || !validPhone.test(phone) || !validAmount) return;
  button.disabled = true;
  button.textContent = selectedApprovalMethod==="pin" ? "Verifying Transaction PIN..." : "Waiting for fingerprint...";

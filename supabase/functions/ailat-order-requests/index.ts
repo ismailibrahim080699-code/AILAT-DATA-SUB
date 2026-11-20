@@ -185,7 +185,7 @@ Deno.serve(async (req: Request) => {
       const { data: rows, error: cablePlansError } = await supabase
         .from("cable_tv_plan_catalog")
         .select("id,provider,supplier_cable_id,cableplan,display_name,supplier_amount,active,mapping_verified")
-        .eq("active", true).eq("mapping_verified", true)
+        .eq("active", true)
         .not("supplier_amount", "is", null)
         .order("supplier_amount", { ascending: true });
       if (cablePlansError) {
@@ -200,11 +200,11 @@ Deno.serve(async (req: Request) => {
         const markup = calculateCableMarkup(cost);
         return [{ id: Number(row.id), provider: row.provider, supplier_cable_id: cableId,
           cableplan: row.cableplan, name: row.display_name, supplier_amount: cost,
-          markup_amount: markup, amount: cost + markup }];
+          markup_amount: markup, amount: cost + markup, mapping_verified: row.mapping_verified === true }];
       });
       return reply({ success: true, plans, pricing_rule: "5_percent_minimum_300_ngn",
         purchase_enabled: false, wallet_charge_enabled: false,
-        notice: plans.length ? "Verified plan prices only. Cable purchase and wallet charging remain disabled pending supplier plan-ID and smart-card validation confirmation." : "No Cable TV plans have been activated. Add only plans whose exact Legitdataway cableplan values and supplier prices have been verified. No payment or subscription was made." });
+        notice: plans.length ? "Catalogue preview only. Numeric Package Plan IDs are being used as agreed, but supplier acceptance and Smart Card validation are not yet confirmed. Cable purchase and wallet charging are disabled." : "No Cable TV plans are available. No payment or subscription was made." });
     }
     if (req.method === "GET" && cableAction === "cable_validate") {
       return reply({

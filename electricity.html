@@ -103,13 +103,14 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   </div>
   <button id="previewBtn" class="secondary" type="button" disabled>Preview Electricity Order</button>
   <div id="previewResult" class="result info" role="status" aria-live="polite"></div>
+  <button id="dryRunElectricityBtn" type="button" hidden>Run Secure Dry-Run Test</button>
   <button id="buyElectricityBtn" type="button" hidden>Pay with Fingerprint</button>
   <button id="pinElectricityBtn" class="secondary" type="button" hidden>Pay with Transaction PIN</button>
   <div id="purchaseResult" class="result" role="status" aria-live="polite"></div>
   <p class="note">The preview uses AILAT DATA's 10% service margin. Supplier charges are checked against the customer total before a successful order is confirmed.</p>
  </section>
 
- <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure order preparation</b><br>Electricity payment is not active yet. The purchase function remains disabled until supplier pricing and test-meter verification are confirmed.</div></div>
+ <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure test mode</b><br>Dry-run verifies your PIN or device approval and checks the server-side order details. It never creates an order, deducts wallet funds, sends a supplier request or generates an electricity token. Live payment remains disabled.</div></div>
 </main>
 <div id="pinOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-label="Transaction PIN">
  <div class="pin-panel">
@@ -143,6 +144,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
  let requestKey=null;
  const buyBtn=document.getElementById("buyElectricityBtn");
  const pinBtn=document.getElementById("pinElectricityBtn");
+ const dryRunBtn=document.getElementById("dryRunElectricityBtn");
  const purchaseResult=document.getElementById("purchaseResult");
  const amountSection=document.getElementById("amountSection");
 
@@ -155,7 +157,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
  function resetVerification(){
   verifiedMeter=null;
   lastQuote=null;
-  buyBtn.hidden=true;pinBtn.hidden=true;
+  buyBtn.hidden=true;pinBtn.hidden=true;dryRunBtn.hidden=true;
   hide(purchaseResult);
   amountSection.hidden=true;
   amount.value="";
@@ -214,7 +216,8 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
    const quote=await response.json();
    if(!response.ok||!quote.success)throw new Error(quote.error||"Could not prepare electricity quote.");
    lastQuote=quote;purchaseSubmitted=false;requestKey=null;
-   buyBtn.hidden=!quote.purchase_enabled;pinBtn.hidden=!quote.purchase_enabled;
+   // Keep real Electricity payment controls hidden. Only the non-charging dry-run is available.
+   buyBtn.hidden=true;pinBtn.hidden=true;dryRunBtn.hidden=false;
    const money=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
    previewResult.className="result info";
    previewResult.style.display="block";
@@ -275,6 +278,51 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
   }catch(error){show(purchaseResult,"error",error.message||"Payment failed.");}
   finally{if(!purchaseSubmitted){buyBtn.disabled=false;pinBtn.disabled=false;}}
  }
+ async function runElectricityDryRun(method){
+  if(!verifiedMeter||!lastQuote||dryRunBtn.disabled)return;
+  const base=Number(amount.value),total=Number(lastQuote.customer_total);
+  if(!Number.isSafeInteger(base)||base!==Number(lastQuote.requested_amount)||!Number.isSafeInteger(total)){
+   show(purchaseResult,"error","Refresh the electricity quote before running the test.");return;
+  }
+  const fingerprint=[verifiedMeter.disco,verifiedMeter.meterType,verifiedMeter.meterNumber,String(base)].join("|");
+  const storageKey="ailat_electricity_dryrun:"+encodeURIComponent(fingerprint);
+  let dryRunKey;
+  try{dryRunKey=sessionStorage.getItem(storageKey)||crypto.randomUUID();sessionStorage.setItem(storageKey,dryRunKey);}
+  catch{dryRunKey=crypto.randomUUID();}
+  dryRunBtn.disabled=true;show(purchaseResult,"info","Please approve the secure dry-run test…");
+  try{
+   const user=await getSignedInUser();await user.reload();
+   if(!user.emailVerified)throw new Error("Verify your email before running this test.");
+   const firebaseToken=await user.getIdToken(true);
+   const intent={service_key:"electricity",idempotency_key:dryRunKey,details:{
+    disco:String(verifiedMeter.disco),meter_type:verifiedMeter.meterType,
+    meter_number:verifiedMeter.meterNumber,amount:base,customer_total:total
+   }};
+   const authorizationToken=await approveTransaction(firebaseToken,intent,method);
+   show(purchaseResult,"info","Approval received. Checking the request safely…");
+   const response=await fetch(endpoint,{method:"POST",headers:{
+    "apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+firebaseToken,"Content-Type":"application/json"
+   },body:JSON.stringify({
+    action:"electricity_dry_run",service_key:"electricity",idempotency_key:dryRunKey,
+    authorization_token:authorizationToken,
+    customer_data:{disco:String(verifiedMeter.disco),meter_type:verifiedMeter.meterType,
+     meter_number:verifiedMeter.meterNumber,amount:base,customer_total:total,profit_markup_rate:10}
+   })});
+   const result=await response.json().catch(()=>({}));
+   if(!response.ok||!result.success)throw new Error(result.error||"Dry-run verification failed.");
+   const money=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
+   show(purchaseResult,"success",
+    "DRY-RUN PASSED. Authorization verified. Amount: "+money(result.requested_amount)+
+    ". Customer total: "+money(result.customer_total)+
+    ". Order created: NO. Wallet charged: NO. Supplier request sent: NO. Authorization consumed: NO."
+   );
+  }catch(error){
+   show(purchaseResult,"error",error.message||"Dry-run could not be completed.");
+  }finally{dryRunBtn.disabled=false;}
+ }
+ dryRunBtn.addEventListener("click",()=>runElectricityDryRun("fingerprint"));
+ // PIN fallback is available through the same secure test action.
+ dryRunBtn.addEventListener("contextmenu",e=>{e.preventDefault();runElectricityDryRun("pin");});
  buyBtn.addEventListener("click",()=>processElectricityPurchase("fingerprint"));
  pinBtn.addEventListener("click",()=>processElectricityPurchase("pin"));
 })();

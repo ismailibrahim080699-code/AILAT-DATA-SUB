@@ -41,6 +41,8 @@ label{display:block;font-size:13px;font-weight:bold;margin:19px 0 9px}
 }
 
 .network.unavailable{opacity:.42;cursor:not-allowed;pointer-events:none;filter:grayscale(1)}
+.amount.unavailable{opacity:.4;cursor:not-allowed;pointer-events:none;background:#f5f5f5;color:#888}
+.availability-note{font-size:11px;color:#765b16;background:#fff8e7;padding:11px;border-radius:9px;line-height:1.5;margin-top:10px}
 .network.active{
  border:2px solid #6425c5;
  background:#f5efff;
@@ -134,8 +136,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 </div>
 
-<div class="network"
- onclick="chooseNetwork(this,'Airtel')">
+<div class="network unavailable" aria-disabled="true" title="Supplier rate not confirmed">
 
 <img
  src="https://cdn.simpleicons.org/airtel/E40000"
@@ -147,8 +148,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 </div>
 
-<div class="network"
- onclick="chooseNetwork(this,'Glo')">
+<div class="network unavailable" aria-disabled="true" title="Supplier rate not confirmed">
 
 <img
  src="https://commons.wikimedia.org/wiki/Special:FilePath/GloLogo.png"
@@ -160,11 +160,11 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 </div>
 
-<div class="network" onclick="chooseNetwork(this,'9mobile')"><div class="ninemobile-logo">9</div><span class="network-name">9mobile</span></div><div class="network" onclick="chooseNetwork(this,'Vitel')"><img class="vitel-logo-img" src="https://mma.prnewswire.com/media/2609274/Vitel_Wireless_Logo.jpg" alt="Vitel"><span class="network-name">Vitel</span></div>
+<div class="network unavailable" aria-disabled="true" title="Supplier rate not confirmed"><div class="ninemobile-logo">9</div><span class="network-name">9mobile</span></div><div class="network unavailable" aria-disabled="true" title="Supplier rate not confirmed"><img class="vitel-logo-img" src="https://mma.prnewswire.com/media/2609274/Vitel_Wireless_Logo.jpg" alt="Vitel"><span class="network-name">Vitel</span></div>
 
 </div>
 
-<label>Airtime Type</label><div class="amounts" id="airtimeTypes"><div class="amount active" onclick="chooseAirtimeType(this,'VTU')">VTU</div><div class="amount" onclick="chooseAirtimeType(this,'SNS')">Share &amp; Sell (SNS)</div></div><p class="note">VTU is regular transferable airtime. SNS is cheaper and cannot be transferred.</p><label>Phone Number</label>
+<label>Airtime Type</label><div class="amounts" id="airtimeTypes"><div class="amount active" onclick="chooseAirtimeType(this,'VTU')">VTU</div><div class="amount unavailable" aria-disabled="true" title="SNS rate not confirmed">Share &amp; Sell (SNS)</div></div><p class="note">VTU is regular transferable airtime. SNS remains unavailable until its supplier rate is verified.</p><label>Phone Number</label>
 <input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="Enter 11-digit phone number" maxlength="11" aria-describedby="phoneError">
 <p id="phoneError" class="field-error" role="alert">Please enter a valid 11-digit Nigerian phone number.</p>
 
@@ -172,15 +172,16 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 <div class="amounts">
 <div class="amount" onclick="chooseAmount(this,100)">₦100</div>
-<div class="amount" onclick="chooseAmount(this,200)">₦200</div>
-<div class="amount" onclick="chooseAmount(this,500)">₦500</div>
-<div class="amount" onclick="chooseAmount(this,1000)">₦1,000</div>
-<div class="amount" onclick="chooseAmount(this,2000)">₦2,000</div>
-<div class="amount" onclick="chooseAmount(this,5000)">₦5,000</div>
+<div class="amount unavailable" aria-disabled="true">₦200</div>
+<div class="amount unavailable" aria-disabled="true">₦500</div>
+<div class="amount unavailable" aria-disabled="true">₦1,000</div>
+<div class="amount unavailable" aria-disabled="true">₦2,000</div>
+<div class="amount unavailable" aria-disabled="true">₦5,000</div>
 </div>
 
 <label>Or Enter Amount</label>
-<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter amount (₦)" min="50" max="50000" step="1" oninput="customValue()" aria-describedby="amountError">
+<input type="number" id="customAmount" inputmode="numeric" placeholder="Only ₦100 is currently available" min="50" max="50000" step="1" disabled aria-describedby="amountError">
+<p class="availability-note">Current verified rate: MTN VTU ₦100 only. Legitdataway supplier debit reference: ₦97. Other networks and amounts are locked until their exact rates are confirmed. No payment is enabled.</p>
 <p id="amountError" class="field-error" role="alert">Enter a whole amount between ₦50 and ₦50,000.</p>
 
 <div class="total">
@@ -208,9 +209,9 @@ function updateAirtimeContinue(){
  if(!button) return;
  const phone=document.getElementById("phone").value.trim();
  const validPhone=/^0[789][01]\d{8}$/.test(phone);
- const validAmount=Number.isSafeInteger(selectedAmount) && selectedAmount>=50 && selectedAmount<=50000;
+ const validAmount=selectedNetwork==="MTN" && selectedAirtimeType==="VTU" && selectedAmount===100;
  button.disabled=!(validPhone && validAmount);
- button.textContent=button.disabled?"Enter valid phone and amount":"Continue";
+ button.textContent=button.disabled?"Only verified MTN ₦100 is available":"Continue";
 }
 
 function chooseAirtimeType(element,type){selectedAirtimeType=type;document.querySelectorAll("#airtimeTypes .amount").forEach(a=>a.classList.remove("active"));element.classList.add("active");}
@@ -248,7 +249,7 @@ const phoneInput=document.getElementById("phone"),phoneError=document.getElement
 const customAmountInput=document.getElementById("customAmount"),amountError=document.getElementById("amountError");
 function validateAirtimeFields(showErrors=true){
  const validPhone=/^0[789][01]\d{8}$/.test(phoneInput.value.trim());
- const validAmount=Number.isInteger(selectedAmount)&&selectedAmount>=50&&selectedAmount<=50000;
+ const validAmount=selectedNetwork==="MTN"&&selectedAirtimeType==="VTU"&&selectedAmount===100;
  phoneInput.classList.toggle("input-error",showErrors&&!validPhone);
  phoneInput.setAttribute("aria-invalid",String(showErrors&&!validPhone));
  phoneError.classList.toggle("show",showErrors&&!validPhone);

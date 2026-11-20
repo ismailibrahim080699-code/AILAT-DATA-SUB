@@ -44,7 +44,7 @@
 <div class="price-line"><span>AILAT gross profit</span><strong id="pGrossProfit">Not available</strong></div>
 <div class="notice warn">NOT SENT. Legitdataway API documentation has been added. Supplier cost and multi-recipient format are not confirmed. NOT SENT: no wallet charge or SMS delivery.</div>
 </section>
-<div class="notice"><strong>Integration:</strong> Legitdataway Bulk SMS API documentation is now recorded in the secure backend. This page validates campaigns and calculates SMS pages only. Supplier sending and wallet charging remain disabled until pricing and the multi-recipient format are confirmed and the secure payment flow is ready. Send messages only to recipients who have consented. Send messages only to recipients who have consented.</div>
+<div class="notice"><strong>Integration:</strong> Legitdataway Bulk SMS API documentation is now recorded in the secure backend. This page validates campaigns and calculates SMS pages only. Supplier sending and wallet charging remain disabled until pricing and the multi-recipient format are confirmed and the secure payment flow is ready. Send messages only to recipients who have consented.</div>
 </section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
 const form=document.getElementById("serviceForm"),errorBox=document.getElementById("formError"),preview=document.getElementById("preview");
@@ -84,7 +84,7 @@ form.addEventListener("submit",async event=>{
   document.getElementById("pGrossProfit").textContent=money(quote.gross_profit);
   preview.style.display="block";
   updateStats();
-  document.querySelector("#preview .notice").textContent=quote.message+" No supplier request or payment was made.";
+  document.querySelector("#preview .notice").textContent=quote.message;
  }catch(error){errorBox.textContent=error.message||"Secure campaign validation failed."}
  finally{quoteButton.disabled=false;quoteButton.textContent="Review Campaign"}
 });

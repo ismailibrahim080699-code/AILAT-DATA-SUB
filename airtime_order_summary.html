@@ -75,7 +75,7 @@ const network = typeof airtimeDraft?.network === "string" ? airtimeDraft.network
 const phone = typeof airtimeDraft?.phone === "string" ? airtimeDraft.phone : "";
 const amount = Number(airtimeDraft?.amount);
 const planType = airtimeDraft?.plan_type === "SNS" ? "SNS" : "VTU";
-const validNetworks = ["MTN","Airtel","Glo","T2","Vitel"];
+const validNetworks = ["MTN","Airtel","Glo","9mobile","T2","Vitel"];
 const validPhone = /^0[789][01]\d{8}$/;
 const validAmount = Number.isSafeInteger(amount) && amount >= 50 && amount <= 50000;
 const button = document.getElementById("confirmButton");

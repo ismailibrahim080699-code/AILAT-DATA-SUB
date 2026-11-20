@@ -92,7 +92,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   <p class="note">Verification checks the meter details with Legitdataway. It does not debit your wallet or generate an electricity token.</p>
  </section>
 
- <section class="card" aria-labelledby="amountTitle">
+ <section class="card" id="amountSection" aria-labelledby="amountTitle" hidden>
   <div class="card-heading">
    <div class="step">02</div>
    <div><h2 id="amountTitle">Enter Purchase Amount</h2><p class="sub">This step prepares an order preview only.</p></div>
@@ -121,7 +121,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
  const previewBtn=document.getElementById("previewBtn");
  const verifyResult=document.getElementById("verifyResult");
  const previewResult=document.getElementById("previewResult");
- let verifiedMeter=null;
+ let verifiedMeter=null;\n const amountSection=document.getElementById("amountSection");
 
  function show(el,kind,message){
   el.className="result "+kind;

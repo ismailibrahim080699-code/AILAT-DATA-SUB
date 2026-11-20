@@ -48,7 +48,7 @@ button:disabled{opacity:.65;cursor:wait}
 <div class="item"><span>Phone Number</span><strong id="phone">-</strong></div>
 <div class="total"><span>Requested Airtime Value</span><strong id="amount">₦0.00</strong></div>
 <div class="notice">
-<strong>Test selection:</strong> All networks and amounts can be previewed. Only MTN ₦100 VTU is approved for live purchase; all other selections remain test-only and cannot charge your wallet.
+<strong>Secure purchase:</strong> Your wallet is charged only after transaction approval. Supplier cost and profit are reconciled after supplier confirmation.
 </div>
 <button id="confirmButton" type="button" disabled>Checking live availability…</button><div class="pin-overlay" id="pinOverlay"><div class="pin-dialog"><h3>Enter AILAT DATA PIN</h3><p>Enter your existing 4-digit Transaction PIN.</p><div class="pin-boxes"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><p id="pinError" class="pin-error" role="alert"></p><div class="pin-actions"><button type="button" id="cancelPin">Cancel</button><button type="button" id="submitPin">Confirm PIN</button></div></div></div>
 <button type="button" class="pin-link" id="pinChoice" hidden>Use PIN</button>
@@ -84,31 +84,24 @@ const quoteBox = document.createElement("div");
 quoteBox.className = "notice";
 quoteBox.style.background = "#f3edff";
 quoteBox.style.color = "#4c1d95";
-quoteBox.innerHTML = "<strong>MTN pricing confirmation</strong><br>Checking the exact confirmed ₦100 reference…";
+quoteBox.innerHTML = "<strong>Airtime pricing</strong><br>Checking availability and amount…";
 document.getElementById("amount").closest(".total").insertAdjacentElement("afterend", quoteBox);
 async function loadAirtimeQuote(){
-  if(network !== "MTN"){
-    quoteBox.textContent = "A verified Legitdataway Airtime rate is not available for this network yet. No payment can be made.";
-    return;
-  }
-  if(amount !== 100){
-    quoteBox.textContent = "Only the MTN ₦100 supplier debit reference has been confirmed (₦97 cost). Other amounts are not yet priced. No payment can be made.";
-    return;
-  }
   try{
-    const url = SUPABASE_FUNCTION_URL + "?action=airtime_quote&network=mtn&amount=" + encodeURIComponent(String(amount));
+    const url = SUPABASE_FUNCTION_URL + "?action=airtime_quote&network=" + encodeURIComponent(network.toLowerCase()) + "&amount=" + encodeURIComponent(String(amount));
     const response = await fetch(url, {method:"GET", headers:{"apikey":SUPABASE_PUBLISHABLE_KEY}});
     const data = await response.json().catch(()=>({}));
     if(!response.ok || !data.success) throw new Error(data.error || "Quote unavailable");
-    quoteBox.innerHTML = "<strong>MTN ₦100 confirmed reference</strong><br>Customer airtime value: ₦" + Number(data.customer_pays).toLocaleString("en-NG") +
-      "<br>Documented supplier debit: ₦" + Number(data.supplier_estimated_cost).toLocaleString("en-NG") +
-      "<br><strong>Documented gross difference: ₦" + Number(data.estimated_profit).toLocaleString("en-NG") + "</strong>" +
-      "<br><small>This is the exact ₦100 reference only, not a price rule for other amounts.</small>" +
-      (data.live_purchase_enabled === true ? "<br><strong>Live purchase is available for this exact option.</strong>" : "<br>Live vending is disabled by the server.");
+    quoteBox.innerHTML = "<strong>Airtime purchase quote</strong><br>Network: " + String(data.network) +
+      "<br>Customer pays: ₦" + Number(data.customer_pays).toLocaleString("en-NG") +
+      "<br><small>Supplier debit and profit will be reconciled after supplier confirmation. No profit is assumed in advance.</small>" +
+      (data.live_purchase_enabled === true ? "<br><strong>Live purchase is enabled.</strong>" : "<br>Live vending is disabled by the server.");
     button.disabled = data.live_purchase_enabled !== true;
-    button.textContent = data.live_purchase_enabled === true ? "Pay ₦100 & Buy Airtime" : "Airtime purchase unavailable";
+    button.textContent = data.live_purchase_enabled === true ? "Pay ₦" + amount.toLocaleString("en-NG") + " & Buy Airtime" : "Airtime purchase unavailable";
   }catch(error){
-    quoteBox.textContent = "MTN estimate could not be loaded. No transaction has been made.";
+    quoteBox.textContent = "Airtime quote could not be loaded. No transaction has been made.";
+    button.disabled = true;
+    button.textContent = "Airtime purchase unavailable";
   }
 }
 loadAirtimeQuote();

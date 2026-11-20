@@ -136,7 +136,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 </div>
 
-<div class="network" onclick="chooseNetwork(this,'Airtel')" title="Test selection only; supplier rate pending">
+<div class="network" onclick="chooseNetwork(this,'Airtel')" title="Available">
 
 <img
  src="https://cdn.simpleicons.org/airtel/E40000"
@@ -148,7 +148,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 
 </div>
 
-<div class="network" onclick="chooseNetwork(this,'Glo')" title="Test selection only; supplier rate pending">
+<div class="network" onclick="chooseNetwork(this,'Glo')" title="Available">
 
 <img
  src="https://commons.wikimedia.org/wiki/Special:FilePath/GloLogo.png"
@@ -180,8 +180,8 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 </div>
 
 <label>Or Enter Amount</label>
-<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter amount for test preview" min="50" max="50000" step="1" aria-describedby="amountError">
-<p class="availability-note">TEST MODE: You can select all networks and amounts to preview the order flow. Only MTN VTU ₦100 has a confirmed live rate. All other selections are blocked before PIN approval and wallet payment until supplier prices are verified.</p>
+<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter airtime amount" min="50" max="50000" step="1" aria-describedby="amountError">
+<p class="availability-note">Airtime purchases are enabled for supported networks and amounts. Supplier debit and profit will be reconciled after supplier confirmation.</p>
 <p id="amountError" class="field-error" role="alert">Enter a whole amount between ₦50 and ₦50,000.</p>
 
 <div class="total">
@@ -192,7 +192,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 <button id="continueAirtimeBtn" onclick="continuePurchase()" disabled>Enter phone number and amount</button>
 
 <div class="note" style="background:#fff8e7;color:#805600;padding:13px;border-radius:10px;margin-top:15px">
-<strong>Supplier dispatch disabled:</strong> This page records an airtime request only. No payment is taken and no airtime is sent from this page.
+<strong>Secure purchase:</strong> Review your network, phone number and amount carefully before approval. Supplier confirmation may take time.
 </div>
 <p class="note">Please check your phone number and requested airtime value before continuing.</p>
 </div>

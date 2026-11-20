@@ -1,2 +1,135 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#4c1d95"><title>Exam PIN / Result Checker - AILAT DATA</title><link rel="stylesheet" href="assets/ailat-theme.css?v=1"><style>*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,sans-serif}header{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:20px;border-radius:0 0 22px 22px}header a{color:#fff;text-decoration:none;font-size:25px}main{max-width:480px;margin:auto;padding:20px}.card{background:#fff;border-radius:17px;padding:22px;margin-top:24px;box-shadow:0 4px 15px #0000000d}.notice{background:#fff7e6;border:1px solid #f4d28b;color:#754b00;padding:16px;border-radius:12px;line-height:1.7;font-size:14px}a.back{display:block;text-align:center;color:#6d28d9;text-decoration:none;margin:22px}</style></head><body><header><a href="dashboard.html">‹</a><h2>AILAT DATA</h2><p>Exam PIN / Result Checker</p></header><main><section class="card"><h3>Exam PIN / Result Checker</h3><div class="notice"><strong>Service temporarily unavailable.</strong><br>We have stopped the previous supplier connection and are preparing the Legitdataway integration. No exam PIN purchase or JAMB verification is available until the new supplier is verified.<br>No payment was taken and no supplier request was sent.</div><a class="back" href="dashboard.html">← Return to Dashboard</a></section></main></body></html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#4c1d95">
+<title>Exam PIN / Result Checker - AILAT DATA</title>
+<link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,sans-serif}.wrap{max-width:490px;min-height:100vh;margin:auto;padding-bottom:35px}header{background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:#fff;padding:22px 20px 25px;border-radius:0 0 24px 24px}header a{color:#fff;text-decoration:none;font-size:26px}header h2{font-size:20px;margin:16px 0 5px}header p{font-size:12px;opacity:.85}.content{padding:20px 17px}.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 5px 22px #35106f0c}.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#8055bd}.card h3{font-size:17px;margin:7px 0;color:#281344}.sub{font-size:12px;color:#8a8297;line-height:1.6;margin:0 0 15px}.plans{display:grid;gap:10px}.plan{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px;border:1px solid #e8e1f0;border-radius:13px;background:#fff;color:#302044;text-align:left;cursor:pointer}.plan.active{border:2px solid #6425c5;background:#f8f3ff;padding:14px}.plan strong{font-size:14px}.plan small{display:block;color:#8c8497;font-size:11px;margin-top:5px}.price{font-weight:800;color:#6425c5;font-size:16px;white-space:nowrap}label{display:block;font-size:12px;font-weight:700;margin:17px 0 8px}input{width:100%;padding:15px;border:1px solid #e5e1ed;border-radius:11px;font-size:14px;outline:none}input:focus{border-color:#6425c5}.summary{background:#f5efff;border-radius:12px;padding:15px;margin-top:18px}.sumrow{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin:7px 0;color:#625673}.sumrow.total{border-top:1px solid #e2d6f3;padding-top:12px;margin-top:12px;color:#3a1c66;font-weight:800;font-size:15px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}button.primary,button.secondary{border:0;border-radius:11px;padding:15px;font-weight:800;font-size:13px;cursor:pointer}button.primary{background:#6425c5;color:#fff}button.secondary{background:#f1eaff;color:#5b21b6}button:disabled{opacity:.5;cursor:not-allowed}.note{font-size:11px;line-height:1.6;color:#8c8497;margin-top:13px}.status{font-size:12px;line-height:1.6;margin-top:14px;white-space:pre-wrap}.pinbox{display:none;position:fixed;inset:0;background:#160b2dcc;z-index:10;align-items:center;justify-content:center;padding:20px}.pinbox.show{display:flex}.pinpanel{background:#fff;border-radius:18px;padding:23px;width:100%;max-width:360px}.digits{display:flex;gap:10px;margin:18px 0}.digits input{width:25%;text-align:center;font-size:22px;font-weight:800}.pinbuttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}.result{background:#f4fff8;border:1px solid #bce7cb;border-radius:12px;padding:14px;margin-top:14px;font-size:13px;line-height:1.8;overflow-wrap:anywhere}.result strong{color:#17663b}.result button{margin-top:10px;width:100%;border:0;border-radius:9px;padding:12px;background:#17663b;color:#fff;font-weight:700}.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a href="dashboard.html">‹</a><h2>Exam PIN / Result Checker</h2><p>Instant exam PIN delivery · Secure wallet payment</p></header>
+<main class="content">
+<section class="card">
+<div class="eyebrow">AVAILABLE EXAM SERVICES</div><h3>Choose your examination</h3><p class="sub">Select one verified exam PIN. JAMB is currently unavailable.</p>
+<div class="plans" id="plans"><p class="sub">Loading verified exam prices…</p></div>
+<label for="phone">Phone Number (optional)</label><input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit phone number">
+<div class="summary">
+<div class="sumrow"><span>Examination</span><strong id="selectedName">Select an exam</strong></div>
+<div class="sumrow"><span>Supplier price</span><strong id="supplierPrice">—</strong></div>
+<div class="sumrow"><span>Service charge</span><strong id="markupPrice">—</strong></div>
+<div class="sumrow total"><span>Total to pay</span><strong id="totalPrice">—</strong></div>
+</div>
+<div class="actions"><button class="primary" id="fingerprintBtn" disabled>Pay with Fingerprint</button><button class="secondary" id="pinBtn" disabled>Pay with PIN</button></div>
+<p class="note">Your wallet is charged only after you approve this exact purchase. If the supplier confirms failure, the wallet charge is refunded. If supplier confirmation is pending, do not submit again.</p>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<div class="result hidden" id="pinResult"></div>
+</section>
+<a href="dashboard.html" style="display:block;text-align:center;color:#6d28d9;text-decoration:none;font-size:13px;margin:20px">← Return to Dashboard</a>
+</main>
+</div>
+<div class="pinbox" id="pinOverlay" role="dialog" aria-modal="true"><div class="pinpanel"><h3>Enter Transaction PIN</h3><p class="sub">Enter your existing 4-digit PIN to approve this purchase.</p><div class="digits"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div><p id="pinError" class="status" style="color:#b42318"></p><div class="pinbuttons"><button class="secondary" id="cancelPin">Cancel</button><button class="primary" id="submitPin">Confirm PIN</button></div></div></div>
+<script type="module">
+import { app } from "./firebase.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app);
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const PASSKEY_API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+let plans=[],selected=null,requestKey="",busy=false,orderSubmitted=false;
+const $=id=>document.getElementById(id);
+const money=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+function getUser(){return new Promise((resolve,reject)=>{const unsub=onAuthStateChanged(auth,u=>{unsub();if(!u)reject(new Error("Please log in first."));else resolve(u)},e=>{unsub();reject(e)})})}
+function makeRequestKey(){return crypto.randomUUID()}
+function setStatus(msg,color="#6b5b80"){$("status").textContent=msg;$("status").style.color=color}
+function renderPlans(){
+ const root=$("plans");root.replaceChildren();
+ plans.forEach(p=>{
+  const b=document.createElement("button");b.type="button";b.className="plan"+(selected?.exam_id===p.exam_id?" active":"");
+  const left=document.createElement("span"),name=document.createElement("strong"),desc=document.createElement("small"),price=document.createElement("span");
+  name.textContent=p.exam_name;desc.textContent="Single PIN · Supplier verified";left.append(name,desc);price.className="price";price.textContent=money(p.selling_amount);b.append(left,price);
+  b.addEventListener("click",()=>{selected=p;requestKey=makeRequestKey();orderSubmitted=false;renderPlans();updateSummary()});root.append(b);
+ });
+}
+function updateSummary(){
+ $("selectedName").textContent=selected?.exam_name||"Select an exam";
+ $("supplierPrice").textContent=selected?money(selected.supplier_amount):"—";
+ $("markupPrice").textContent=selected?money(selected.markup_amount):"—";
+ $("totalPrice").textContent=selected?money(selected.selling_amount):"—";
+ $("fingerprintBtn").disabled=!selected||busy||orderSubmitted;
+ $("pinBtn").disabled=!selected||busy||orderSubmitted;
+}
+async function requestPin(){
+ return new Promise(resolve=>{
+  const overlay=$("pinOverlay"),boxes=[...document.querySelectorAll(".pin-digit")],error=$("pinError");
+  const finish=v=>{overlay.classList.remove("show");boxes.forEach(b=>b.value="");error.textContent="";resolve(v)};
+  overlay.classList.add("show");boxes[0].focus();
+  boxes.forEach((box,i)=>{box.oninput=()=>{box.value=box.value.replace(/\D/g,"").slice(-1);if(box.value&&i<3)boxes[i+1].focus()};box.onkeydown=e=>{if(e.key==="Backspace"&&!box.value&&i>0)boxes[i-1].focus();if(e.key==="Enter")$("submitPin").click();if(e.key==="Escape")finish(null)}});
+  $("cancelPin").onclick=()=>finish(null);
+  $("submitPin").onclick=()=>{const pin=boxes.map(b=>b.value).join("");if(!/^\d{4}$/.test(pin)){error.textContent="Enter all four digits.";return}finish(pin)};
+ });
+}
+async function authorize(token,intent,method){
+ const headers={"Authorization":"Bearer "+token,"Content-Type":"application/json"};
+ const call=async body=>{const r=await fetch(PASSKEY_API,{method:"POST",headers,body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success)throw new Error(d.error||"Transaction authorization failed.");return d};
+ if(method==="pin"){const pin=await requestPin();if(pin===null)throw new Error("Transaction approval cancelled.");const d=await call({action:"authorize_with_pin",intent,pin});if(!d.authorization_token)throw new Error("PIN approval failed.");return d.authorization_token}
+ const begin=await call({action:"start_transaction",intent});
+ const fromB64=v=>{const x=String(v||"").replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(x+"=".repeat((4-x.length%4)%4)),c=>c.charCodeAt(0))};
+ const toB64=b=>{let raw="";for(const x of new Uint8Array(b))raw+=String.fromCharCode(x);return btoa(raw).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"")};
+ const opts={...begin.options,challenge:fromB64(begin.options.challenge),allowCredentials:(begin.options.allowCredentials||[]).map(x=>({...x,id:fromB64(x.id)}))};
+ const credential=await navigator.credentials.get({publicKey:opts});if(!credential)throw new Error("Fingerprint approval cancelled.");
+ const response={id:credential.id,rawId:toB64(credential.rawId),type:credential.type,authenticatorAttachment:credential.authenticatorAttachment,clientExtensionResults:credential.getClientExtensionResults(),response:{clientDataJSON:toB64(credential.response.clientDataJSON),authenticatorData:toB64(credential.response.authenticatorData),signature:toB64(credential.response.signature),userHandle:credential.response.userHandle?toB64(credential.response.userHandle):null}};
+ const done=await call({action:"finish_transaction",response});if(!done.authorization_token)throw new Error("Biometric approval was not completed.");return done.authorization_token;
+}
+async function process(method){
+ if(!selected||busy||orderSubmitted)return;
+ const phone=$("phone").value.trim();
+ if(phone&&!/^0[789][01]\d{8}$/.test(phone)){setStatus("Enter a valid 11-digit Nigerian phone number.","#b42318");$("phone").focus();return}
+ busy=true;updateSummary();$("pinResult").classList.add("hidden");
+ try{
+  const user=await getUser();await user.reload();if(!user.emailVerified)throw new Error("Please verify your email before purchasing Exam PIN.");
+  const token=await user.getIdToken(true);
+  const intent={service_key:"exam",idempotency_key:requestKey,details:{exam_id:selected.exam_id,exam_name:selected.exam_name,quantity:1,supplier_amount:selected.supplier_amount,markup_amount:selected.markup_amount,selling_amount:selected.selling_amount,phone}};
+  setStatus(method==="pin"?"Waiting for Transaction PIN approval…":"Waiting for fingerprint approval…");
+  const authorization_token=await authorize(token,intent,method);
+  setStatus("Approval successful. Sending your order securely…");
+  const response=await fetch(API,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({service_key:"exam",idempotency_key:requestKey,authorization_token,customer_data:{exam_id:selected.exam_id,quantity:1,phone}})});
+  const result=await response.json().catch(()=>({}));
+  if(result.order_request?.reference){
+   orderSubmitted=true;
+   if(result.fulfillment_status==="success"&&Array.isArray(result.issued_pins)&&result.issued_pins.length){
+    const issued=result.issued_pins[0];const box=$("pinResult");box.classList.remove("hidden");
+    const heading=document.createElement("strong");heading.textContent=selected.exam_name+" PIN generated";
+    const pin=document.createElement("div");pin.textContent="PIN: "+issued.pin;
+    const serial=document.createElement("div");serial.textContent="Serial Number: "+issued.serial;
+    const ref=document.createElement("div");ref.textContent="Reference: "+result.order_request.reference;
+    const copy=document.createElement("button");copy.type="button";copy.textContent="Copy PIN and Serial";copy.onclick=()=>navigator.clipboard?.writeText("PIN: "+issued.pin+"\nSerial: "+issued.serial);
+    box.replaceChildren(heading,pin,serial,ref,copy);setStatus("Payment successful. Your exam PIN is ready.","#17663b");
+   }else if(result.payment_status==="refunded"||result.fulfillment_status==="failed"){
+    setStatus((result.error||"Supplier could not issue the PIN.")+" Your wallet was refunded. Reference: "+result.order_request.reference,"#b42318");
+   }else{
+    setStatus((result.notice||"Your order is being processed. Do not submit again.")+" Reference: "+result.order_request.reference,"#805600");
+   }
+  }else if(!response.ok||!result.success)throw new Error(result.error||"The order could not be submitted.");
+ }catch(e){setStatus(e.message||"Something went wrong. Check Transaction History before trying again.","#b42318")}
+ finally{busy=false;updateSummary()}
+}
+$("fingerprintBtn").addEventListener("click",()=>process("fingerprint"));
+$("pinBtn").addEventListener("click",()=>process("pin"));
+async function loadPlans(){
+ try{
+  const r=await fetch(API+"?action=exam_plans",{headers:{"apikey":PUBLISHABLE_KEY}});
+  const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||"Exam plans are unavailable.");
+  plans=Array.isArray(d.plans)?d.plans:[];
+  if(!plans.length)throw new Error("No verified Exam PIN plans are currently available.");
+  renderPlans();setStatus("Verified supplier prices loaded. Choose one exam to continue.");
+ }catch(e){$("plans").textContent=e.message;setStatus(e.message,"#b42318")}
+}
+loadPlans();
+</script>
+</body>
+</html>

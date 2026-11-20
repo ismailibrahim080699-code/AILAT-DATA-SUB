@@ -192,19 +192,28 @@ Deno.serve(async (req: Request) => {
         console.error("Cable catalogue read failed:", cablePlansError.message);
         return reply({ success: false, error: "Could not load verified Cable TV plans." }, 500);
       }
+      const providerMap: Record<string, { id: number; cablename: string }> = {
+        gotv: { id: 1, cablename: "gotv" },
+        dstv: { id: 2, cablename: "dstv" },
+        startimes: { id: 3, cablename: "startime" },
+      };
       const plans = (rows ?? []).flatMap((row: Record<string, unknown>) => {
         const cost = Number(row.supplier_amount);
         const cableId = Number(row.supplier_cable_id);
-        if (!Number.isFinite(cost) || cost <= 0 || ![1,2,3].includes(cableId) ||
+        const provider = String(row.provider ?? "").toLowerCase();
+        const mapping = providerMap[provider];
+        if (!mapping || mapping.id !== cableId || !Number.isFinite(cost) || cost <= 0 ||
             typeof row.cableplan !== "string" || !row.cableplan.trim()) return [];
         const markup = calculateCableMarkup(cost);
-        return [{ id: Number(row.id), provider: row.provider, supplier_cable_id: cableId,
-          cableplan: row.cableplan, name: row.display_name, supplier_amount: cost,
-          markup_amount: markup, amount: cost + markup, mapping_verified: row.mapping_verified === true }];
+        return [{ id: Number(row.id), provider, cablename: mapping.cablename,
+          supplier_cable_id: cableId, cableplan: row.cableplan, name: row.display_name,
+          supplier_amount: cost, markup_amount: markup, amount: cost + markup,
+          mapping_verified: row.mapping_verified === true }];
       });
-      return reply({ success: true, plans, pricing_rule: "5_percent_minimum_300_ngn",
-        purchase_enabled: false, wallet_charge_enabled: false,
-        notice: plans.length ? "Catalogue preview only. Numeric Package Plan IDs are being used as agreed, but supplier acceptance and Smart Card validation are not yet confirmed. Cable purchase and wallet charging are disabled." : "No Cable TV plans are available. No payment or subscription was made." });
+      return reply({ success: true, plans, provider_ids: { gotv: 1, dstv: 2, startimes: 3 },
+        supplier_cablename_values: { gotv: "gotv", dstv: "dstv", startimes: "startime" },
+        pricing_rule: "5_percent_minimum_300_ngn", purchase_enabled: false, wallet_charge_enabled: false,
+        notice: plans.length ? "Read-only preview: provider IDs and cablename values are mapped from the supplied API details. Numeric Package Plan IDs remain provisional until Legitdataway confirms them, and Smart Card validation is not yet confirmed. No wallet charge or subscription request is possible." : "No Cable TV plans are available. No payment or subscription was made." });
     }
     if (req.method === "GET" && cableAction === "cable_validate") {
       return reply({

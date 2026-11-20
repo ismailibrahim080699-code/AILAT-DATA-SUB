@@ -180,7 +180,7 @@ button{width:100%;padding:16px;border:0;border-radius:11px;background:#6425c5;co
 </div>
 
 <label>Or Enter Amount</label>
-<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter airtime amount" min="50" max="50000" step="1" aria-describedby="amountError">
+<input type="number" id="customAmount" inputmode="numeric" placeholder="Enter airtime amount" min="50" max="50000" step="1" aria-describedby="amountError" oninput="customValue()">
 <p class="availability-note">Airtime purchases are enabled for supported networks and amounts. Supplier debit and profit will be reconciled after supplier confirmation.</p>
 <p id="amountError" class="field-error" role="alert">Enter a whole amount between ₦50 and ₦50,000.</p>
 

@@ -103,7 +103,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   </div>
   <button id="previewBtn" class="secondary" type="button" disabled>Preview Electricity Order</button>
   <div id="previewResult" class="result info" role="status" aria-live="polite"></div>
-  <p class="note">Supplier minimums, charges and the final selling price are still awaiting confirmation. No payment can be made from this preview.</p>
+  <p class="note">The preview uses AILAT DATA's 10% service margin. Supplier charges will be reconciled before live vending. This preview cannot take payment.</p>
  </section>
 
  <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure order preparation</b><br>Electricity payment is not active yet. The purchase function remains disabled until supplier pricing and test-meter verification are confirmed.</div></div>
@@ -170,23 +170,39 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
    verifyBtn.textContent="Verify Meter";
   }
  });
- previewBtn.addEventListener("click",()=>{
+ previewBtn.addEventListener("click",async()=>{
   hide(previewResult);
   if(!verifiedMeter){show(previewResult,"error","Please verify your meter first.");return;}
   const value=Number(amount.value);
-  if(!Number.isFinite(value)||value<=0){show(previewResult,"error","Enter an amount greater than zero.");return;}
-  const formatted=new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:2}).format(value);
-  previewResult.className="result info";
-  previewResult.style.display="block";
-  previewResult.innerHTML=
-   "<strong>Order preview only — not a purchase</strong>"+
-   "<div class='summary-row'><span>Customer</span><strong>"+escapeHtml(verifiedMeter.name||"Not supplied")+"</strong></div>"+
-   "<div class='summary-row'><span>Electricity company</span><strong>"+escapeHtml(verifiedMeter.discoName||disco.options[disco.selectedIndex].text)+"</strong></div>"+
-   "<div class='summary-row'><span>Meter number</span><strong>"+escapeHtml(verifiedMeter.meterNumber)+"</strong></div>"+
-   "<div class='summary-row'><span>Meter type</span><strong>"+escapeHtml(verifiedMeter.meterType.toUpperCase())+"</strong></div>"+
-   "<div class='summary-row'><span>Requested amount</span><strong>"+escapeHtml(formatted)+"</strong></div>"+
-   "<div class='summary-row'><span>Supplier charges / final price</span><strong class='pending'>Awaiting confirmation</strong></div>"+
-   "<p class='note'>No wallet deduction, supplier order or token generation has taken place.</p>";
+  if(!Number.isSafeInteger(value)||value<1||value>500000){show(previewResult,"error","Enter a whole-naira amount between ₦1 and ₦500,000.");return;}
+  previewBtn.disabled=true;
+  previewBtn.textContent="Preparing preview...";
+  try{
+   const url=new URL(endpoint);
+   url.searchParams.set("action","electricity_quote");
+   url.searchParams.set("amount",String(value));
+   const response=await fetch(url.toString(),{method:"GET",headers:{Accept:"application/json"}});
+   const quote=await response.json();
+   if(!response.ok||!quote.success)throw new Error(quote.error||"Could not prepare electricity quote.");
+   const money=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
+   previewResult.className="result info";
+   previewResult.style.display="block";
+   previewResult.innerHTML=
+    "<strong>Order preview only — not a purchase</strong>"+
+    "<div class='summary-row'><span>Customer</span><strong>"+escapeHtml(verifiedMeter.name||"Not supplied")+"</strong></div>"+
+    "<div class='summary-row'><span>Electricity company</span><strong>"+escapeHtml(verifiedMeter.discoName||disco.options[disco.selectedIndex].text)+"</strong></div>"+
+    "<div class='summary-row'><span>Meter number</span><strong>"+escapeHtml(verifiedMeter.meterNumber)+"</strong></div>"+
+    "<div class='summary-row'><span>Meter type</span><strong>"+escapeHtml(verifiedMeter.meterType.toUpperCase())+"</strong></div>"+
+    "<div class='summary-row'><span>Electricity amount</span><strong>"+escapeHtml(money(quote.requested_amount))+"</strong></div>"+
+    "<div class='summary-row'><span>AILAT DATA service margin (10%)</span><strong>"+escapeHtml(money(quote.markup_amount))+"</strong></div>"+
+    "<div class='summary-row'><span>Estimated customer total</span><strong>"+escapeHtml(money(quote.customer_total))+"</strong></div>"+
+    "<p class='note'>This is a read-only estimate. Supplier charges will be reconciled before live vending. No wallet deduction, supplier order or token generation has taken place.</p>";
+  }catch(error){
+   show(previewResult,"error",error.message||"Could not prepare electricity quote.");
+  }finally{
+   previewBtn.disabled=false;
+   previewBtn.textContent="Preview Electricity Order";
+  }
  });
  function escapeHtml(value){
   return String(value).replace(/[&<>"']/g,function(c){

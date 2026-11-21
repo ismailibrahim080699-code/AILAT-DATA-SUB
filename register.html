@@ -131,6 +131,7 @@ import {
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+const REFERRAL_API = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-referral";
 
 async function createShortReferralCode(uid){
  for(let attempt=0;attempt<40;attempt++){
@@ -303,6 +304,25 @@ form.addEventListener("submit", async function(event){
 
   await batch.commit();
   profileSaved = true;
+
+  // Persist the referral attribution in the server-side ledger after the
+  // Firebase referral record has been saved and verified by its public code.
+  if(referralCode){
+   try{
+    const referralToken = await createdUser.getIdToken();
+    const syncResponse = await fetch(REFERRAL_API,{
+     method:"POST",
+     headers:{"Content-Type":"application/json",Authorization:"Bearer "+referralToken},
+     body:JSON.stringify({action:"sync_attribution",referral_code:referralCode})
+    });
+    const syncResult = await syncResponse.json();
+    if(!syncResponse.ok || !syncResult.success){
+     console.warn("Referral attribution sync pending:",syncResult.error||syncResponse.status);
+    }
+   }catch(syncError){
+    console.warn("Referral attribution sync will be retried later:",syncError);
+   }
+  }
 
   // SEND EMAIL VERIFICATION
 

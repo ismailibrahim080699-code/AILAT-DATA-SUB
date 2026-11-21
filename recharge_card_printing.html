@@ -3,109 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#4c1d95">
+<meta name="theme-color" content="#ffffff">
 <title>Recharge Card Printing | AILAT DATA</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f4f7f6;color:#202b33;font-family:Arial,sans-serif}
-header{background:#fff;color:#202b33;padding:20px 20px 25px;border-radius:0 0 25px 25px;box-shadow:0 9px 25px #4c1d9528}
-header a{color:#202b33;text-decoration:none;font-size:25px}
-header h1{font-size:21px;margin:16px 0 5px}
-header p{font-size:12px;margin:0;opacity:.85}
-main{max-width:520px;margin:0 auto;padding:18px 16px 35px}
-.panel{background:#fff;border:1px solid #e9ddff;border-radius:19px;padding:19px;margin-top:16px;box-shadow:0 8px 24px #3210640c}
-.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.3px;color:#7c3aed;text-transform:uppercase}
-h2{font-size:17px;margin:8px 0 5px}
-.muted{color:#786b91;font-size:12px;line-height:1.65}
-.plan{display:flex;align-items:center;gap:13px;padding:15px;border:3px solid #0ba568;border-radius:25px;margin-top:18px;background:#f1faf5;min-height:140px;cursor:pointer}
-.network{width:62px;height:62px;flex:0 0 62px;display:grid;place-items:center;border-radius:50%;background:#ffcb05;padding:5px}.network svg{width:100%;height:100%;display:block}
-.plan-info{flex:1}.plan-info strong{display:block;font-size:15px}.plan-info small{display:block;color:#827695;font-size:11px;margin-top:4px}
-.amount{font-size:17px;font-weight:900;color:#079b5a;white-space:nowrap}
-.details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.details[hidden]{display:none}
-.detail{background:#faf8ff;border-radius:12px;padding:12px}.detail small{display:block;color:#887a9d;font-size:10px;margin-bottom:6px}.detail strong{font-size:12px}
-.status{display:flex;gap:10px;align-items:flex-start;background:#fff8e8;border:1px solid #f3dfb1;color:#76520b;border-radius:13px;padding:14px;font-size:12px;line-height:1.65;margin-top:16px}
-.status b{display:block;margin-bottom:3px}
-.status-icon{font-size:17px}
-.footer-link{display:block;text-align:center;color:#6d28d9;text-decoration:none;font-size:13px;font-weight:700;margin:22px 0 5px}
+body{margin:0;background:#f5f7f6;color:#252d34;font-family:Arial,Helvetica,sans-serif}
+header{background:#fff;padding:24px 22px 18px;box-shadow:0 4px 18px rgba(20,40,35,.05)}
+header a{color:#27333a;text-decoration:none;font-size:29px;line-height:1}
+main{max-width:680px;margin:0 auto;padding:18px 16px 38px}
+.panel{background:#fff;border-radius:30px;padding:30px 28px 34px;box-shadow:0 10px 24px rgba(25,45,40,.12)}
+h1{font-size:clamp(23px,5vw,34px);line-height:1.2;margin:4px 0 52px;font-weight:800;letter-spacing:-.5px}
+.step-title{font-size:clamp(19px,4.4vw,27px);font-weight:700;color:#75818a;margin:0 0 28px}
+.network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:62px}
+.network-choice{appearance:none;width:100%;min-height:178px;border:3px solid #e5e9e7;border-radius:30px;background:#f3faf6;color:#26333a;padding:22px 16px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .16s,background .16s,box-shadow .16s}
+.network-choice[aria-pressed="true"]{border-color:#0aa568;background:#f1faf5;box-shadow:0 0 0 1px rgba(10,165,104,.08)}
+.network-choice:focus-visible{outline:3px solid #a5e8c9;outline-offset:3px}
+.mtn-mark{width:62px;height:62px;display:block}
+.network-name{font-size:25px;font-weight:800;line-height:1}
+.step-two{margin-top:0}
+.denomination{width:100%;min-height:116px;text-align:left;background:#fff;border:2px solid #e6e8e7;border-radius:28px;padding:22px 22px;color:#242c32;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.denomination.selected{border-color:#0aa568;background:#f8fdf9}
+.denomination-main{font-size:25px;font-weight:500}
+.denomination-price{display:block;color:#079b5a;font-size:24px;font-weight:800;margin-top:18px}
+.denomination-arrow{font-size:25px;color:#079b5a}
+.fields{display:grid;gap:28px;margin:88px 0 0}
+.field{width:100%;height:108px;border:2px solid #e0e3e2;border-radius:17px;background:#fff;padding:24px;font-size:25px;color:#27333a;outline:none}
+.field::placeholder{color:#9ba5ac;opacity:1}
+.field:focus{border-color:#0aa568}
+.field-label{position:relative}
+.field-label span{position:absolute;left:25px;top:-11px;background:#fff;padding:0 7px;color:#9ba5ac;font-size:20px}
+.lock-note{margin-top:28px;padding:15px 17px;border-radius:14px;background:#fff8e8;border:1px solid #f2dfb4;color:#75520d;font-size:13px;line-height:1.55}
+.lock-note strong{display:block;margin-bottom:4px}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
+.text-button{border:0;background:transparent;color:#079b5a;font-weight:700;font-size:13px;padding:8px 0;cursor:pointer}
+.back-link{color:#079b5a;text-decoration:none;font-weight:700;font-size:14px}
+[hidden]{display:none!important}
+@media(max-width:420px){main{padding:12px 15px 30px}.panel{padding:27px 22px 30px;border-radius:28px}h1{margin-bottom:54px}.network-grid{grid-template-columns:1fr 1fr;gap:12px}.network-choice{min-height:164px;border-radius:28px;padding:17px 10px}.fields{margin-top:82px;gap:26px}.field{height:108px;font-size:23px;padding:22px}.denomination{min-height:116px;padding:20px}.denomination-main{font-size:23px}.denomination-price{font-size:23px}}
 </style>
 </head>
 <body>
-<header>
-<a href="dashboard.html" aria-label="Back to dashboard">‹</a>
-<h1>Recharge Card Printing</h1>
-<p>Secure PIN and serial-number generation</p>
-</header>
+<header><a href="dashboard.html" aria-label="Back to dashboard">‹</a></header>
 <main>
 <section class="panel">
-<div class="eyebrow">Supplier catalogue</div>
-<h2>Available plan</h2>
-<p class="muted" id="catalogMessage" aria-live="polite">Checking the latest verified supplier catalogue…</p>
-<div id="planList">
-<div class="plan" id="mtnToggle" role="button" tabindex="0" aria-expanded="false" aria-label="Show MTN denominations">
-<div class="network" role="img" aria-label="MTN official brand mark"><svg viewBox="0 0 120 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="60" cy="36" r="32" fill="#ffcb05" stroke="#111" stroke-width="4"/><text x="60" y="46" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="900" letter-spacing="-1.5" fill="#111">MTN</text></svg></div>
-<div class="plan-info"><strong>MTN Recharge Card</strong><small>₦100 denomination · Catalogue Plan ID: 1</small></div>
-<div class="amount">₦100</div>
+<h1>Purchase Recharge Card (E-Pin)</h1>
+<h2 class="step-title">1. Select Network</h2>
+<div class="network-grid" id="networkGrid">
+<button class="network-choice" id="mtnChoice" type="button" aria-pressed="false">
+<svg class="mtn-mark" viewBox="0 0 100 100" role="img" aria-label="MTN logo" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50" cy="50" r="46" fill="#ffcb05"/>
+<ellipse cx="50" cy="50" rx="35" ry="25" fill="none" stroke="#111" stroke-width="3.5"/>
+<text x="50" y="57" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="900" letter-spacing="-1.5" fill="#111">MTN</text>
+</svg>
+<span class="network-name">MTN</span>
+</button>
 </div>
-<div class="details" id="mtnDetails" hidden>
-<div class="detail"><small>Network ID</small><strong>1 — MTN</strong></div>
-<div class="detail"><small>Load code</small><strong>*556#</strong></div>
-<div class="detail"><small>Balance code</small><strong>*556#</strong></div>
-<div class="detail"><small>API plan_type</small><strong>Not yet verified</strong></div>
+<section id="denominationSection" hidden>
+<h2 class="step-title step-two">2. Select Denomination</h2>
+<button class="denomination" id="mtn100" type="button" aria-pressed="false">
+<span><span class="denomination-main">100 = ₦100.00</span><span class="denomination-price">₦100.00</span></span>
+<span class="denomination-arrow" aria-hidden="true">›</span>
+</button>
+<div class="fields" id="orderFields" hidden>
+<input class="field" type="text" id="cardName" placeholder="Business Name (on card)" autocomplete="organization" maxlength="40">
+<label class="field-label"><span>Quantity</span><input class="field" type="number" id="quantity" value="1" min="1" max="100" inputmode="numeric"></label>
+<input class="field" type="password" id="transactionPin" placeholder="Transaction Pin" inputmode="numeric" autocomplete="off" maxlength="6">
 </div>
-</div>
-<div class="status" id="purchaseStatus">
-<span class="status-icon">🔒</span>
-<div><b>Purchases are not enabled yet</b>The supplier API's plan_type mapping and actual unit cost have not been confirmed. PIN generation and wallet debit remain disabled. This page will not send a supplier request or take payment.</div>
-</div>
-<button id="refreshCatalogue" type="button" style="width:100%;margin-top:14px;border:0;border-radius:12px;padding:13px;background:#5b21b6;color:#fff;font-weight:800;font-size:13px">Refresh catalogue</button>
 </section>
-<a class="footer-link" href="dashboard.html">← Return to Dashboard</a>
+<div class="lock-note" id="purchaseLock"><strong>🔒 Purchases are not enabled yet</strong>The supplier's API plan_type and actual unit cost have not both been confirmed. This screen is for layout preview only; it will not send a supplier request or debit your wallet.</div>
+<div class="actions">
+<a class="back-link" href="dashboard.html">← Return to Dashboard</a>
+<button class="text-button" id="refreshCatalogue" type="button">Refresh catalogue</button>
+</div>
+<p id="catalogMessage" aria-live="polite" style="font-size:12px;color:#849097;margin:12px 0 0"></p>
+</section>
 </main>
-<script type="module">
+<script>
 const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const mtnChoice=document.getElementById("mtnChoice");
+const denominationSection=document.getElementById("denominationSection");
+const denomination=document.getElementById("mtn100");
+const orderFields=document.getElementById("orderFields");
 const message=document.getElementById("catalogMessage");
-const list=document.getElementById("planList");
-const refresh=document.getElementById("refreshCatalogue");
-function safe(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));}
-async function loadCatalogue(){
- refresh.disabled=true;refresh.textContent="Refreshing…";message.textContent="Checking supplier catalogue…";
+mtnChoice.addEventListener("click",()=>{
+ const selected=mtnChoice.getAttribute("aria-pressed")==="true";
+ mtnChoice.setAttribute("aria-pressed",String(!selected));
+ denominationSection.hidden=selected;
+ if(selected){orderFields.hidden=true;denomination.setAttribute("aria-pressed","false");}
+});
+denomination.addEventListener("click",()=>{
+ const selected=denomination.getAttribute("aria-pressed")==="true";
+ denomination.setAttribute("aria-pressed",String(!selected));
+ denomination.classList.toggle("selected",!selected);
+ orderFields.hidden=selected;
+});
+document.getElementById("refreshCatalogue").addEventListener("click",async()=>{
+ const button=document.getElementById("refreshCatalogue");
+ button.disabled=true;button.textContent="Refreshing…";message.textContent="Checking verified catalogue…";
  try{
   const response=await fetch(CATALOG_URL,{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
   const result=await response.json();
-  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Catalogue is temporarily unavailable.");
-  const mtn=result.plans.find(plan=>String(plan.network).toUpperCase()==="MTN");
-  if(mtn){
-   const info=document.querySelector("#mtnToggle .plan-info");
-   info.innerHTML="<strong>MTN</strong><small>₦"+safe(mtn.face_value)+" denomination · Catalogue Plan ID: "+safe(mtn.plan_id)+"</small>";
-   const amount=document.querySelector("#mtnToggle .amount");
-   amount.textContent="₦"+safe(mtn.face_value);
-   const vals=[safe(mtn.network_id)+" — MTN",safe(mtn.load_code||"Not supplied"),safe(mtn.balance_code||"Not supplied"),mtn.plan_type_confirmed?safe(mtn.plan_type):"Not yet verified"];
-   document.querySelectorAll("#mtnDetails .detail strong").forEach((el,i)=>el.textContent=vals[i]);
-  } else {
-   document.querySelector("#mtnToggle .plan-info").innerHTML="<strong>MTN</strong><small>No verified MTN denomination currently available</small>";
-   document.querySelector("#mtnDetails").hidden=true;
-   document.querySelector("#mtnToggle").setAttribute("aria-expanded","false");
-  }
-  message.textContent=result.notice||"Catalogue refreshed successfully.";
-  const purchaseEnabled=result.purchase_enabled===true&&result.plan_type_confirmed===true&&result.pricing_confirmed===true;
-  document.getElementById("purchaseStatus").innerHTML=purchaseEnabled
-   ? "<span class='status-icon'>🔒</span><div><b>Purchase approval required</b>Catalogue is verified. Purchases remain locked until the secure checkout is deployed.</div>"
-   : "<span class='status-icon'>🔒</span><div><b>Purchases are not enabled yet</b>Supplier plan mapping and actual unit cost are not both confirmed. No supplier request or wallet debit can happen from this page.</div>";
- }catch(error){message.textContent=error.message||"Could not refresh catalogue."; }
- finally{refresh.disabled=false;refresh.textContent="Refresh catalogue";}
-}
-const mtnToggle=document.getElementById("mtnToggle");
-function toggleMtn(){const d=document.getElementById("mtnDetails");const open=mtnToggle.getAttribute("aria-expanded")==="true";mtnToggle.setAttribute("aria-expanded",String(!open));d.hidden=open;}
-mtnToggle.addEventListener("click",toggleMtn);
-mtnToggle.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleMtn();}});
-const mtnToggle=document.getElementById("mtnToggle");
-function toggleMtn(){const details=document.getElementById("mtnDetails");const open=mtnToggle.getAttribute("aria-expanded")==="true";mtnToggle.setAttribute("aria-expanded",String(!open));details.hidden=open;}
-mtnToggle.addEventListener("click",toggleMtn);
-mtnToggle.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleMtn();}});
-refresh.addEventListener("click",loadCatalogue);
-loadCatalogue();
+  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Catalogue unavailable.");
+  const plan=result.plans.find(p=>String(p.network).toUpperCase()==="MTN"&&Number(p.face_value)===100);
+  if(!plan)throw new Error("MTN ₦100 is not currently listed in the verified catalogue.");
+  document.querySelector(".denomination-main").textContent=Number(plan.face_value)+" = ₦"+Number(plan.face_value).toFixed(2);
+  document.querySelector(".denomination-price").textContent="₦"+Number(plan.face_value).toFixed(2);
+  message.textContent="Catalogue refreshed successfully.";
+ }catch(error){message.textContent=error.message||"Could not refresh catalogue.";}
+ finally{button.disabled=false;button.textContent="Refresh catalogue";}
+});
 </script>
 </body>
 </html>

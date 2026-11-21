@@ -38,9 +38,10 @@ h2{font-size:17px;margin:8px 0 5px}
 </header>
 <main>
 <section class="panel">
-<div class="eyebrow">Verified catalogue information</div>
-<h2>Available plan on supplier dashboard</h2>
-<p class="muted">Only the plan shown below has been confirmed from the supplier dashboard information shared with AILAT DATA.</p>
+<div class="eyebrow">Supplier catalogue</div>
+<h2>Available plan</h2>
+<p class="muted" id="catalogMessage" aria-live="polite">Checking the latest verified supplier catalogue…</p>
+<div id="planList">
 <div class="plan">
 <div class="network">MTN</div>
 <div class="plan-info"><strong>MTN Recharge Card</strong><small>₦100 denomination · Catalogue Plan ID: 1</small></div>
@@ -52,12 +53,50 @@ h2{font-size:17px;margin:8px 0 5px}
 <div class="detail"><small>Balance code</small><strong>*556#</strong></div>
 <div class="detail"><small>API plan_type</small><strong>Not yet verified</strong></div>
 </div>
-<div class="status">
+</div>
+<div class="status" id="purchaseStatus">
 <span class="status-icon">🔒</span>
 <div><b>Purchases are not enabled yet</b>The supplier API's plan_type mapping and actual unit cost have not been confirmed. PIN generation and wallet debit remain disabled. This page will not send a supplier request or take payment.</div>
 </div>
+<button id="refreshCatalogue" type="button" style="width:100%;margin-top:14px;border:0;border-radius:12px;padding:13px;background:#5b21b6;color:#fff;font-weight:800;font-size:13px">Refresh catalogue</button>
 </section>
 <a class="footer-link" href="dashboard.html">← Return to Dashboard</a>
 </main>
+<script type="module">
+const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
+const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const message=document.getElementById("catalogMessage");
+const list=document.getElementById("planList");
+const refresh=document.getElementById("refreshCatalogue");
+function safe(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));}
+async function loadCatalogue(){
+ refresh.disabled=true;refresh.textContent="Refreshing…";message.textContent="Checking supplier catalogue…";
+ try{
+  const response=await fetch(CATALOG_URL,{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
+  const result=await response.json();
+  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Catalogue is temporarily unavailable.");
+  list.innerHTML=result.plans.length?result.plans.map(plan=>`
+   <div class="plan">
+    <div class="network">${safe(plan.network)}</div>
+    <div class="plan-info"><strong>${safe(plan.network)} Recharge Card</strong><small>₦${safe(plan.face_value)} denomination · Catalogue Plan ID: ${safe(plan.plan_id)}</small></div>
+    <div class="amount">₦${safe(plan.face_value)}</div>
+   </div>
+   <div class="details">
+    <div class="detail"><small>Network ID</small><strong>${safe(plan.network_id)} — ${safe(plan.network)}</strong></div>
+    <div class="detail"><small>Load code</small><strong>${safe(plan.load_code||"Not supplied")}</strong></div>
+    <div class="detail"><small>Balance code</small><strong>${safe(plan.balance_code||"Not supplied")}</strong></div>
+    <div class="detail"><small>API plan_type</small><strong>${plan.plan_type_confirmed?safe(plan.plan_type):"Not yet verified"}</strong></div>
+   </div>`).join(""):"<p class='muted'>No verified recharge-card plans are currently available.</p>";
+  message.textContent=result.notice||"Catalogue refreshed successfully.";
+  const purchaseEnabled=result.purchase_enabled===true&&result.plan_type_confirmed===true&&result.pricing_confirmed===true;
+  document.getElementById("purchaseStatus").innerHTML=purchaseEnabled
+   ? "<span class='status-icon'>🔒</span><div><b>Purchase approval required</b>Catalogue is verified. Purchases remain locked until the secure checkout is deployed.</div>"
+   : "<span class='status-icon'>🔒</span><div><b>Purchases are not enabled yet</b>Supplier plan mapping and actual unit cost are not both confirmed. No supplier request or wallet debit can happen from this page.</div>";
+ }catch(error){message.textContent=error.message||"Could not refresh catalogue."; }
+ finally{refresh.disabled=false;refresh.textContent="Refresh catalogue";}
+}
+refresh.addEventListener("click",loadCatalogue);
+loadCatalogue();
+</script>
 </body>
 </html>

@@ -62,9 +62,22 @@ async function api(path="",method="GET",body){
  if(!response.ok||!data.success)throw new Error(data.error||"Support administration request failed.");
  return data;
 }
+let knownTicketRefs=null;
 function render(tickets){
  ticketsBox.replaceChildren();
- countBox.textContent=tickets.length+" ticket"+(tickets.length===1?"":"s");
+ const pending=tickets.filter(t=>["open","in_review"].includes(String(t.status||"open").toLowerCase())).length;
+ countBox.textContent=tickets.length+" ticket"+(tickets.length===1?"":"s")+" · "+pending+" awaiting attention";
+ const refs=new Set(tickets.map(t=>t.ticket_ref).filter(Boolean));
+ if(knownTicketRefs){
+  const arrivals=tickets.filter(t=>t.ticket_ref&&!knownTicketRefs.has(t.ticket_ref));
+  if(arrivals.length){
+   statusBox.textContent="🔔 "+arrivals.length+" new customer support ticket"+(arrivals.length===1?"":"s")+" received.";
+   if("Notification" in window && Notification.permission==="granted"){
+    new Notification("AILAT DATA — New Support Ticket",{body:arrivals.length+" new customer ticket(s) need your attention."});
+   }
+  }
+ }
+ knownTicketRefs=refs;
  if(!tickets.length){ticketsBox.appendChild(node("div","empty","There are no customer support tickets yet."));return;}
  for(const t of tickets){
   const card=node("article","ticket");
@@ -102,6 +115,7 @@ async function loadTickets(){
  finally{refreshBtn.disabled=false;}
 }
 refreshBtn.addEventListener("click",loadTickets);
+let supportPoll=null;
 onAuthStateChanged(auth,async user=>{
  if(!user){location.replace("login.html");return;}
  currentUser=user;
@@ -109,6 +123,8 @@ onAuthStateChanged(auth,async user=>{
   await user.reload();
   if(!user.emailVerified){await signOut(auth);alert("Please verify your email before accessing this page.");location.replace("login.html");return;}
   await loadTickets();
+  if(supportPoll)clearInterval(supportPoll);
+  supportPoll=setInterval(loadTickets,30000);
  }catch(error){ticketsBox.textContent=error.message;}
 });
 </script>

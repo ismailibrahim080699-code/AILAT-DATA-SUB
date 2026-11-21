@@ -179,6 +179,27 @@ onAuthStateChanged(auth,async(user)=>{
   const userRef=doc(db,"users",user.uid);
   const userSnap=await getDoc(userRef);
   if(!userSnap.exists()){showMessage("User profile not found.","red");return;}
+
+  // Retry server-side attribution sync if registration sync was interrupted.
+  try{
+   const ownReferralRecord=await getDoc(doc(db,"referrals",user.uid));
+   if(ownReferralRecord.exists()){
+    const referredCode=String(ownReferralRecord.data().referralCode||"").trim().toUpperCase();
+    if(referredCode){
+     const referralToken=await user.getIdToken();
+     const syncResponse=await fetch(REFERRAL_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+referralToken},
+      body:JSON.stringify({action:"sync_attribution",referral_code:referredCode})
+     });
+     const syncResult=await syncResponse.json();
+     if(!syncResponse.ok||!syncResult.success)console.warn("Referral attribution retry pending:",syncResult.error||syncResponse.status);
+    }
+   }
+  }catch(syncError){
+   console.warn("Referral attribution retry failed:",syncError);
+  }
+
   let referralCode=userSnap.data().referralCode;
   // Keep existing codes valid as aliases, but issue a short code for long legacy codes.
   if(!referralCode || !/^AILAT[0-9]{5}$/.test(referralCode)){

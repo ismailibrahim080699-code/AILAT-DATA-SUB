@@ -11,35 +11,35 @@
 body{margin:0;background:#f5f7f6;color:#252d34;font-family:Arial,Helvetica,sans-serif}
 header{background:#fff;padding:24px 22px 18px;box-shadow:0 4px 18px rgba(20,40,35,.05)}
 header a{color:#27333a;text-decoration:none;font-size:29px;line-height:1}
-main{max-width:680px;margin:0 auto;padding:18px 16px 38px}
-.panel{background:#fff;border-radius:30px;padding:30px 28px 34px;box-shadow:0 10px 24px rgba(25,45,40,.12)}
-h1{font-size:clamp(23px,5vw,34px);line-height:1.2;margin:4px 0 52px;font-weight:800;letter-spacing:-.5px}
-.step-title{font-size:clamp(19px,4.4vw,27px);font-weight:700;color:#75818a;margin:0 0 28px}
-.network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:62px}
-.network-choice{appearance:none;width:100%;min-height:178px;border:3px solid #e5e9e7;border-radius:30px;background:#f3faf6;color:#26333a;padding:22px 16px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .16s,background .16s,box-shadow .16s}
+main{max-width:680px;margin:0 auto;padding:14px 16px 30px}
+.panel{background:#fff;border-radius:28px;padding:26px 24px 28px;box-shadow:0 9px 22px rgba(25,45,40,.11)}
+h1{font-size:clamp(22px,4.7vw,31px);line-height:1.2;margin:4px 0 44px;font-weight:800;letter-spacing:-.5px}
+.step-title{font-size:clamp(18px,4vw,24px);font-weight:700;color:#75818a;margin:0 0 24px}
+.network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:54px;max-width:500px}
+.network-choice{appearance:none;width:100%;min-height:164px;border:2.5px solid #e5e9e7;border-radius:27px;background:#f3faf6;color:#26333a;padding:22px 16px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .16s,background .16s,box-shadow .16s}
 .network-choice[aria-pressed="true"]{border-color:#0aa568;background:#f1faf5;box-shadow:0 0 0 1px rgba(10,165,104,.08)}
 .network-choice:focus-visible{outline:3px solid #a5e8c9;outline-offset:3px}
-.mtn-mark{width:62px;height:62px;display:block}
-.network-name{font-size:25px;font-weight:800;line-height:1}
+.mtn-mark{width:56px;height:56px;display:block}
+.network-name{font-size:23px;font-weight:800;line-height:1}
 .step-two{margin-top:0}
-.denomination{width:100%;min-height:116px;text-align:left;background:#fff;border:2px solid #e6e8e7;border-radius:28px;padding:22px 22px;color:#242c32;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.denomination{width:100%;min-height:108px;text-align:left;background:#fff;border:2px solid #e6e8e7;border-radius:28px;padding:22px 22px;color:#242c32;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .denomination.selected{border-color:#0aa568;background:#f8fdf9}
-.denomination-main{font-size:25px;font-weight:500}
-.denomination-price{display:block;color:#079b5a;font-size:24px;font-weight:800;margin-top:18px}
+.denomination-main{font-size:23px;font-weight:500}
+.denomination-price{display:block;color:#079b5a;font-size:22px;font-weight:800;margin-top:18px}
 .denomination-arrow{font-size:25px;color:#079b5a}
-.fields{display:grid;gap:28px;margin:88px 0 0}
-.field{width:100%;height:108px;border:2px solid #e0e3e2;border-radius:17px;background:#fff;padding:24px;font-size:25px;color:#27333a;outline:none}
+.fields{display:grid;gap:24px;margin:72px 0 0}
+.field{width:100%;height:96px;border:2px solid #e0e3e2;border-radius:17px;background:#fff;padding:24px;font-size:25px;color:#27333a;outline:none}
 .field::placeholder{color:#9ba5ac;opacity:1}
 .field:focus{border-color:#0aa568}
 .field-label{position:relative}
 .field-label span{position:absolute;left:25px;top:-11px;background:#fff;padding:0 7px;color:#9ba5ac;font-size:20px}
 .lock-note{margin-top:28px;padding:15px 17px;border-radius:14px;background:#fff8e8;border:1px solid #f2dfb4;color:#75520d;font-size:13px;line-height:1.55}
 .lock-note strong{display:block;margin-bottom:4px}
-.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
+.actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:18px}
 .text-button{border:0;background:transparent;color:#079b5a;font-weight:700;font-size:13px;padding:8px 0;cursor:pointer}
-.back-link{color:#079b5a;text-decoration:none;font-weight:700;font-size:14px}
+
 [hidden]{display:none!important}
-@media(max-width:420px){main{padding:12px 15px 30px}.panel{padding:27px 22px 30px;border-radius:28px}h1{margin-bottom:54px}.network-grid{grid-template-columns:1fr 1fr;gap:12px}.network-choice{min-height:164px;border-radius:28px;padding:17px 10px}.fields{margin-top:82px;gap:26px}.field{height:108px;font-size:23px;padding:22px}.denomination{min-height:116px;padding:20px}.denomination-main{font-size:23px}.denomination-price{font-size:23px}}
+@media(max-width:420px){main{padding:12px 15px 26px}.panel{padding:25px 21px 27px;border-radius:27px}h1{font-size:25px;margin-bottom:48px}.network-grid{grid-template-columns:1fr 1fr;gap:11px;margin-bottom:52px}.network-choice{min-height:154px;border-radius:25px;padding:16px 9px}.fields{margin-top:70px;gap:24px}.field{height:94px;font-size:22px;padding:20px}.denomination{min-height:106px;padding:18px}.denomination-main{font-size:22px}.denomination-price{font-size:22px}}
 </style>
 </head>
 <body>
@@ -72,7 +72,7 @@ h1{font-size:clamp(23px,5vw,34px);line-height:1.2;margin:4px 0 52px;font-weight:
 </section>
 <div class="lock-note" id="purchaseLock"><strong>🔒 Purchases are not enabled yet</strong>The supplier's API plan_type and actual unit cost have not both been confirmed. This screen is for layout preview only; it will not send a supplier request or debit your wallet.</div>
 <div class="actions">
-<a class="back-link" href="dashboard.html">← Return to Dashboard</a>
+
 <button class="text-button" id="refreshCatalogue" type="button">Refresh catalogue</button>
 </div>
 <p id="catalogMessage" aria-live="polite" style="font-size:12px;color:#849097;margin:12px 0 0"></p>

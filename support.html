@@ -22,6 +22,10 @@ button:disabled{opacity:.6}.status{font-size:12px;line-height:1.6;margin-top:10p
 .pill{display:inline-block;border-radius:20px;padding:5px 9px;background:#f0eaff;color:#5b21b6;font-size:10px;font-weight:800}
 .ticket p{margin:8px 0 5px;white-space:pre-wrap;overflow-wrap:anywhere}.reply{background:#f5f3ff;border-radius:10px;padding:10px;margin-top:9px;font-size:12px;line-height:1.5;color:#4b347c}
 .notice{background:#fff8e8;border:1px solid #f2dfb5;border-radius:12px;padding:11px;color:#775a22;font-size:11px;line-height:1.6}
+.reply-alert{display:flex;align-items:center;gap:8px;background:#fff1f2;border:1px solid #fecdd3;color:#be123c;border-radius:11px;padding:10px 12px;margin:10px 0;font-size:12px;font-weight:800}
+.reply-alert[hidden]{display:none!important}
+.new-reply{display:inline-block;margin-left:7px;background:#dc2626;color:#fff;border-radius:20px;padding:4px 8px;font-size:9px;font-weight:900}
+.reply{cursor:pointer}
 footer{text-align:center;padding:20px;color:#9aa5a9;font-size:10px}
 @media(max-width:420px){.wrap{padding-left:13px;padding-right:13px}.card{padding:15px;border-radius:16px}header{min-height:92px}header h1{font-size:20px}}
 </style>
@@ -48,6 +52,7 @@ footer{text-align:center;padding:20px;color:#9aa5a9;font-size:10px}
  <section class="card">
   <h2>My support tickets</h2>
   <p>Only tickets belonging to your signed-in account are shown here.</p>
+  <div id="replyNotice" class="reply-alert" role="status" aria-live="polite" hidden>🔔 You have a new reply from AILAT DATA Support.</div>
   <div id="ticketList" class="hint">Loading your tickets…</div>
   <button type="button" id="refreshBtn" style="background:#e1f0ef;color:#0f766e">Refresh Tickets</button>
  </section>
@@ -69,6 +74,8 @@ const statusBox=document.getElementById("formStatus");
 const ticketList=document.getElementById("ticketList");
 const refreshBtn=document.getElementById("refreshBtn");
 let currentUser=null;
+let supportPoll=null;
+let latestTickets=[];
 
 function safeText(value){return typeof value==="string"?value:"";}
 function addText(parent,tag,className,value){
@@ -90,13 +97,25 @@ async function api(path="",options={}){
  if(!response.ok||!data.success)throw new Error(data.error||"Support service is temporarily unavailable.");
  return data;
 }
+function replyReadKey(ticket){
+ return "ailatSupportReplyRead_"+currentUser.uid+"_"+ticket.ticket_ref;
+}
+function isReplyUnread(ticket){
+ if(!ticket.admin_reply)return false;
+ return localStorage.getItem(replyReadKey(ticket))!==ticket.admin_reply;
+}
 function renderTickets(tickets){
+ latestTickets=Array.isArray(tickets)?tickets:[];
  ticketList.replaceChildren();
- if(!Array.isArray(tickets)||tickets.length===0){
+ const unread=latestTickets.filter(isReplyUnread).length;
+ const notice=document.getElementById("replyNotice");
+ notice.hidden=unread===0;
+ notice.textContent=unread===1?"🔔 You have 1 new reply from AILAT DATA Support.":"🔔 You have "+unread+" new replies from AILAT DATA Support.";
+ if(latestTickets.length===0){
   addText(ticketList,"p","","You have not submitted any support tickets yet.");
   return;
  }
- for(const ticket of tickets){
+ for(const ticket of latestTickets){
   const item=document.createElement("article");item.className="ticket";
   const top=document.createElement("div");top.className="tickettop";
   addText(top,"span","ref",ticket.ticket_ref);
@@ -104,11 +123,30 @@ function renderTickets(tickets){
   item.appendChild(top);
   addText(item,"strong","",ticket.subject);
   addText(item,"p","",ticket.message);
-  addText(item,"p","hint", "Topic: "+ticket.category+" · "+(ticket.created_at?new Date(ticket.created_at).toLocaleString():""));
+  addText(item,"p","hint","Topic: "+ticket.category+" · "+(ticket.created_at?new Date(ticket.created_at).toLocaleString():""));
   if(ticket.admin_reply){
    const reply=document.createElement("div");reply.className="reply";
-   addText(reply,"strong","","Support reply");
+   const replyTitle=document.createElement("strong");
+   replyTitle.textContent="Support reply";
+   if(isReplyUnread(ticket)){
+    const badge=document.createElement("span");badge.className="new-reply";badge.textContent="NEW REPLY";replyTitle.appendChild(badge);
+   }
+   reply.appendChild(replyTitle);
    addText(reply,"div","",ticket.admin_reply);
+   reply.addEventListener("click",()=>{
+    localStorage.setItem(replyReadKey(ticket),ticket.admin_reply);
+    renderTickets(latestTickets);
+   });
+   reply.setAttribute("role","button");
+   reply.setAttribute("tabindex","0");
+   reply.setAttribute("aria-label","Read support reply");
+   reply.addEventListener("keydown",event=>{
+    if(event.key==="Enter"||event.key===" "){
+     event.preventDefault();
+     localStorage.setItem(replyReadKey(ticket),ticket.admin_reply);
+     renderTickets(latestTickets);
+    }
+   });
    item.appendChild(reply);
   }
   ticketList.appendChild(item);
@@ -128,6 +166,8 @@ onAuthStateChanged(auth,async user=>{
   await user.reload();
   if(!user.emailVerified){await signOut(auth);alert("Please verify your email before accessing this page.");location.replace("login.html");return;}
   await loadTickets();
+  if(supportPoll)clearInterval(supportPoll);
+  supportPoll=setInterval(loadTickets,30000);
  }catch(error){ticketList.textContent=error.message;}
 });
 form.addEventListener("submit",async event=>{

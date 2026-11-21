@@ -111,7 +111,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   <p class="note">The preview uses AILAT DATA's 10% service margin. Supplier charges are checked against the customer total before a successful order is confirmed.</p>
  </section>
 
- <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure test mode</b><br>Dry-run verifies your PIN or device approval and checks the server-side order details. It never creates an order, deducts wallet funds, sends a supplier request or generates an electricity token. Live payment remains disabled.</div></div>
+ <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure test mode</b><br>Electricity testing is temporarily paused while the server-side dry-run flow is secured. Live payment remains disabled. No order, wallet debit, supplier request or token generation is available from this page.</div></div>
 </main>
 <div id="pinOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-label="Transaction PIN">
  <div class="pin-panel">
@@ -219,7 +219,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
    if(!response.ok||!quote.success)throw new Error(quote.error||"Could not prepare electricity quote.");
    lastQuote=quote;purchaseSubmitted=false;requestKey=null;
    // Keep real Electricity payment controls hidden. Only the non-charging dry-run is available.
-   buyBtn.hidden=true;pinBtn.hidden=true;dryRunBtn.hidden=false;dryRunPinBtn.hidden=false;
+   buyBtn.hidden=true;pinBtn.hidden=true;dryRunBtn.hidden=true;dryRunPinBtn.hidden=true;
    const money=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
    previewResult.className="result info";
    previewResult.style.display="block";

@@ -75,18 +75,19 @@ async function loadCatalogue(){
   const response=await fetch(CATALOG_URL,{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
   const result=await response.json();
   if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Catalogue is temporarily unavailable.");
-  list.innerHTML=result.plans.length?result.plans.map(plan=>`
-   <div class="plan">
-    ${String(plan.network).toUpperCase()==="MTN"?'<div class="network" role="img" aria-label="MTN official brand mark"><svg viewBox="0 0 120 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="60" cy="36" rx="53" ry="29" fill="none" stroke="#111" stroke-width="5"/><text x="60" y="46" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="900" letter-spacing="-1.5" fill="#111">MTN</text></svg></div>':`<div class="network">${safe(plan.network)}</div>`}
-    <div class="plan-info"><strong>${safe(plan.network)} Recharge Card</strong><small>₦${safe(plan.face_value)} denomination · Catalogue Plan ID: ${safe(plan.plan_id)}</small></div>
-    <div class="amount">₦${safe(plan.face_value)}</div>
-   </div>
-   <div class="details">
-    <div class="detail"><small>Network ID</small><strong>${safe(plan.network_id)} — ${safe(plan.network)}</strong></div>
-    <div class="detail"><small>Load code</small><strong>${safe(plan.load_code||"Not supplied")}</strong></div>
-    <div class="detail"><small>Balance code</small><strong>${safe(plan.balance_code||"Not supplied")}</strong></div>
-    <div class="detail"><small>API plan_type</small><strong>${plan.plan_type_confirmed?safe(plan.plan_type):"Not yet verified"}</strong></div>
-   </div>`).join(""):"<p class='muted'>No verified recharge-card plans are currently available.</p>";
+  const mtn=result.plans.find(plan=>String(plan.network).toUpperCase()==="MTN");
+  if(mtn){
+   const info=document.querySelector("#mtnToggle .plan-info");
+   info.innerHTML="<strong>MTN</strong><small>₦"+safe(mtn.face_value)+" denomination · Catalogue Plan ID: "+safe(mtn.plan_id)+"</small>";
+   const amount=document.querySelector("#mtnToggle .amount");
+   amount.textContent="₦"+safe(mtn.face_value);
+   const vals=[safe(mtn.network_id)+" — MTN",safe(mtn.load_code||"Not supplied"),safe(mtn.balance_code||"Not supplied"),mtn.plan_type_confirmed?safe(mtn.plan_type):"Not yet verified"];
+   document.querySelectorAll("#mtnDetails .detail strong").forEach((el,i)=>el.textContent=vals[i]);
+  } else {
+   document.querySelector("#mtnToggle .plan-info").innerHTML="<strong>MTN</strong><small>No verified MTN denomination currently available</small>";
+   document.querySelector("#mtnDetails").hidden=true;
+   document.querySelector("#mtnToggle").setAttribute("aria-expanded","false");
+  }
   message.textContent=result.notice||"Catalogue refreshed successfully.";
   const purchaseEnabled=result.purchase_enabled===true&&result.plan_type_confirmed===true&&result.pricing_confirmed===true;
   document.getElementById("purchaseStatus").innerHTML=purchaseEnabled
@@ -97,6 +98,10 @@ async function loadCatalogue(){
 }
 const mtnToggle=document.getElementById("mtnToggle");
 function toggleMtn(){const d=document.getElementById("mtnDetails");const open=mtnToggle.getAttribute("aria-expanded")==="true";mtnToggle.setAttribute("aria-expanded",String(!open));d.hidden=open;}
+mtnToggle.addEventListener("click",toggleMtn);
+mtnToggle.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleMtn();}});
+const mtnToggle=document.getElementById("mtnToggle");
+function toggleMtn(){const details=document.getElementById("mtnDetails");const open=mtnToggle.getAttribute("aria-expanded")==="true";mtnToggle.setAttribute("aria-expanded",String(!open));details.hidden=open;}
 mtnToggle.addEventListener("click",toggleMtn);
 mtnToggle.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleMtn();}});
 refresh.addEventListener("click",loadCatalogue);

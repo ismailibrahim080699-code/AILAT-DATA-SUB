@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>AILAT DATA | Support Admin</title>
+<link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
+<link rel="stylesheet" href="assets/ailat-theme.css?v=1">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#303342;font-family:Arial,sans-serif}
+header{position:relative;padding:76px 18px 18px;background:#f4f5f7;color:#303342;min-height:130px}
+.back{position:absolute;left:16px;top:16px;width:42px;height:42px;border-radius:50%;background:#f3efff;color:#5b21b6;text-decoration:none;display:grid;place-items:center;font-size:27px;box-shadow:0 2px 8px #00000008}
+header h1{font-size:21px;margin:0 0 6px}header p{font-size:12px;color:#7c8588;margin:0}
+.wrap{max-width:760px;margin:12px auto;padding:0 14px 35px}
+.toolbar{display:flex;gap:9px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.toolbar span{font-size:12px;color:#6b7280}
+button,select,textarea{font:13px Arial}
+button{border:0;border-radius:10px;padding:11px 14px;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;font-weight:700}
+button:disabled{opacity:.55}
+#refresh{background:#eee8ff;color:#5b21b6}
+.status{font-size:12px;color:#5b21b6;min-height:20px;margin:8px 0}
+.ticket{background:white;border-radius:16px;padding:15px;margin:0 0 12px;box-shadow:0 2px 12px #00000008}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.ref{font-size:11px;font-weight:800;color:#5b21b6}
+.pill{font-size:10px;font-weight:800;padding:6px 9px;border-radius:20px;background:#f0eaff;color:#5b21b6}
+.ticket h3{font-size:15px;margin:12px 0 7px}
+.meta{font-size:11px;color:#7c8588;line-height:1.6}
+.message{font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0}
+.ticket label{display:block;font-size:11px;font-weight:700;margin:12px 0 6px;color:#555}
+.ticket select,.ticket textarea{width:100%;border:1px solid #ded9e8;border-radius:9px;padding:11px;background:#fcfbff;color:#303342}
+.ticket textarea{min-height:85px;resize:vertical}
+.actions{display:flex;gap:9px;align-items:center}.actions button{flex:1;margin-top:10px}
+.empty{background:white;border-radius:14px;padding:18px;color:#777;font-size:13px}
+footer{text-align:center;padding:20px;color:#9aa5a9;font-size:10px}
+</style>
+</head>
+<body>
+<header><a class="back" href="dashboard.html" aria-label="Back">‹</a><h1>Support Administration</h1><p>Review customer tickets and send official support replies.</p></header>
+<main class="wrap">
+ <div class="toolbar"><span id="count">Loading support tickets…</span><button id="refresh" type="button">Refresh</button></div>
+ <div id="status" class="status" role="status" aria-live="polite"></div>
+ <section id="tickets"><div class="empty">Checking administrator access…</div></section>
+</main>
+<footer>AILAT DATA © 2026 · Admin Support</footer>
+<script type="module">
+import {app} from "./firebase.js";
+import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app);
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-customer-support";
+const API_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const ticketsBox=document.getElementById("tickets");
+const statusBox=document.getElementById("status");
+const countBox=document.getElementById("count");
+const refreshBtn=document.getElementById("refresh");
+let currentUser=null;
+function node(tag,cls,txt){const el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined)el.textContent=String(txt);return el;}
+async function api(path="",method="GET",body){
+ const token=await currentUser.getIdToken(true);
+ const response=await fetch(API+path,{method,headers:{"apikey":API_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok||!data.success)throw new Error(data.error||"Support administration request failed.");
+ return data;
+}
+function render(tickets){
+ ticketsBox.replaceChildren();
+ countBox.textContent=tickets.length+" ticket"+(tickets.length===1?"":"s");
+ if(!tickets.length){ticketsBox.appendChild(node("div","empty","There are no customer support tickets yet."));return;}
+ for(const t of tickets){
+  const card=node("article","ticket");
+  const top=node("div","top");
+  top.append(node("span","ref",t.ticket_ref),node("span","pill",String(t.status||"open").replaceAll("_"," ").toUpperCase()));
+  card.appendChild(top);
+  card.appendChild(node("h3","",t.subject||"No subject"));
+  card.appendChild(node("div","meta","Customer UID: "+(t.user_id||"Unavailable")+" · Topic: "+(t.category||"Other")+" · "+(t.created_at?new Date(t.created_at).toLocaleString():"")));
+  card.appendChild(node("p","message",t.message||""));
+  const label1=node("label","","Ticket status");
+  const select=node("select","");
+  for(const [value,label] of [["open","Open"],["in_review","In review"],["resolved","Resolved"],["closed","Closed"]]){
+   const option=node("option","",label);option.value=value;if((t.status||"open")===value)option.selected=true;select.appendChild(option);
+  }
+  const label2=node("label","","Reply to customer");
+  const area=node("textarea","");area.maxLength=2000;area.placeholder="Write a clear reply for the customer…";area.value=t.admin_reply||"";
+  const save=node("button","","Save update");
+  save.type="button";
+  save.addEventListener("click",async()=>{
+   save.disabled=true;statusBox.textContent="Saving "+t.ticket_ref+"…";
+   try{
+    await api("","PATCH",{ticket_ref:t.ticket_ref,status:select.value,admin_reply:area.value.trim()});
+    statusBox.textContent="Ticket "+t.ticket_ref+" updated successfully.";
+    await loadTickets();
+   }catch(error){statusBox.textContent=error.message;save.disabled=false;}
+  });
+  card.append(label1,select,label2,area,save);
+  ticketsBox.appendChild(card);
+ }
+}
+async function loadTickets(){
+ refreshBtn.disabled=true;statusBox.textContent="Loading tickets…";countBox.textContent="Loading…";
+ try{const result=await api("?admin=1");render(result.tickets||[]);statusBox.textContent="Support inbox is up to date.";}
+ catch(error){ticketsBox.replaceChildren(node("div","empty",error.message));countBox.textContent="Access unavailable";statusBox.textContent="";}
+ finally{refreshBtn.disabled=false;}
+}
+refreshBtn.addEventListener("click",loadTickets);
+onAuthStateChanged(auth,async user=>{
+ if(!user){location.replace("login.html");return;}
+ currentUser=user;
+ try{
+  await user.reload();
+  if(!user.emailVerified){await signOut(auth);alert("Please verify your email before accessing this page.");location.replace("login.html");return;}
+  await loadTickets();
+ }catch(error){ticketsBox.textContent=error.message;}
+});
+</script>
+</body>
+</html>

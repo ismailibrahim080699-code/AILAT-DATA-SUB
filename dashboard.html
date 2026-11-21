@@ -183,6 +183,8 @@ footer{
  font-size:13px;font-weight:700;border-radius:9px;
 }
 .menu-links a svg{width:19px;height:19px}
+.support-nav-badge{margin-left:auto;min-width:21px;height:21px;padding:0 6px;border-radius:20px;background:#dc2626;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900}
+.support-nav-badge[hidden]{display:none!important}
 .menu-links a:active{background:#e5f2f1}
 .logout{
  display:flex;align-items:center;justify-content:center;
@@ -381,7 +383,7 @@ footer{
   <a href="referral.html"><i data-lucide="gift"></i>My Referral</a>
   <a href="transaction_history.html"><i data-lucide="receipt"></i>Transaction History</a>
   <a href="support.html"><i data-lucide="life-buoy"></i>Customer Support</a>
-  <a href="admin_support.html" id="adminSupportLink" hidden><i data-lucide="shield-check"></i>Support Administration</a>
+  <a href="admin_support.html" id="adminSupportLink" hidden><i data-lucide="shield-check"></i>Support Administration <span class="support-nav-badge" id="adminSupportBadge" hidden>0</span></a>
   <a href="dashboard.html"><i data-lucide="house"></i>Dashboard</a>
   <a href="admin_profit.html" id="adminProfitLink" hidden><i data-lucide="chart-no-axes-combined"></i>Business Profit (Admin)</a>
   <a href="admin_withdrawals.html" id="adminWithdrawalLink" hidden><i data-lucide="wallet"></i>Withdrawal Approval (Admin)</a>
@@ -476,19 +478,34 @@ async function checkAdminProfitAccess(user){
  }
 }
 
+let knownSupportTicketRefs=null;
 async function checkAdminSupportAccess(user){
  const link=document.getElementById("adminSupportLink");
+ const badge=document.getElementById("adminSupportBadge");
  if(!link)return;
- link.hidden=true;
  try{
-  const token=await user.getIdToken(true);
+  const token=await user.getIdToken();
   const response=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-customer-support?admin=1",{
    method:"GET",
    headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token}
   });
   if(response.ok){
    const result=await response.json();
-   if(result.success)link.hidden=false;
+   if(result.success){
+    link.hidden=false;
+    const tickets=Array.isArray(result.tickets)?result.tickets:[];
+    const pending=tickets.filter(t=>["open","in_review"].includes(String(t.status||"open").toLowerCase())).length;
+    badge.textContent=String(pending);
+    badge.hidden=pending===0;
+    const refs=new Set(tickets.map(t=>t.ticket_ref).filter(Boolean));
+    if(knownSupportTicketRefs){
+     const arrivals=tickets.filter(t=>t.ticket_ref&&!knownSupportTicketRefs.has(t.ticket_ref));
+     if(arrivals.length && "Notification" in window && Notification.permission==="granted"){
+      new Notification("AILAT DATA — New Support Ticket",{body:arrivals.length+" new customer ticket(s) need your attention."});
+     }
+    }
+    knownSupportTicketRefs=refs;
+   }
   }
  }catch(error){
   console.warn("Admin support access check unavailable.");
@@ -598,6 +615,7 @@ onAuthStateChanged(auth,async(user)=>{
   checkAdminProfitAccess(user);
   checkAdminWithdrawalAccess(user);
   checkAdminSupportAccess(user);
+  setInterval(()=>{if(auth.currentUser)checkAdminSupportAccess(auth.currentUser);},30000);
 
   try{
    await loadWalletFromBackend(user);

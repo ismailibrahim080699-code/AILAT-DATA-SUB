@@ -295,10 +295,14 @@ function renderTransactions(items){
    purchaseType ? `<div>Plan Type: ${safe(purchaseType)}</div>` : "",
    validity ? `<div>Validity: ${safe(validity)}</div>` : "",
    examRows,
+   customer.quantity !== undefined && customer.quantity !== null ? `<div>Quantity: ${safe(customer.quantity)}</div>` : "",
+   customer.load_code ? `<div>Load code: ${safe(customer.load_code)}</div>` : "",
+   customer.balance_code ? `<div>Balance code: ${safe(customer.balance_code)}</div>` : "",
    ...issuedPins.slice(0,10).map((entry,index) => {
     const pin = entry && typeof entry.pin === "string" ? entry.pin : "";
     const serial = entry && typeof entry.serial === "string" ? entry.serial : "";
-    return pin ? `<div><strong>Exam PIN ${index+1}:</strong> ${safe(pin)}</div>` + (serial ? `<div><strong>Serial:</strong> ${safe(serial)}</div>` : "") : "";
+    const pinLabel = String(item.type || "").toLowerCase().includes("recharge") ? "Recharge PIN" : "Exam PIN";
+    return pin ? `<div><strong>${pinLabel} ${index+1}:</strong> ${safe(pin)}</div>` + (serial ? `<div><strong>Serial:</strong> ${safe(serial)}</div>` : "") : "";
    }),
    providerNetworkId !== undefined && providerNetworkId !== null ? `<div>Supplier Network ID: ${safe(providerNetworkId)}</div>` : "",
    providerPlanId !== undefined && providerPlanId !== null ? `<div>Supplier Plan ID: ${safe(providerPlanId)}</div>` : "",
@@ -465,10 +469,30 @@ async function loadTransactions(user){
    customer_data: request.customer_data || {}
   }));
 
+  const rechargeCardRows = requestResult.ok && Array.isArray(requestResult.data.recharge_card_orders)
+   ? requestResult.data.recharge_card_orders.map(order => ({
+      type: "Recharge Card Printing",
+      amount: order.customer_total,
+      created_at: order.created_at,
+      description: "Recharge card order. PINs and serial numbers appear here when returned by the supplier.",
+      reference: order.reference,
+      status: order.status || "processing",
+      is_request: false,
+      customer_data: {
+       network: order.network,
+       quantity: order.quantity,
+       bundle: "₦" + String(order.face_value || "") + " Recharge Card",
+       issued_pins: Array.isArray(order.issued_cards) ? order.issued_cards : [],
+       load_code: order.load_code || "",
+       balance_code: order.balance_code || ""
+      }
+     }))
+   : [];
+
   const transactionRows = Array.isArray(transactions) ? transactions : [];
-  // Merge both history sources without showing the same reference twice.
+  // Merge all history sources without showing the same reference twice.
   const seenReferences = new Set();
-  const combined = [...transactionRows, ...requests].filter(item => {
+  const combined = [...transactionRows, ...requests, ...rechargeCardRows].filter(item => {
    const reference = String(item.reference || "").trim();
    if(!reference) return true;
    if(seenReferences.has(reference)) return false;

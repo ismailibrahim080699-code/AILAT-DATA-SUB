@@ -19,7 +19,7 @@ main{max-width:520px;margin:0 auto;padding:18px 16px 35px}
 h2{font-size:17px;margin:8px 0 5px}
 .muted{color:#786b91;font-size:12px;line-height:1.65}
 .plan{display:flex;align-items:center;gap:13px;padding:15px;border:1px solid #e9ddff;border-radius:15px;margin-top:16px}
-.network{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#fff1c2;color:#805600;font-weight:900;font-size:12px}
+.network{width:64px;height:48px;flex:0 0 64px;display:grid;place-items:center;border-radius:10px;background:#ffcb05;padding:5px}.network svg{width:100%;height:100%;display:block}
 .plan-info{flex:1}.plan-info strong{display:block;font-size:15px}.plan-info small{display:block;color:#827695;font-size:11px;margin-top:4px}
 .amount{font-size:17px;font-weight:900;color:#4c1d95;white-space:nowrap}
 .details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
@@ -43,7 +43,7 @@ h2{font-size:17px;margin:8px 0 5px}
 <p class="muted" id="catalogMessage" aria-live="polite">Checking the latest verified supplier catalogue…</p>
 <div id="planList">
 <div class="plan">
-<div class="network">MTN</div>
+<div class="network" role="img" aria-label="MTN official brand mark"><svg viewBox="0 0 120 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="60" cy="36" rx="53" ry="29" fill="none" stroke="#111" stroke-width="5"/><text x="60" y="46" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="900" letter-spacing="-1.5" fill="#111">MTN</text></svg></div>
 <div class="plan-info"><strong>MTN Recharge Card</strong><small>₦100 denomination · Catalogue Plan ID: 1</small></div>
 <div class="amount">₦100</div>
 </div>
@@ -77,7 +77,7 @@ async function loadCatalogue(){
   if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Catalogue is temporarily unavailable.");
   list.innerHTML=result.plans.length?result.plans.map(plan=>`
    <div class="plan">
-    <div class="network">${safe(plan.network)}</div>
+    ${String(plan.network).toUpperCase()==="MTN"?'<div class="network" role="img" aria-label="MTN official brand mark"><svg viewBox="0 0 120 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="60" cy="36" rx="53" ry="29" fill="none" stroke="#111" stroke-width="5"/><text x="60" y="46" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="900" letter-spacing="-1.5" fill="#111">MTN</text></svg></div>':`<div class="network">${safe(plan.network)}</div>`}
     <div class="plan-info"><strong>${safe(plan.network)} Recharge Card</strong><small>₦${safe(plan.face_value)} denomination · Catalogue Plan ID: ${safe(plan.plan_id)}</small></div>
     <div class="amount">₦${safe(plan.face_value)}</div>
    </div>

@@ -1,1 +1,63 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#4c1d95"><title>Recharge Card Printing - AILAT DATA</title><link rel="stylesheet" href="assets/ailat-theme.css?v=1"><style>*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,sans-serif}header{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:20px;border-radius:0 0 22px 22px}header a{color:#fff;text-decoration:none;font-size:25px}main{max-width:480px;margin:auto;padding:20px}.card{background:#fff;border-radius:17px;padding:22px;margin-top:24px;box-shadow:0 4px 15px #0000000d}.notice{background:#fff7e6;border:1px solid #f4d28b;color:#754b00;padding:16px;border-radius:12px;line-height:1.7;font-size:14px}a.back{display:block;text-align:center;color:#6d28d9;text-decoration:none;margin:22px}</style></head><body><header><a href="dashboard.html">‹</a><h2>AILAT DATA</h2><p>Recharge Card Printing</p></header><main><section class="card"><h3>Recharge Card Printing</h3><div class="notice"><strong>Service temporarily unavailable.</strong><br>Recharge-card purchases and PIN generation are paused while the new supplier integration is being verified. No PIN will be generated and no wallet charge will be made.<br>No payment or supplier request can be made from this page.</div><a class="back" href="dashboard.html">← Return to Dashboard</a></section></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4c1d95">
+<title>Recharge Card Printing | AILAT DATA</title>
+<link rel="stylesheet" href="assets/ailat-theme.css?v=1">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,sans-serif}
+header{background:linear-gradient(135deg,#35106b,#5b21b6,#7c3aed);color:#fff;padding:20px 20px 25px;border-radius:0 0 25px 25px;box-shadow:0 9px 25px #4c1d9528}
+header a{color:#fff;text-decoration:none;font-size:25px}
+header h1{font-size:21px;margin:16px 0 5px}
+header p{font-size:12px;margin:0;opacity:.85}
+main{max-width:520px;margin:0 auto;padding:18px 16px 35px}
+.panel{background:#fff;border:1px solid #e9ddff;border-radius:19px;padding:19px;margin-top:16px;box-shadow:0 8px 24px #3210640c}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.3px;color:#7c3aed;text-transform:uppercase}
+h2{font-size:17px;margin:8px 0 5px}
+.muted{color:#786b91;font-size:12px;line-height:1.65}
+.plan{display:flex;align-items:center;gap:13px;padding:15px;border:1px solid #e9ddff;border-radius:15px;margin-top:16px}
+.network{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#fff1c2;color:#805600;font-weight:900;font-size:12px}
+.plan-info{flex:1}.plan-info strong{display:block;font-size:15px}.plan-info small{display:block;color:#827695;font-size:11px;margin-top:4px}
+.amount{font-size:17px;font-weight:900;color:#4c1d95;white-space:nowrap}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.detail{background:#faf8ff;border-radius:12px;padding:12px}.detail small{display:block;color:#887a9d;font-size:10px;margin-bottom:6px}.detail strong{font-size:12px}
+.status{display:flex;gap:10px;align-items:flex-start;background:#fff8e8;border:1px solid #f3dfb1;color:#76520b;border-radius:13px;padding:14px;font-size:12px;line-height:1.65;margin-top:16px}
+.status b{display:block;margin-bottom:3px}
+.status-icon{font-size:17px}
+.footer-link{display:block;text-align:center;color:#6d28d9;text-decoration:none;font-size:13px;font-weight:700;margin:22px 0 5px}
+</style>
+</head>
+<body>
+<header>
+<a href="dashboard.html" aria-label="Back to dashboard">‹</a>
+<h1>Recharge Card Printing</h1>
+<p>Secure PIN and serial-number generation</p>
+</header>
+<main>
+<section class="panel">
+<div class="eyebrow">Verified catalogue information</div>
+<h2>Available plan on supplier dashboard</h2>
+<p class="muted">Only the plan shown below has been confirmed from the supplier dashboard information shared with AILAT DATA.</p>
+<div class="plan">
+<div class="network">MTN</div>
+<div class="plan-info"><strong>MTN Recharge Card</strong><small>₦100 denomination · Catalogue Plan ID: 1</small></div>
+<div class="amount">₦100</div>
+</div>
+<div class="details">
+<div class="detail"><small>Network ID</small><strong>1 — MTN</strong></div>
+<div class="detail"><small>Load code</small><strong>*556#</strong></div>
+<div class="detail"><small>Balance code</small><strong>*556#</strong></div>
+<div class="detail"><small>API plan_type</small><strong>Not yet verified</strong></div>
+</div>
+<div class="status">
+<span class="status-icon">🔒</span>
+<div><b>Purchases are not enabled yet</b>The supplier API's plan_type mapping and actual unit cost have not been confirmed. PIN generation and wallet debit remain disabled. This page will not send a supplier request or take payment.</div>
+</div>
+</section>
+<a class="footer-link" href="dashboard.html">← Return to Dashboard</a>
+</main>
+</body>
+</html>

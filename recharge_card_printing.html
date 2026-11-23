@@ -43,7 +43,7 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 <h2 class="section-title">2. Select Denomination</h2>
 <div class="plans" id="planList"><div class="empty">Please select MTN, GLO, or Airtel to view available denominations.</div></div>
 <div class="controls"><label for="quantity">3. Quantity (1–100)</label><input id="quantity" type="number" inputmode="numeric" min="1" max="100" step="1" value="1"><button class="primary" id="quoteBtn" disabled>Choose a denomination</button><div class="quote-result" id="quoteResult" aria-live="polite"></div></div>
-<div class="notice"><strong>🔒 Secure quote stage.</strong><br>You can now select a denomination and create an order quote. This step does not deduct wallet funds and does not send an order to the supplier. Final purchase will be enabled only after Transaction PIN/fingerprint approval and encrypted PIN delivery are fully verified.</div>
+<div class="notice"><strong>🔒 Secure quote stage.</strong><br>You can now select a denomination and create an order quote. This step does not deduct wallet funds and does not send an order to the supplier. When purchases are available, every order will require secure Transaction PIN or device fingerprint/passkey approval.</div>
 <p class="status" id="catalogMessage" aria-live="polite"></p>
 </section></main>
 <script>
@@ -102,23 +102,6 @@ quoteBtn.addEventListener("click",async()=>{
   activeQuote=q;
   quoteResult.textContent="Quote created: "+q.reference+" | "+q.network+" "+money(q.face_value)+" × "+q.quantity+" | Total: "+money(q.customer_total)+". No wallet money has been deducted yet.";
   quoteResult.classList.add("show");
-  const cryptoTest=document.createElement("button");
-  cryptoTest.type="button";cryptoTest.className="primary";cryptoTest.style.background="#ede9fe";cryptoTest.style.color="#4c1d95";
-  cryptoTest.textContent="Test Encrypted PIN Delivery (No Purchase)";
-  cryptoTest.addEventListener("click",testEncryptedPinDelivery);
-  quoteResult.append(document.createElement("br"),cryptoTest);
-  const pinTest=document.createElement("button");
-  pinTest.type="button";pinTest.className="primary";pinTest.style.background="#ede9fe";pinTest.style.color="#4c1d95";
-  pinTest.textContent="Test Transaction PIN (No Purchase)";
-  pinTest.addEventListener("click",testTransactionPin);
-  quoteResult.append(document.createElement("br"),pinTest);
-  if(window.PublicKeyCredential&&navigator.credentials?.get){
-   const bioTest=document.createElement("button");
-   bioTest.type="button";bioTest.className="primary";bioTest.style.background="#ede9fe";bioTest.style.color="#4c1d95";
-   bioTest.textContent="Test Fingerprint / Passkey (No Purchase)";
-   bioTest.addEventListener("click",testFingerprintPasskey);
-   quoteResult.append(document.createElement("br"),bioTest);
-  }
   if(purchaseEnabled){
    const action=document.createElement("button");
    action.type="button";action.className="primary";action.textContent="Approve & Buy Cards";
@@ -144,7 +127,7 @@ async function loadCatalogue(){
   purchaseEnabled=!!(statusResponse.ok&&status.success&&status.purchase_enabled);
   message.textContent=purchaseEnabled
    ?"Catalogue updated. Secure purchase checks are configured; Transaction PIN/fingerprint approval is still required."
-   :"Catalogue updated. "+(status.message||"Final purchase is not enabled yet.")+" No wallet funds will be deducted.";
+   :"Catalogue updated. Recharge-card purchases are not available yet. Please check again later. No wallet funds have been deducted." ;
  }catch(error){message.textContent=error.message||"Failed to load catalogue.";}
 }
 loadCatalogue();
@@ -184,101 +167,6 @@ function showPinDialog(noteText="Enter your 4-digit PIN to approve this recharge
   input.addEventListener("input",()=>{input.value=input.value.replace(/\D/g,"").slice(0,4);});
   actions.append(cancel,confirm);panel.append(heading,note,input,error,actions);overlay.append(panel);document.body.append(overlay);input.focus();
  });
-}
-async function testEncryptedPinDelivery(){
- const button=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Test Encrypted PIN Delivery (No Purchase)");
- if(button){button.disabled=true;button.textContent="Testing encryption...";}
- try{
-  const {auth}=await import("./firebase.js");
-  const user=auth.currentUser;if(!user)throw new Error("Please sign in again.");
-  await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
-  const token=await user.getIdToken(true);
-  const response=await fetch(API_URL+"?action=recharge_card_crypto_self_test",{
-   method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json","Accept":"application/json"},
-   body:JSON.stringify({}),cache:"no-store"
-  });
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok||!result.success||!result.synthetic_only||!result.test_record_deleted)
-   throw new Error(result.error||"Encrypted PIN delivery self-test failed.");
-  const success=document.createElement("p");success.style.cssText="color:#167647;font-weight:700;font-size:13px";
-  success.textContent="✓ Synthetic PIN encryption, database round-trip, decryption, and test-record deletion verified. No real PIN, supplier, order, authorization, or wallet was used.";
-  quoteResult.append(success);
- }catch(error){
-  const failure=document.createElement("p");failure.style.cssText="color:#b42318;font-size:13px";
-  failure.textContent=error.message||"Encrypted PIN delivery test failed.";quoteResult.append(failure);
- }finally{
-  if(button&&button.isConnected){button.disabled=false;button.textContent="Test Encrypted PIN Delivery (No Purchase)";}
- }
-}
-async function testTransactionPin(){
- const testButton=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Test Transaction PIN (No Purchase)");
- if(testButton){testButton.disabled=true;testButton.textContent="Checking PIN...";}
- try{
-  const {auth}=await import("./firebase.js");
-  const user=auth.currentUser;
-  if(!user)throw new Error("Please sign in again.");
-  await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
-  const token=await user.getIdToken(true);
-  const pin=await showPinDialog("Enter your 4-digit Transaction PIN. This test will not create an order or deduct money.");
-  if(pin===null)throw new Error("PIN test cancelled.");
-  const response=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys",{
-   method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
-   body:JSON.stringify({action:"verify_pin_only",pin})
-  });
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok||!result.success||!result.test_only)throw new Error(result.error||"PIN verification failed.");
-  const success=document.createElement("p");
-  success.style.cssText="color:#167647;font-weight:700;font-size:13px";
-  success.textContent="✓ Transaction PIN verified successfully. No order was placed, no authorization was issued, and no wallet money was deducted.";
-  quoteResult.append(success);
- }catch(error){
-  const failure=document.createElement("p");
-  failure.style.cssText="color:#b42318;font-size:13px";
-  failure.textContent=error.message||"PIN test failed.";
-  quoteResult.append(failure);
- }finally{
-  if(testButton&&testButton.isConnected){testButton.disabled=false;testButton.textContent="Test Transaction PIN (No Purchase)";}
- }
-}
-async function testFingerprintPasskey(){
- const button=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Test Fingerprint / Passkey (No Purchase)");
- if(button){button.disabled=true;button.textContent="Waiting for fingerprint...";}
- try{
-  const {auth}=await import("./firebase.js");
-  const user=auth.currentUser;if(!user)throw new Error("Please sign in again.");
-  await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
-  const token=await user.getIdToken(true);
-  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
-  const call=async body=>{
-   const response=await fetch(endpoint,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});
-   const result=await response.json().catch(()=>({}));
-   if(!response.ok||!result.success)throw new Error(result.error||"Fingerprint test failed.");
-   return result;
-  };
-  const begin=await call({action:"start_transaction_test"});
-  const options={...begin.options,challenge:b64urlToBytes(begin.options.challenge),
-   allowCredentials:(begin.options.allowCredentials||[]).map(item=>({...item,id:b64urlToBytes(item.id)}))};
-  const credential=await navigator.credentials.get({publicKey:options});
-  if(!credential)throw new Error("Fingerprint/passkey test was cancelled.");
-  const response={id:credential.id,rawId:bytesToB64url(credential.rawId),type:credential.type,
-   authenticatorAttachment:credential.authenticatorAttachment,
-   clientExtensionResults:credential.getClientExtensionResults(),
-   response:{clientDataJSON:bytesToB64url(credential.response.clientDataJSON),
-    authenticatorData:bytesToB64url(credential.response.authenticatorData),
-    signature:bytesToB64url(credential.response.signature),
-    userHandle:credential.response.userHandle?bytesToB64url(credential.response.userHandle):null}};
-  const finished=await call({action:"finish_transaction_test",response});
-  if(!finished.test_only||!finished.verified)throw new Error("Fingerprint test did not return a valid test-only result.");
-  const success=document.createElement("p");
-  success.style.cssText="color:#167647;font-weight:700;font-size:13px";
-  success.textContent="✓ Fingerprint/passkey verified successfully. No authorization was issued, no order was placed, and no wallet money was deducted.";
-  quoteResult.append(success);
- }catch(error){
-  const failure=document.createElement("p");failure.style.cssText="color:#b42318;font-size:13px";
-  failure.textContent=error.message||"Fingerprint test failed.";quoteResult.append(failure);
- }finally{
-  if(button&&button.isConnected){button.disabled=false;button.textContent="Test Fingerprint / Passkey (No Purchase)";}
- }
 }
 async function transactionAuthorization(user,token,intent,method){
  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";

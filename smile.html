@@ -65,7 +65,6 @@ footer{text-align:center;color:#958ba5;font-size:10px;padding:18px}
 
  <section class="card">
   <h3 class="section-title">Smile Account Details</h3>
-  <label>Account Identification Type</label>
   <label for="accountTypeSelect">Select Account Type</label>
   <select id="accountTypeSelect" autocomplete="off">
    <option value="" selected disabled>Select Account Type</option>
@@ -93,12 +92,10 @@ footer{text-align:center;color:#958ba5;font-size:10px;padding:18px}
     <span class="plan-tag">AVAILABLE PLAN</span>
    </div>
    <div class="price-lines">
-    <div class="price-line"><span>Supplier cost</span><strong>₦333.00</strong></div>
-    <div class="price-line sale"><span>AILAT DATA selling price</span><strong>₦500.00</strong></div>
+    <div class="price-line sale"><span>Price</span><strong>₦500.00</strong></div>
    </div>
-   <div class="profit"><span>Gross price difference</span><strong>₦167.00</strong></div>
   </div>
-  <div class="notice"><strong>Integration preparation:</strong> This bundle and its selling price have been added for setup. The supplier's Plan ID 25 is recorded as a reference only; its exact BundleTypeCode mapping and successful/failed API responses still need confirmation. No payment will be taken and no data request will be sent while verification is pending.</div>
+  <div class="notice"><strong>Important:</strong> Please confirm your Smile account details and selected bundle carefully. Purchase is temporarily unavailable while the service is being prepared.</div>
   <div class="status"><span class="status-dot"></span> Purchase activation is pending supplier API verification</div>
   <button class="continue" type="button" disabled>Purchase Temporarily Disabled</button>
   <p class="helper">Your wallet will not be charged from this page until the complete supplier response and transaction-status flow have been verified.</p>
@@ -160,10 +157,8 @@ async function loadSmileSetup() {
     const plan = result.plans[0];
     document.querySelector(".plan-name").textContent = plan.bundle + " Data";
     document.querySelector(".plan-validity").textContent = "Valid for " + plan.validity;
-    document.querySelector(".price-line strong").textContent = "₦" + Number(plan.supplier_cost).toFixed(2);
     document.querySelector(".price-line.sale strong").textContent = "₦" + Number(plan.selling_price).toFixed(2);
-    document.querySelector(".profit strong").textContent = "₦" + Number(plan.gross_difference).toFixed(2);
-    notice.innerHTML = "<strong>Integration preparation:</strong> Smile plan details are now being loaded securely from AILAT DATA's backend. Supplier Plan ID 25 is still only a reference; SMEAPI has not yet confirmed that it is the required BundleTypeCode. No payment or supplier request can be made until the API response and transaction-status flow are verified.";
+    notice.innerHTML = "<strong>Important:</strong> Please confirm your Smile account details and selected bundle carefully. Purchase is temporarily unavailable while the service is being prepared.";
     status.innerHTML = '<span class="status-dot"></span> Secure backend connected · purchasing remains disabled';
     statusDot.style.background = "#16a34a";
   } catch (error) {

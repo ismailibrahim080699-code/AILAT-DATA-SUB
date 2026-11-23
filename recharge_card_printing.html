@@ -1,118 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ha">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#4c1d95">
 <title>Recharge Card Printing | AILAT DATA</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f5f7f6;color:#252d34;font-family:Arial,Helvetica,sans-serif}
-header{background:#fff;padding:24px 22px 18px;box-shadow:0 4px 18px rgba(20,40,35,.05)}
-header a{color:#27333a;text-decoration:none;font-size:29px;line-height:1}
-main{max-width:680px;margin:0 auto;padding:14px 16px 30px}
-.panel{background:#fff;border-radius:28px;padding:26px 24px 28px;box-shadow:0 9px 22px rgba(25,45,40,.11)}
-h1{font-size:clamp(22px,4.7vw,31px);line-height:1.2;margin:4px 0 44px;font-weight:800;letter-spacing:-.5px}
-.step-title{font-size:clamp(18px,4vw,24px);font-weight:700;color:#75818a;margin:0 0 24px}
-.network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:54px;max-width:500px}
-.network-choice{appearance:none;width:100%;min-height:164px;border:2.5px solid #e5e9e7;border-radius:27px;background:#f3faf6;color:#26333a;padding:22px 16px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .16s,background .16s,box-shadow .16s}
-.network-choice[aria-pressed="true"]{border-color:#0aa568;background:#f1faf5;box-shadow:0 0 0 1px rgba(10,165,104,.08)}
-.network-choice:focus-visible{outline:3px solid #a5e8c9;outline-offset:3px}
-.mtn-mark{width:56px;height:56px;display:block}
-.network-name{font-size:23px;font-weight:800;line-height:1}
-.step-two{margin-top:0}
-.denomination{width:100%;min-height:108px;text-align:left;background:#fff;border:2px solid #e6e8e7;border-radius:28px;padding:22px 22px;color:#242c32;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-.denomination.selected{border-color:#0aa568;background:#f8fdf9}
-.denomination-main{font-size:23px;font-weight:500}
-.denomination-price{display:block;color:#079b5a;font-size:22px;font-weight:800;margin-top:18px}
-.denomination-arrow{font-size:25px;color:#079b5a}
-.fields{display:grid;gap:24px;margin:72px 0 0}
-.field{width:100%;height:96px;border:2px solid #e0e3e2;border-radius:17px;background:#fff;padding:24px;font-size:25px;color:#27333a;outline:none}
-.field::placeholder{color:#9ba5ac;opacity:1}
-.field:focus{border-color:#0aa568}
-.field-label{position:relative}
-.field-label span{position:absolute;left:25px;top:-11px;background:#fff;padding:0 7px;color:#9ba5ac;font-size:20px}
-.lock-note{margin-top:28px;padding:15px 17px;border-radius:14px;background:#fff8e8;border:1px solid #f2dfb4;color:#75520d;font-size:13px;line-height:1.55}
-.lock-note strong{display:block;margin-bottom:4px}
-.actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:18px}
-.text-button{border:0;background:transparent;color:#079b5a;font-weight:700;font-size:13px;padding:8px 0;cursor:pointer}
-
-[hidden]{display:none!important}
-@media(max-width:420px){main{padding:12px 15px 26px}.panel{padding:25px 21px 27px;border-radius:27px}h1{font-size:25px;margin-bottom:48px}.network-grid{grid-template-columns:1fr 1fr;gap:11px;margin-bottom:52px}.network-choice{min-height:154px;border-radius:25px;padding:16px 9px}.fields{margin-top:70px;gap:24px}.field{height:94px;font-size:22px;padding:20px}.denomination{min-height:106px;padding:18px}.denomination-main{font-size:22px}.denomination-price{font-size:22px}}
+*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(120deg,#4c1d95,#7c3aed);padding:22px 20px;color:white}
+header a{color:white;text-decoration:none;font-size:28px}
+header strong{font-size:17px;margin-left:12px}
+main{max-width:720px;margin:22px auto;padding:0 15px 35px}
+.panel{background:white;border-radius:22px;padding:22px;box-shadow:0 8px 28px #32106b12}
+h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height:1.5;margin:0 0 22px}
+.section-title{font-size:16px;margin:22px 0 12px}
+.networks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.network{border:1.5px solid #e7def8;border-radius:14px;background:#faf8ff;padding:15px 8px;font-weight:800;color:#4c1d95;cursor:pointer}
+.network[aria-pressed=true]{background:#4c1d95;color:white;border-color:#4c1d95}
+.plans{display:grid;gap:11px}
+.plan{border:1.5px solid #e9e2f5;border-radius:15px;padding:15px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.plan-name{font-weight:800;font-size:16px}.plan-code{font-size:12px;color:#817694;margin-top:6px}
+.price{font-weight:800;color:#6d28d9;font-size:18px;white-space:nowrap}
+.notice{margin-top:20px;border:1px solid #f0d99d;background:#fff9e9;color:#74520b;border-radius:14px;padding:14px;font-size:13px;line-height:1.55}
+.status{font-size:12px;color:#766b8c;margin-top:12px;min-height:18px}
+.refresh{border:0;border-radius:12px;background:#ede7fb;color:#4c1d95;font-weight:800;padding:12px 15px;cursor:pointer;margin-top:15px}
+.empty{padding:18px;text-align:center;color:#817694;background:#faf8ff;border-radius:12px}
+@media(max-width:420px){.panel{padding:18px}h1{font-size:22px}.plan{padding:13px}.price{font-size:16px}}
 </style>
 </head>
 <body>
-<header><a href="dashboard.html" aria-label="Back to dashboard">‹</a></header>
-<main>
-<section class="panel">
-<h1>Purchase Recharge Card (E-Pin)</h1>
-<h2 class="step-title">1. Select Network</h2>
-<div class="network-grid" id="networkGrid">
-<button class="network-choice" id="mtnChoice" type="button" aria-pressed="false">
-<svg class="mtn-mark" viewBox="0 0 100 100" role="img" aria-label="MTN logo" xmlns="http://www.w3.org/2000/svg">
-<circle cx="50" cy="50" r="46" fill="#ffcb05"/>
-<ellipse cx="50" cy="50" rx="35" ry="25" fill="none" stroke="#111" stroke-width="3.5"/>
-<text x="50" y="57" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="900" letter-spacing="-1.5" fill="#111">MTN</text>
-</svg>
-<span class="network-name">MTN</span>
-</button>
+<header><a href="dashboard.html" aria-label="Back to dashboard">‹</a><strong>AILAT DATA</strong></header>
+<main><section class="panel">
+<h1>Recharge Card Printing</h1>
+<p class="sub">Zaɓi network domin ganin denominations da farashin katin. Farashin siyarwa daidai yake da adadin kati.</p>
+<h2 class="section-title">1. Zaɓi Network</h2>
+<div class="networks" id="networkChoices">
+<button class="network" data-network="MTN" aria-pressed="true">MTN</button>
+<button class="network" data-network="GLO" aria-pressed="false">GLO</button>
+<button class="network" data-network="AIRTEL" aria-pressed="false">AIRTEL</button>
 </div>
-<section id="denominationSection" hidden>
-<h2 class="step-title step-two">2. Select Denomination</h2>
-<button class="denomination" id="mtn100" type="button" aria-pressed="false">
-<span><span class="denomination-main">100 = ₦100.00</span><span class="denomination-price">₦100.00</span></span>
-<span class="denomination-arrow" aria-hidden="true">›</span>
-</button>
-<div class="fields" id="orderFields" hidden>
-<input class="field" type="text" id="cardName" placeholder="Business Name (on card)" autocomplete="organization" maxlength="40">
-<label class="field-label"><span>Quantity</span><input class="field" type="number" id="quantity" value="1" min="1" max="100" inputmode="numeric"></label>
-<input class="field" type="password" id="transactionPin" placeholder="Transaction Pin" inputmode="numeric" autocomplete="off" maxlength="6">
-</div>
-</section>
-<div class="lock-note" id="purchaseLock"><strong>🔒 Purchases are not enabled yet</strong>The supplier's API plan_type and actual unit cost have not both been confirmed. This screen is for layout preview only; it will not send a supplier request or debit your wallet.</div>
-<div class="actions">
-
-<button class="text-button" id="refreshCatalogue" type="button">Refresh catalogue</button>
-</div>
-<p id="catalogMessage" aria-live="polite" style="font-size:12px;color:#849097;margin:12px 0 0"></p>
-</section>
-</main>
+<h2 class="section-title">2. Zaɓi Adadin Kati</h2>
+<div class="plans" id="planList"><div class="empty">Ana loda jerin katuna...</div></div>
+<div class="notice"><strong>🔒 Siyan kati bai buɗe ba tukuna.</strong><br>Wannan jerin farashi ne kawai. Za a kunna saye bayan an tabbatar da tsarin samar da PIN daga mai kaya da kuma cire kuɗin wallet cikin aminci. Ba a karɓar kuɗi ko aika oda a wannan shafin yanzu.</div>
+<button class="refresh" id="refreshCatalogue" type="button">Sabunta jerin farashi</button>
+<p class="status" id="catalogMessage" aria-live="polite"></p>
+</section></main>
 <script>
 const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-const mtnChoice=document.getElementById("mtnChoice");
-const denominationSection=document.getElementById("denominationSection");
-const denomination=document.getElementById("mtn100");
-const orderFields=document.getElementById("orderFields");
-const message=document.getElementById("catalogMessage");
-mtnChoice.addEventListener("click",()=>{
- const selected=mtnChoice.getAttribute("aria-pressed")==="true";
- mtnChoice.setAttribute("aria-pressed",String(!selected));
- denominationSection.hidden=selected;
- if(selected){orderFields.hidden=true;denomination.setAttribute("aria-pressed","false");}
-});
-denomination.addEventListener("click",()=>{
- const selected=denomination.getAttribute("aria-pressed")==="true";
- denomination.setAttribute("aria-pressed",String(!selected));
- denomination.classList.toggle("selected",!selected);
- orderFields.hidden=selected;
-});
-document.getElementById("refreshCatalogue").addEventListener("click",async()=>{
+let plans=[];let selectedNetwork="MTN";
+const planList=document.getElementById("planList"),message=document.getElementById("catalogMessage");
+function renderPlans(){
+ const items=plans.filter(p=>String(p.network).toUpperCase()===selectedNetwork);
+ planList.innerHTML="";
+ if(!items.length){planList.innerHTML='<div class="empty">Babu kati a wannan network a yanzu.</div>';return;}
+ items.forEach(p=>{
+  const card=document.createElement("div");card.className="plan";
+  const left=document.createElement("div");
+  const name=document.createElement("div");name.className="plan-name";name.textContent=selectedNetwork+" ₦"+Number(p.face_value).toLocaleString("en-NG");
+  const code=document.createElement("div");code.className="plan-code";code.textContent="Loda kati: "+p.load_code+"  •  Duba balance: "+p.balance_code;
+  left.append(name,code);
+  const price=document.createElement("div");price.className="price";price.textContent="₦"+Number(p.selling_price).toLocaleString("en-NG");
+  card.append(left,price);planList.append(card);
+ });
+}
+document.querySelectorAll(".network").forEach(btn=>btn.addEventListener("click",()=>{
+ selectedNetwork=btn.dataset.network;
+ document.querySelectorAll(".network").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));
+ renderPlans();
+}));
+async function loadCatalogue(){
  const button=document.getElementById("refreshCatalogue");
- button.disabled=true;button.textContent="Refreshing…";message.textContent="Checking verified catalogue…";
+ button.disabled=true;button.textContent="Ana sabuntawa...";
+ message.textContent="Ana ɗauko jerin farashi...";
  try{
   const response=await fetch(CATALOG_URL,{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
   const result=await response.json();
-  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Catalogue unavailable.");
-  const plan=result.plans.find(p=>String(p.network).toUpperCase()==="MTN"&&Number(p.face_value)===100);
-  if(!plan)throw new Error("MTN ₦100 is not currently listed in the verified catalogue.");
-  document.querySelector(".denomination-main").textContent=Number(plan.face_value)+" = ₦"+Number(plan.face_value).toFixed(2);
-  document.querySelector(".denomination-price").textContent="₦"+Number(plan.face_value).toFixed(2);
-  message.textContent="Catalogue refreshed successfully.";
- }catch(error){message.textContent=error.message||"Could not refresh catalogue.";}
- finally{button.disabled=false;button.textContent="Refresh catalogue";}
-});
+  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Ba a samu jerin farashin ba.");
+  plans=result.plans;renderPlans();
+  message.textContent="An sabunta jerin katuna. Farashi ana gyara shi da hannu idan mai kaya ya canza.";
+ }catch(error){message.textContent=error.message||"An kasa sabunta jerin farashi.";}
+ finally{button.disabled=false;button.textContent="Sabunta jerin farashi";}
+}
+document.getElementById("refreshCatalogue").addEventListener("click",loadCatalogue);
+loadCatalogue();
 </script>
-</body>
-</html>
+</body></html>

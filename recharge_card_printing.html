@@ -126,8 +126,8 @@ async function loadCatalogue(){
   const status=await statusResponse.json().catch(()=>({}));
   purchaseEnabled=!!(statusResponse.ok&&status.success&&status.purchase_enabled);
   message.textContent=purchaseEnabled
-   ?"Catalogue updated. Secure purchase is available after Transaction PIN/fingerprint approval."
-   :"Catalogue updated. You can create quotes; final purchase is not enabled yet, and no wallet funds will be deducted.";
+   ?"Catalogue updated. Secure purchase checks are configured; Transaction PIN/fingerprint approval is still required."
+   :"Catalogue updated. "+(status.message||"Final purchase is not enabled yet.")+" No wallet funds will be deducted.";
  }catch(error){message.textContent=error.message||"Failed to load catalogue.";}
 }
 loadCatalogue();

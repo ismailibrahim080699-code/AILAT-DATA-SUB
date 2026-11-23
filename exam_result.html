@@ -12,10 +12,10 @@
 </head>
 <body>
 <div class="wrap">
-<header><a href="dashboard.html">‹</a><h2>Exam PIN / Result Checker</h2><p>Instant exam PIN delivery · Secure wallet payment</p></header>
+<header><a href="dashboard.html">‹</a><h2>Exam PIN / Result Checker</h2><p>Live exam catalogue · Purchase temporarily disabled</p></header>
 <main class="content">
 <section class="card">
-<div class="eyebrow">AVAILABLE EXAM SERVICES</div><h3>Choose your examination</h3><p class="sub">Select one verified exam PIN. JAMB is currently unavailable.</p>
+<div class="eyebrow">AVAILABLE EXAM SERVICES</div><h3>Choose your examination</h3><p class="sub">Live prices from BilalSadaSub. PIN purchase is temporarily disabled.</p>
 <div class="plans" id="plans"><p class="sub">Loading verified exam prices…</p></div>
 <label for="phone">Phone Number (optional)</label><input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit phone number">
 <div class="summary">
@@ -24,8 +24,8 @@
 <div class="sumrow"><span>Service charge</span><strong id="markupPrice">—</strong></div>
 <div class="sumrow total"><span>Total to pay</span><strong id="totalPrice">—</strong></div>
 </div>
-<div class="actions"><button class="primary" id="fingerprintBtn" disabled>Pay with Fingerprint</button><button class="secondary" id="pinBtn" disabled>Pay with PIN</button></div>
-<p class="note">Your wallet is charged only after you approve this exact purchase. If the supplier confirms failure, the wallet charge is refunded. If supplier confirmation is pending, do not submit again.</p>
+<div class="actions"><button class="primary" id="fingerprintBtn" disabled>Purchase unavailable</button><button class="secondary" id="pinBtn" disabled>Purchase unavailable</button></div>
+<p class="note">Live catalogue preview only. No PIN purchase, supplier order or wallet charge can be made from this page yet.</p>
 <div class="status" id="status" role="status" aria-live="polite"></div>
 <div class="result hidden" id="pinResult"></div>
 </section>
@@ -51,7 +51,7 @@ function renderPlans(){
  plans.forEach(p=>{
   const b=document.createElement("button");b.type="button";b.className="plan"+(selected?.exam_id===p.exam_id?" active":"");
   const left=document.createElement("span"),name=document.createElement("strong"),desc=document.createElement("small"),price=document.createElement("span");
-  name.textContent=p.exam_name;desc.textContent="Single PIN · Supplier verified";left.append(name,desc);price.className="price";price.textContent=money(p.selling_amount);b.append(left,price);
+  name.textContent=p.exam_name;desc.textContent=(p.mode==="profile_code"?"JAMB profile-code PIN":"Single PIN")+" · BilalSadaSub live";left.append(name,desc);price.className="price";price.textContent=money(p.selling_amount);b.append(left,price);
   b.addEventListener("click",()=>{selected=p;requestKey=makeRequestKey();orderSubmitted=false;renderPlans();updateSummary()});root.append(b);
  });
 }
@@ -126,7 +126,7 @@ async function loadPlans(){
   const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||"Exam plans are unavailable.");
   plans=Array.isArray(d.plans)?d.plans:[];
   if(!plans.length)throw new Error("No verified Exam PIN plans are currently available.");
-  renderPlans();setStatus("Verified supplier prices loaded. Choose one exam to continue.");
+  renderPlans();setStatus("Live BilalSadaSub exam prices loaded. Purchase is disabled; no payment can be made.");
  }catch(e){$("plans").textContent=e.message;setStatus(e.message,"#b42318")}
 }
 loadPlans();

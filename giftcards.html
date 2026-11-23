@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#4c1d95">
+<title>Gift Cards - AILAT DATA</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,sans-serif}
+.wrap{max-width:560px;min-height:100vh;margin:auto;padding-bottom:35px}
+header{background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:#fff;padding:22px 20px 25px;border-radius:0 0 24px 24px}
+header a{color:#fff;text-decoration:none;font-size:25px}header h2{font-size:21px;margin:17px 0 5px}header p{font-size:12px;opacity:.88;margin:0}
+main{padding:18px 15px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:15px}
+.tab{border:1px solid #ddd2f8;border-radius:12px;background:#fff;color:#5b21b6;padding:13px;font-weight:700}
+.tab.active{background:#5b21b6;color:white}.panel{background:#fff;border-radius:17px;padding:16px;margin-bottom:14px;box-shadow:0 5px 22px #35106f0c}
+.note{background:#f4efff;border:1px solid #e4d8ff;border-radius:12px;padding:12px;font-size:12px;line-height:1.55;color:#51328b}
+input,select{width:100%;padding:13px;border:1px solid #ddd2f8;border-radius:11px;font-size:14px;background:#fff;color:#24134d;outline:none}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0}
+#search{margin-top:12px}.grid{display:grid;gap:10px}.gift{border:1px solid #eee7fb;border-radius:14px;padding:13px}
+.gift-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.gift h3{font-size:15px;margin:0 0 5px}.muted{font-size:11px;color:#76698e;line-height:1.5}
+.rate{font-weight:800;color:#5b21b6;white-space:nowrap;font-size:13px}.price{font-size:12px;margin-top:9px;color:#24134d}
+.buy{width:100%;border:0;border-radius:10px;padding:11px;margin-top:10px;background:#e8e0f7;color:#745c9c;font-weight:700}
+.empty,.status{font-size:13px;color:#75688a;line-height:1.6;text-align:center;padding:20px 8px}
+.lock{opacity:.8}.hidden{display:none!important}.section-title{font-size:15px;margin:0 0 10px}
+footer{text-align:center;color:#8b7da4;font-size:11px;padding:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a href="dashboard.html">‹</a><h2>Gift Cards</h2><p>Buy gift-card vouchers or exchange your gift card for Naira.</p></header>
+<main>
+<div class="tabs"><button class="tab active" id="buyTab">Buy Gift Card</button><button class="tab" id="sellTab">Sell Gift Card</button></div>
+<section id="buyPanel">
+<div class="panel">
+<h3 class="section-title">Available gift cards</h3>
+<p class="muted">Live catalogue from BilalSadaSub. Naira estimate = foreign amount × selling rate.</p>
+<input id="search" type="search" placeholder="Search Amazon, Steam, iTunes...">
+<div class="filters"><select id="country"><option value="">All countries</option></select><select id="currency"><option value="">All currencies</option></select></div>
+<div id="plans" class="grid"><div class="status">Loading gift-card catalogue...</div></div>
+</div>
+<div class="note"><b>Purchases are not active yet.</b> Gift-card purchase requires Tier 2 verification and a secure AILAT DATA wallet/PIN approval flow. No payment will be taken on this page.</div>
+</section>
+<section id="sellPanel" class="hidden">
+<div class="panel lock"><h3 class="section-title">Sell / Exchange a Gift Card</h3>
+<p class="muted">Submit a card for review and receive Naira after it is verified.</p>
+<div class="note"><b>Tier 3 verification required.</b> Card submissions and image uploads are not open yet. This protects your card details and prevents unverified submissions.</div></div>
+<div class="panel"><h3 class="section-title">Exchange status guide</h3>
+<p class="muted"><b>Pending:</b> waiting for review<br><b>Approved:</b> awaiting payout<br><b>Paid:</b> Naira credited to wallet<br><b>Rejected:</b> reviewer provides a reason</p></div>
+</section>
+<div id="pageStatus" class="status" role="status" aria-live="polite"></div>
+</main><footer>AILAT DATA © 2026</footer>
+</div>
+<script type="module">
+import { app } from "./firebase.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app),API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const $=id=>document.getElementById(id);let allPlans=[];
+function userReady(){return new Promise((resolve,reject)=>{const unsub=onAuthStateChanged(auth,u=>{unsub();if(!u)reject(new Error("Please log in to view Gift Cards."));else resolve(u)},e=>{unsub();reject(e)})})}
+function naira(n){return "₦"+Number(n).toLocaleString("en-NG",{maximumFractionDigits:2})}
+function setOptions(id,values,label){const el=$(id),old=el.value;el.replaceChildren(new Option(label,""));[...new Set(values.filter(Boolean))].sort().forEach(v=>el.add(new Option(v,v)));if(values.includes(old))el.value=old}
+function render(){const q=$("search").value.trim().toLowerCase(),country=$("country").value,currency=$("currency").value;
+const list=allPlans.filter(p=>(!q||(p.name+" "+p.category+" "+p.country+" "+p.currency).toLowerCase().includes(q))&&(!country||p.country===country)&&(!currency||p.currency===currency));
+const root=$("plans");root.replaceChildren();if(!list.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No matching gift cards found.";root.append(empty);return}
+list.forEach(p=>{const card=document.createElement("article");card.className="gift";const top=document.createElement("div");top.className="gift-top";const info=document.createElement("div"),name=document.createElement("h3"),meta=document.createElement("div"),rate=document.createElement("div");
+name.textContent=p.name;meta.className="muted";meta.textContent=[p.category,p.country,p.currency].filter(Boolean).join(" · ");rate.className="rate";rate.textContent=naira(p.selling_rate)+" / "+p.currency;info.append(name,meta);top.append(info,rate);
+const price=document.createElement("div");price.className="price";price.textContent=p.is_range?"Allowed value: "+p.currency+" "+p.local_min+" – "+p.local_max:"Fixed value: "+p.currency+" "+p.local_max;
+const btn=document.createElement("button");btn.className="buy";btn.disabled=true;btn.textContent="Buy unavailable — Tier 2 required";card.append(top,price,btn);root.append(card)});
+}
+async function load(){try{const u=await userReady(),token=await u.getIdToken(true);const r=await fetch(API+"?action=giftcard_plans",{headers:{apikey:PUBLISHABLE_KEY,Authorization:"Bearer "+token},cache:"no-store"});const data=await r.json();if(!r.ok||!data.success)throw new Error(data.error||"Catalogue unavailable.");
+allPlans=Array.isArray(data.plans)?data.plans:[];setOptions("country",allPlans.map(p=>p.country),"All countries");setOptions("currency",allPlans.map(p=>p.currency),"All currencies");render();$("pageStatus").textContent=allPlans.length?allPlans.length+" gift-card variants loaded.":"No gift-card variants are currently available.";
+}catch(e){$("plans").textContent=e.message||"Could not load gift cards.";$("pageStatus").textContent=""}}
+$("search").addEventListener("input",render);$("country").addEventListener("change",render);$("currency").addEventListener("change",render);
+$("buyTab").onclick=()=>{$("buyTab").classList.add("active");$("sellTab").classList.remove("active");$("buyPanel").classList.remove("hidden");$("sellPanel").classList.add("hidden")};
+$("sellTab").onclick=()=>{$("sellTab").classList.add("active");$("buyTab").classList.remove("active");$("sellPanel").classList.remove("hidden");$("buyPanel").classList.add("hidden")};
+load();
+</script>
+</body></html>

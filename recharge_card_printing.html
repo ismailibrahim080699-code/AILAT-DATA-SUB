@@ -50,7 +50,7 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
 const API_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-let plans=[],selectedNetwork=null,selectedPlan=null,authReady=false,activeQuote=null;
+let plans=[],selectedNetwork=null,selectedPlan=null,authReady=false,activeQuote=null,purchaseEnabled=false;
 const planList=document.getElementById("planList"),message=document.getElementById("catalogMessage");
 const quoteBtn=document.getElementById("quoteBtn"),quantityInput=document.getElementById("quantity"),quoteResult=document.getElementById("quoteResult");
 function money(n){return "₦"+Number(n).toLocaleString("en-NG");}
@@ -102,10 +102,16 @@ quoteBtn.addEventListener("click",async()=>{
   activeQuote=q;
   quoteResult.textContent="Quote created: "+q.reference+" | "+q.network+" "+money(q.face_value)+" × "+q.quantity+" | Total: "+money(q.customer_total)+". No wallet money has been deducted yet.";
   quoteResult.classList.add("show");
-  const action=document.createElement("button");
-  action.type="button";action.className="primary";action.textContent="Approve & Buy Cards";
-  action.addEventListener("click",()=>purchaseQuote(q));
-  quoteResult.append(document.createElement("br"),action);
+  if(purchaseEnabled){
+   const action=document.createElement("button");
+   action.type="button";action.className="primary";action.textContent="Approve & Buy Cards";
+   action.addEventListener("click",()=>purchaseQuote(q));
+   quoteResult.append(document.createElement("br"),action);
+  }else{
+   const safeNote=document.createElement("p");
+   safeNote.textContent="Final purchase is not enabled yet. No wallet money has been deducted.";
+   quoteResult.append(document.createElement("br"),safeNote);
+  }
  }catch(error){quoteResult.textContent=error.message||"Quote request failed.";quoteResult.classList.add("show");}
  finally{updateQuoteButton();}
 });
@@ -116,7 +122,12 @@ async function loadCatalogue(){
   const result=await response.json();
   if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Could not load recharge card prices.");
   plans=result.plans;renderPlans();
-  message.textContent="Catalogue updated. Select a denomination to create a secure quote.";
+  const statusResponse=await fetch(API_URL+"?action=recharge_card_status",{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
+  const status=await statusResponse.json().catch(()=>({}));
+  purchaseEnabled=!!(statusResponse.ok&&status.success&&status.purchase_enabled);
+  message.textContent=purchaseEnabled
+   ?"Catalogue updated. Secure purchase is available after Transaction PIN/fingerprint approval."
+   :"Catalogue updated. You can create quotes; final purchase is not enabled yet, and no wallet funds will be deducted.";
  }catch(error){message.textContent=error.message||"Failed to load catalogue.";}
 }
 loadCatalogue();

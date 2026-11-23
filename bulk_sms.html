@@ -14,7 +14,7 @@
 <body>
 <header><a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a></header>
 <main><section class="card">
-<div class="hero"><div class="icon" aria-hidden="true">✉</div><h1>Bulk SMS</h1><p class="sub">Create and review a BilalSadaSub SMS campaign</p><span class="status" id="serviceStatus">BILALSADASUB API RECEIVED · PRICING PENDING</span></div>
+<div class="hero"><div class="icon" aria-hidden="true">✉</div><h1>Bulk SMS</h1><p class="sub">Create and review a BilalSadaSub SMS campaign</p><span class="status" id="serviceStatus">BILALSADASUB API · ₦10 / PAGE</span></div>
 <form id="serviceForm" novalidate>
 <div class="section">
 <p class="section-title">Campaign details</p>
@@ -39,12 +39,12 @@
 <div class="price-line"><span>Message encoding</span><strong id="pEncoding">—</strong></div>
 <div class="price-line"><span>Pages per recipient</span><strong id="pPagesEach">0</strong></div>
 <div class="price-line"><span>Total SMS pages</span><strong id="pTotalPages">0</strong></div>
-<div class="price-line"><span>BilalSadaSub cost</span><strong id="pSupplierCost">Not confirmed</strong></div>
+<div class="price-line"><span>BilalSadaSub cost (estimate)</span><strong id="pSupplierCost">Not confirmed</strong></div>
 <div class="price-line"><span>Customer charge</span><strong id="pCustomerCharge">Not configured</strong></div>
 <div class="price-line"><span>AILAT gross profit</span><strong id="pGrossProfit">Not available</strong></div>
-<div class="notice warn">NOT SENT. BilalSadaSub API details are recorded. Supplier SMS-page rate and customer price are not confirmed. No wallet charge or SMS delivery.</div>
+<div class="notice warn">PRICE PREVIEW ONLY. ₦8 per page supplier cost + ₦2 AILAT gross margin = ₦10 customer price. No SMS was sent and no wallet charge was made.</div>
 </section>
-<div class="notice"><strong>Integration:</strong> BilalSadaSub Bulk SMS API is selected. This page validates campaigns and calculates SMS pages only. Supplier sending and wallet charging remain disabled until pricing is confirmed and the secure payment flow is ready. Send messages only to recipients who have consented.</div>
+<div class="notice"><strong>Integration:</strong> BilalSadaSub Bulk SMS API is selected. This page validates campaigns and previews ₦10 per SMS page (₦8 supplier cost + ₦2 gross margin). Sending and wallet charging remain disabled while the secure approval and delivery flow is completed. Send messages only to recipients who have consented.</div>
 </section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
 <script>
 const form=document.getElementById("serviceForm"),errorBox=document.getElementById("formError"),preview=document.getElementById("preview");

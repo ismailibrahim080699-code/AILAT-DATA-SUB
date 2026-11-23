@@ -16,7 +16,7 @@ main{max-width:720px;margin:22px auto;padding:0 15px 35px}
 h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height:1.5;margin:0 0 22px}
 .section-title{font-size:16px;margin:22px 0 12px}
 .networks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.network{border:1.5px solid #e7def8;border-radius:14px;background:#faf8ff;padding:15px 8px;font-weight:800;color:#4c1d95;cursor:pointer}
+.network{border:1.5px solid #e7def8;border-radius:14px;background:#faf8ff;padding:13px 8px;font-weight:800;color:#4c1d95;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:112px}.network-logo{width:54px;height:45px;display:block}.network-label{font-size:14px}
 .network[aria-pressed=true]{background:#4c1d95;color:white;border-color:#4c1d95}
 .plans{display:grid;gap:11px}
 .plan{border:1.5px solid #e9e2f5;border-radius:15px;padding:15px;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -36,9 +36,9 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 <p class="sub">Zaɓi network domin ganin denominations da farashin katin. Farashin siyarwa daidai yake da adadin kati.</p>
 <h2 class="section-title">1. Zaɓi Network</h2>
 <div class="networks" id="networkChoices">
-<button class="network" data-network="MTN" aria-pressed="true">MTN</button>
-<button class="network" data-network="GLO" aria-pressed="false">GLO</button>
-<button class="network" data-network="AIRTEL" aria-pressed="false">AIRTEL</button>
+<button class="network" data-network="MTN" aria-pressed="true"><svg class="network-logo" viewBox="0 0 100 80" role="img" aria-label="MTN logo"><circle cx="50" cy="40" r="37" fill="#ffcb05"/><text x="50" y="48" text-anchor="middle" font-size="25" font-weight="900" fill="#111">MTN</text></svg><span class="network-label">MTN</span></button>
+<button class="network" data-network="GLO" aria-pressed="false"><svg class="network-logo" viewBox="0 0 100 80" role="img" aria-label="Glo logo"><text x="50" y="52" text-anchor="middle" font-family="Arial,sans-serif" font-size="45" font-weight="900" letter-spacing="-5" fill="#159447">Glo</text><path d="M19 61 Q50 73 82 59" fill="none" stroke="#159447" stroke-width="3" stroke-linecap="round"/></svg><span class="network-label">GLO</span></button>
+<button class="network" data-network="AIRTEL" aria-pressed="false"><svg class="network-logo" viewBox="0 0 100 80" role="img" aria-label="Airtel logo"><path d="M50 8 C34 30 17 48 26 61 C35 75 68 68 78 55 C87 42 67 21 50 8Z" fill="#e31b36"/><path d="M37 56 Q52 41 69 48" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><text x="50" y="77" text-anchor="middle" font-size="11" font-weight="800" fill="#e31b36">airtel</text></svg><span class="network-label">AIRTEL</span></button>
 </div>
 <h2 class="section-title">2. Zaɓi Adadin Kati</h2>
 <div class="plans" id="planList"><div class="empty">Ana loda jerin katuna...</div></div>
@@ -59,7 +59,7 @@ function renderPlans(){
   const card=document.createElement("div");card.className="plan";
   const left=document.createElement("div");
   const name=document.createElement("div");name.className="plan-name";name.textContent=selectedNetwork+" ₦"+Number(p.face_value).toLocaleString("en-NG");
-  const code=document.createElement("div");code.className="plan-code";code.textContent="Loda kati: "+p.load_code+"  •  Duba balance: "+p.balance_code;
+  const code=document.createElement("div");code.className="plan-code";code.textContent="Recharge Code: "+p.load_code+"  •  Check Balance: "+p.balance_code;
   left.append(name,code);
   const price=document.createElement("div");price.className="price";price.textContent="₦"+Number(p.selling_price).toLocaleString("en-NG");
   card.append(left,price);planList.append(card);

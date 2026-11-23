@@ -139,8 +139,8 @@ function validateSmileDetails(){
   return false;
  }
  if(type==="phone"){
-  const normalized=value.replace(/[\\s()-]/g,"");
-  if(!/^\\+?[0-9]{10,15}$/.test(normalized)){
+  const normalized=value.replace(/[\s()-]/g,"");
+  if(!/^\+?[0-9]{10,15}$/.test(normalized)){
    accountNumber.setCustomValidity("Enter a valid Smile phone number.");
    accountNumber.reportValidity();
    return false;

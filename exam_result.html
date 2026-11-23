@@ -222,7 +222,7 @@ async function loadPlans(silent=false){
   lastCatalogueSuccess=Date.now();
   const stamp=new Date(lastCatalogueSuccess).toLocaleTimeString("en-NG",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
   refreshLabel.textContent="Live prices · Last updated "+stamp+" · Auto-refresh every 60 seconds";
-  if(!silent||!selected)setStatus("Latest BilalSadaSub exam prices loaded. Purchase remains disabled; no payment can be made.");
+  if(!silent||!selected)setStatus("Latest BilalSadaSub exam prices loaded. Select your exam and approve the exact total to continue.");
   else setStatus("Exam prices updated automatically. Your selected exam and new price are shown.");
  }catch(e){
   if(!plans.length)$("plans").textContent=e.message;

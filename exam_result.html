@@ -136,7 +136,8 @@ async function process(method){
   const total=Math.round(Number(selected.selling_amount)*quantity*100)/100;
   const jambType=isJamb?getJambType(selected):"";
   const verifiedName=isJamb?jambVerification.name:"";
-  const intent={service_key:"exam",idempotency_key:requestKey,details:{
+  const orderKey=requestKey;
+ const intent={service_key:"exam",idempotency_key:orderKey,details:{
    exam_id:Number(selected.exam_id),exam_name:selected.exam_name,mode:selected.mode,quantity,
    selling_amount:total,phone,profile_code:profileCode,jamb_type:jambType,verified_name:verifiedName
   }};
@@ -144,7 +145,7 @@ async function process(method){
   const authorization_token=await authorize(token,intent,method);
   setStatus("Approval successful. Sending your order securely…");
   const response=await fetch(API,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
-   body:JSON.stringify({service_key:"exam",idempotency_key:requestKey,authorization_token,
+   body:JSON.stringify({service_key:"exam",idempotency_key:orderKey,authorization_token,
     customer_data:{exam_id:Number(selected.exam_id),quantity,phone,profile_code:profileCode,jamb_type:jambType,verified_name:verifiedName}})});
   const result=await response.json().catch(()=>({}));
   if(result.verified_name&&isJamb){

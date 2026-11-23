@@ -88,7 +88,7 @@ function encodingInfo(text){
 }
 function updateStats(){const list=numbers(),info=encodingInfo(message.value);$("recipientCount").textContent=list.length;$("charCount").textContent=info.units;$("pageCount").textContent=list.length*info.pages;}
 function showSend(kind,text){sendResult.className=kind;sendResult.textContent=text;}
-function hideSend(){sendResult.className="";sendResult.textContent="";sendResult.style.display="none";}
+function hideSend(){sendResult.className="";sendResult.textContent="";}
 function resetPreview(){latestCampaign=null;latestQuote=null;requestKey="";preview.style.display="none";sendActions.hidden=true;hideSend();submissionUncertain=false;}
 for(const el of [sender,recipients,message])el.addEventListener("input",()=>{resetPreview();updateStats();});
 async function signedIn(){

@@ -8,7 +8,20 @@
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <title>AILAT DATA | Bulk SMS</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;display:flex;flex-direction:column}header{padding:19px max(4%,calc((100% - 650px)/2));background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}header a{color:white;text-decoration:none;font-weight:bold}header .top-back{display:grid;place-items:center;width:40px;height:40px;font-size:32px;line-height:1;border-radius:12px;background:#ffffff18}main{width:min(92%,600px);margin:26px auto;flex:1}.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:24px 21px;box-shadow:0 10px 28px #35106f12}.hero{text-align:center}.icon{width:66px;height:66px;margin:0 auto 14px;border-radius:19px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:29px}h1{font-size:24px;margin:0 0 7px}.sub{font-size:14px;line-height:1.7;color:#75658f;margin:0}.status{display:inline-block;margin:12px 0;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:11px;font-weight:800;letter-spacing:.3px}.section{margin-top:18px;padding:17px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}.section-title{font-size:14px;font-weight:800;margin:0 0 7px}label{display:block;margin:15px 0 7px;font-size:13px;font-weight:700;color:#44345f}input,textarea{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}textarea{resize:vertical;min-height:90px}input:focus,textarea:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}.hint{font-size:11px;color:#887b9f;line-height:1.6;margin:6px 0 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:white;border:1px solid #eee7ff;border-radius:11px;padding:11px 8px;text-align:center}.stat strong{display:block;font-size:18px;color:#5b21b6}.stat span{display:block;font-size:10px;color:#817394;margin-top:4px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}button{border:0;border-radius:11px;padding:14px;font-size:14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}.notice{margin-top:15px;padding:13px;border-radius:12px;background:#f3efff;color:#5b21b6;font-size:12px;line-height:1.7}.notice.warn{background:#fff7e6;color:#805300}.error{color:#b42318;font-size:12px;margin-top:10px;min-height:16px}.preview{display:none;margin-top:15px;padding:15px;border:1px solid #ddd1fa;border-radius:12px;background:#fff}.preview h2{font-size:15px;margin:0 0 10px}.preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Arial;color:#51446b;margin:0}.price-line{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:8px 0;border-bottom:1px solid #eee7ff}.price-line:last-child{border:0}footer{text-align:center;padding:20px;color:#9589ac;font-size:11px}@media(max-width:390px){.actions{grid-template-columns:1fr}.stats{gap:5px}.stat strong{font-size:16px}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d;display:flex;flex-direction:column}header{padding:19px max(4%,calc((100% - 650px)/2));background:linear-gradient(135deg,#35106f,#5b21b6,#7c3aed);color:white}header a{color:white;text-decoration:none;font-weight:bold}header .top-back{display:grid;place-items:center;width:40px;height:40px;font-size:32px;line-height:1;border-radius:12px;background:#ffffff18}main{width:min(92%,600px);margin:26px auto;flex:1}.card{background:white;border:1px solid #eee7ff;border-radius:22px;padding:24px 21px;box-shadow:0 10px 28px #35106f12}.hero{text-align:center}.icon{width:66px;height:66px;margin:0 auto 14px;border-radius:19px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:29px}h1{font-size:24px;margin:0 0 7px}.sub{font-size:14px;line-height:1.7;color:#75658f;margin:0}.status{display:inline-block;margin:12px 0;padding:8px 13px;border-radius:20px;background:#fff4d6;color:#875500;font-size:11px;font-weight:800;letter-spacing:.3px}.section{margin-top:18px;padding:17px;background:#faf8ff;border:1px solid #eee7ff;border-radius:15px}.section-title{font-size:14px;font-weight:800;margin:0 0 7px}label{display:block;margin:15px 0 7px;font-size:13px;font-weight:700;color:#44345f}input,textarea{width:100%;padding:13px;border:1px solid #e4deef;border-radius:10px;background:white;color:#24134d;font:14px Arial}textarea{resize:vertical;min-height:90px}input:focus,textarea:focus{outline:2px solid #c4b5fd;border-color:#7c3aed}.hint{font-size:11px;color:#887b9f;line-height:1.6;margin:6px 0 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:white;border:1px solid #eee7ff;border-radius:11px;padding:11px 8px;text-align:center}.stat strong{display:block;font-size:18px;color:#5b21b6}.stat span{display:block;font-size:10px;color:#817394;margin-top:4px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}button{border:0;border-radius:11px;padding:14px;font-size:14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:white}.secondary{background:#eee7ff;color:#4c1d95}.notice{margin-top:15px;padding:13px;border-radius:12px;background:#f3efff;color:#5b21b6;font-size:12px;line-height:1.7}.notice.warn{background:#fff7e6;color:#805300}.error{color:#b42318;font-size:12px;margin-top:10px;min-height:16px}.preview{display:none;margin-top:15px;padding:15px;border:1px solid #ddd1fa;border-radius:12px;background:#fff}.preview h2{font-size:15px;margin:0 0 10px}.preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Arial;color:#51446b;margin:0}.price-line{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:8px 0;border-bottom:1px solid #eee7ff}.price-line:last-child{border:0}
+input[type=checkbox]{width:auto;accent-color:#6d28d9;margin:0 7px 0 0}
+.checkline{display:flex;align-items:flex-start;gap:5px;font-size:12px;line-height:1.6;color:#51446b;margin-top:14px}
+#sendActions[hidden]{display:none}
+.pin-overlay{display:none;position:fixed;inset:0;z-index:20;background:#180b2acc;align-items:center;justify-content:center;padding:20px}
+.pin-overlay.show{display:flex}.pin-panel{background:white;border-radius:20px;padding:24px;width:min(100%,360px);box-shadow:0 20px 60px #17052e55}
+.pin-panel h2{font-size:19px;margin:0 0 7px}.pin-boxes{display:flex;gap:10px;justify-content:center;margin:22px 0}
+.pin-input{width:48px;height:54px;text-align:center;font-size:22px;font-weight:bold}
+.pin-error{min-height:18px;color:#b42318;font-size:12px;text-align:center}
+.pin-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+#sendResult{margin-top:12px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;display:none}
+#sendResult.info{display:block;background:#f3efff;color:#4c1d95}
+#sendResult.success{display:block;background:#e9f8ef;color:#17663b}
+#sendResult.error{display:block;background:#fff0f0;color:#a61b1b}footer{text-align:center;padding:20px;color:#9589ac;font-size:11px}@media(max-width:390px){.actions{grid-template-columns:1fr}.stats{gap:5px}.stat strong{font-size:16px}}
 </style>
 </head>
 <body>
@@ -29,7 +42,7 @@
  <div class="stat"><strong id="pageCount">0</strong><span>Total SMS pages</span></div>
 </div>
 <div class="error" id="formError" role="alert" aria-live="polite"></div>
-<div class="actions"><button class="primary" type="submit">Review Campaign</button><button class="secondary" type="reset">Clear Form</button></div>
+<label class="checkline"><input id="consent" type="checkbox" required> I confirm these recipients agreed to receive this message, and this is an OTP or transactional notice—not marketing.</label><div class="actions"><button class="primary" type="submit">Review Campaign</button><button class="secondary" type="reset">Clear Form</button></div>
 </div>
 </form>
 <section class="preview" id="preview" aria-live="polite">
@@ -42,78 +55,153 @@
 <div class="price-line"><span>BilalSadaSub cost (estimate)</span><strong id="pSupplierCost">Not confirmed</strong></div>
 <div class="price-line"><span>Customer charge</span><strong id="pCustomerCharge">Not configured</strong></div>
 <div class="price-line"><span>AILAT gross profit</span><strong id="pGrossProfit">Not available</strong></div>
-<div class="notice warn">PRICE PREVIEW ONLY. ₦8 per page supplier cost + ₦2 AILAT gross margin = ₦10 customer price. No SMS was sent and no wallet charge was made.</div>
+<div class="notice warn" id="priceNotice">PRICE PREVIEW ONLY. ₦8 per page supplier cost + ₦2 AILAT gross margin = ₦10 customer price.</div><div class="actions" id="sendActions" hidden><button class="primary" id="fingerprintBtn" type="button">Send with Fingerprint</button><button class="secondary" id="pinBtn" type="button">Send with Transaction PIN</button></div><div id="sendResult" role="status" aria-live="polite"></div>
 </section>
-<div class="notice"><strong>Integration:</strong> BilalSadaSub Bulk SMS API is selected. This page validates campaigns and previews ₦10 per SMS page (₦8 supplier cost + ₦2 gross margin). Sending and wallet charging remain disabled while the secure approval and delivery flow is completed. Send messages only to recipients who have consented.</div>
+<div class="notice"><strong>Integration:</strong> BilalSadaSub Bulk SMS API is selected. Messages are sent through BilalSadaSub only after secure Transaction PIN or fingerprint approval and wallet confirmation. Supplier cost is ₦8/page; customer price is ₦10/page. Marketing messages to DND numbers are not supported. Send only consented OTP or transactional messages.</div>
 </section></main><footer>AILAT DATA © 2026 · All Rights Reserved</footer>
-<script>
-const form=document.getElementById("serviceForm"),errorBox=document.getElementById("formError"),preview=document.getElementById("preview");
-const sender=document.getElementById("sender"),recipients=document.getElementById("recipients"),message=document.getElementById("message");
-const count=document.getElementById("recipientCount"),chars=document.getElementById("charCount"),pages=document.getElementById("pageCount");
-function normalizedNumbers(){return recipients.value.split(/[\\s,;]+/).map(x=>x.trim()).filter(Boolean)}
-function encodingInfo(text){const quote=String.fromCharCode(34);const slash=String.fromCharCode(92);const gsmBasic="@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"+quote+"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";const gsmExt="^{}"+slash+"[~]|€";const chars=Array.from(text);const gsm=chars.every(ch=>gsmBasic.includes(ch)||gsmExt.includes(ch));const units=gsm?chars.reduce((n,ch)=>n+(gsmExt.includes(ch)?2:1),0):chars.length;const single=gsm?160:70;const multipart=gsm?153:67;return {gsm,length:units,pages:units===0?0:(units<=single?1:Math.ceil(units/multipart))}}
-function updateStats(){const list=normalizedNumbers(),info=encodingInfo(message.value);count.textContent=list.length;chars.textContent=info.length;pages.textContent=list.length*info.pages}
-recipients.addEventListener("input",updateStats);message.addEventListener("input",updateStats);
-form.addEventListener("submit",async event=>{
- event.preventDefault();errorBox.textContent="";preview.style.display="none";
- const id=sender.value.trim(),raw=normalizedNumbers(),body=message.value.trim();
- if(!id){errorBox.textContent="Enter your approved Sender ID.";sender.focus();return}
- if(id.length>11||/^\d+$/.test(id)||!/^[A-Za-z0-9 ]+$/.test(id)){errorBox.textContent="Sender ID must be approved, plain text and no more than 11 characters.";sender.focus();return}
- if(!raw.length){errorBox.textContent="Enter at least one recipient number.";recipients.focus();return}
- const invalid=raw.filter(n=>!/^0[789][01]\d{8}$/.test(n));
- if(invalid.length){errorBox.textContent="Invalid number(s): "+invalid.slice(0,3).join(", ")+". Use valid 11-digit Nigerian mobile numbers.";recipients.focus();return}
- const unique=[...new Set(raw)];
- if(unique.length!==raw.length){errorBox.textContent="Duplicate phone numbers found. Remove duplicates before reviewing.";recipients.focus();return}
- if(!body){errorBox.textContent="Write your SMS message.";message.focus();return}
- if(body.length>5000){errorBox.textContent="Message is too long. Please shorten it.";message.focus();return}
- const info=encodingInfo(body);
- const quoteButton=form.querySelector('button[type="submit"]');
- quoteButton.disabled=true;quoteButton.textContent="Checking campaign…";
- try{
-  if(typeof window.__ailatBulkSmsQuote!=="function") throw new Error("Secure Bulk SMS connection is still loading. Refresh and try again.");
-  const quote=await window.__ailatBulkSmsQuote({sender_id:id,phones:unique,message:body});
-  if(!quote.success) throw new Error(quote.error||"Could not validate this campaign.");
-  document.getElementById("pEncoding").textContent=quote.encoding;
-  document.getElementById("pPagesEach").textContent=quote.pages_per_recipient;
-  document.getElementById("pTotalPages").textContent=quote.total_pages;
-  document.getElementById("pRecipients").textContent=quote.recipients;
-  document.getElementById("pSender").textContent=quote.sender_id;
-  const money=value=>value===null||value===undefined?"Not confirmed":"₦"+Number(value).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
-  document.getElementById("pSupplierCost").textContent=money(quote.supplier_cost);
-  document.getElementById("pCustomerCharge").textContent=money(quote.customer_charge);
-  document.getElementById("pGrossProfit").textContent=money(quote.gross_profit);
-  preview.style.display="block";
-  updateStats();
-  document.querySelector("#preview .notice").textContent=quote.message;
- }catch(error){errorBox.textContent=error.message||"Secure campaign validation failed."}
- finally{quoteButton.disabled=false;quoteButton.textContent="Review Campaign"}
-});
-form.addEventListener("reset",()=>{errorBox.textContent="";preview.style.display="none";setTimeout(updateStats,0)});
-updateStats();
-</script>
+<div class="pin-overlay" id="pinOverlay" role="dialog" aria-modal="true" aria-label="Transaction PIN">
+ <div class="pin-panel"><h2>Confirm Transaction PIN</h2><p class="sub">Enter your 4-digit Transaction PIN to approve this exact SMS campaign and wallet amount.</p>
+  <div class="pin-boxes"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 1"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 2"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 3"><input class="pin-input" inputmode="numeric" maxlength="1" aria-label="PIN digit 4"></div>
+  <div id="pinError" class="pin-error"></div><div class="pin-actions"><button id="cancelPin" class="secondary" type="button">Cancel</button><button id="submitPin" class="primary" type="button">Approve</button></div>
+ </div>
+</div>
 <script type="module">
 import { app } from "./firebase.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-const SUPABASE_FUNCTION_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
-window.__ailatBulkSmsQuote=async customer_data=>{
- const user=auth.currentUser;
- if(!user) throw new Error("Please log in again to review a Bulk SMS campaign.");
- await user.reload();
- if(!user.emailVerified) throw new Error("Please verify your email before using Bulk SMS.");
- const token=await user.getIdToken(true);
- const response=await fetch(SUPABASE_FUNCTION_URL,{method:"POST",headers:{
-  "apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"
- },body:JSON.stringify({action:"bulk_sms_quote",customer_data})});
+const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
+const PASSKEY_API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const $=id=>document.getElementById(id);
+const form=$("serviceForm"),sender=$("sender"),recipients=$("recipients"),message=$("message");
+const errorBox=$("formError"),preview=$("preview"),sendActions=$("sendActions"),sendResult=$("sendResult");
+let latestCampaign=null,latestQuote=null,requestKey="",busy=false,submissionUncertain=false;
+const money=value=>"₦"+Number(value).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+function numbers(){return recipients.value.split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean)}
+function encodingInfo(text){
+ const quote=String.fromCharCode(34),slash=String.fromCharCode(92);
+ const basic="@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"+quote+"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
+ const ext="^{}"+slash+"[~]|€",chars=Array.from(text),gsm=chars.every(ch=>basic.includes(ch)||ext.includes(ch));
+ const units=gsm?chars.reduce((n,ch)=>n+(ext.includes(ch)?2:1),0):chars.reduce((n,ch)=>n+ch.length,0);
+ const pages=units===0?0:(gsm?(units<=160?1:Math.ceil(units/153)):(units<=70?1:Math.ceil(units/67)));
+ return {gsm,units,pages};
+}
+function updateStats(){const list=numbers(),info=encodingInfo(message.value);$("recipientCount").textContent=list.length;$("charCount").textContent=info.units;$("pageCount").textContent=list.length*info.pages;}
+function showSend(kind,text){sendResult.className=kind;sendResult.textContent=text;}
+function hideSend(){sendResult.className="";sendResult.textContent="";sendResult.style.display="none";}
+function resetPreview(){latestCampaign=null;latestQuote=null;requestKey="";preview.style.display="none";sendActions.hidden=true;hideSend();submissionUncertain=false;}
+for(const el of [sender,recipients,message])el.addEventListener("input",()=>{resetPreview();updateStats();});
+async function signedIn(){
+ const user=auth.currentUser;if(!user)throw new Error("Please log in again.");
+ await user.reload();if(!user.emailVerified)throw new Error("Verify your email before using Bulk SMS.");
+ return user;
+}
+async function apiCall(token,payload){
+ const response=await fetch(API,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(payload)});
  const result=await response.json().catch(()=>({}));
- if(!response.ok||!result.success) throw new Error(result.error||"Secure Bulk SMS validation failed.");
- return result;
-};
+ return {response,result};
+}
+async function requestPin(){
+ return new Promise(resolve=>{
+  const overlay=$("pinOverlay"),boxes=[...document.querySelectorAll(".pin-input")],err=$("pinError");
+  const finish=value=>{overlay.classList.remove("show");boxes.forEach(b=>b.value="");err.textContent="";resolve(value);};
+  overlay.classList.add("show");boxes[0].focus();
+  boxes.forEach((box,i)=>{box.oninput=()=>{box.value=box.value.replace(/\D/g,"").slice(-1);if(box.value&&i<3)boxes[i+1].focus();};
+   box.onkeydown=e=>{if(e.key==="Backspace"&&!box.value&&i>0)boxes[i-1].focus();if(e.key==="Enter")$("submitPin").click();if(e.key==="Escape")finish(null);};
+   box.onpaste=e=>{const v=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"").slice(0,4);if(v){e.preventDefault();v.split("").forEach((d,j)=>boxes[j].value=d);boxes[Math.min(v.length,3)].focus();}};});
+  $("cancelPin").onclick=()=>finish(null);
+  $("submitPin").onclick=()=>{const pin=boxes.map(b=>b.value).join("");if(!/^\d{4}$/.test(pin)){err.textContent="Enter all four digits.";return;}finish(pin);};
+ });
+}
+async function approveTransaction(firebaseToken,intent,method){
+ const call=async body=>{const r=await fetch(PASSKEY_API,{method:"POST",headers:{"Authorization":"Bearer "+firebaseToken,"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success)throw new Error(d.error||"Transaction approval failed.");return d;};
+ if(method==="pin"){const pin=await requestPin();if(pin===null)throw new Error("Transaction approval cancelled.");const d=await call({action:"authorize_with_pin",intent,pin});if(!d.authorization_token)throw new Error("PIN approval failed.");return d.authorization_token;}
+ const fromB64=s=>{s=String(s||"").replace(/-/g,"+").replace(/_/g,"/");const v=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(v,c=>c.charCodeAt(0));};
+ const toB64=b=>{const v=new Uint8Array(b);let s="";for(const x of v)s+=String.fromCharCode(x);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
+ const begin=await call({action:"start_transaction",intent});
+ const opts={...begin.options,challenge:fromB64(begin.options.challenge),allowCredentials:(begin.options.allowCredentials||[]).map(x=>({...x,id:fromB64(x.id)}))};
+ const credential=await navigator.credentials.get({publicKey:opts});if(!credential)throw new Error("Fingerprint approval cancelled.");
+ const response={id:credential.id,rawId:toB64(credential.rawId),type:credential.type,authenticatorAttachment:credential.authenticatorAttachment,
+  clientExtensionResults:credential.getClientExtensionResults(),response:{clientDataJSON:toB64(credential.response.clientDataJSON),
+  authenticatorData:toB64(credential.response.authenticatorData),signature:toB64(credential.response.signature),
+  userHandle:credential.response.userHandle?toB64(credential.response.userHandle):null}};
+ const done=await call({action:"finish_transaction",response});if(!done.authorization_token)throw new Error("Fingerprint approval did not complete.");return done.authorization_token;
+}
+form.addEventListener("submit",async event=>{
+ event.preventDefault();errorBox.textContent="";resetPreview();
+ const id=sender.value.trim(),phones=numbers(),body=message.value.trim();
+ if(!id||id.length>11||/^\d+$/.test(id)||!/^[A-Za-z0-9 ]+$/.test(id)){errorBox.textContent="Enter your approved Sender ID (1–11 characters; not digits only).";sender.focus();return;}
+ if(!phones.length||phones.length>500){errorBox.textContent="Enter between 1 and 500 recipient numbers.";recipients.focus();return;}
+ if(phones.some(n=>!/^0[789][01]\d{8}$/.test(n))){errorBox.textContent="Every recipient must be a valid 11-digit Nigerian mobile number.";recipients.focus();return;}
+ if(new Set(phones).size!==phones.length){errorBox.textContent="Duplicate phone numbers found. Remove duplicates.";recipients.focus();return;}
+ if(!body||body.length>5000){errorBox.textContent="Enter a message (maximum 5,000 characters).";message.focus();return;}
+ if(!$("consent").checked){errorBox.textContent="Confirm that recipients consented and this is an OTP or transactional message.";return;}
+ const button=form.querySelector('button[type="submit"]');button.disabled=true;button.textContent="Checking price…";
+ try{
+  const user=await signedIn(),token=await user.getIdToken(true);
+  const {response,result}=await apiCall(token,{action:"bulk_sms_quote",customer_data:{sender_id:id,phones,message:body}});
+  if(!response.ok||!result.success)throw new Error(result.error||"Campaign price could not be checked.");
+  latestCampaign={sender_id:id,phones,message:body};latestQuote=result;requestKey=crypto.randomUUID();
+  $("pEncoding").textContent=result.encoding;$("pPagesEach").textContent=result.pages_per_recipient;
+  $("pTotalPages").textContent=result.total_pages;$("pRecipients").textContent=result.recipients;$("pSender").textContent=result.sender_id;
+  $("pSupplierCost").textContent=money(result.supplier_cost);$("pCustomerCharge").textContent=money(result.customer_charge);
+  $("pGrossProfit").textContent=money(result.gross_profit);
+  $("priceNotice").textContent="PRICE REVIEW: Supplier estimate "+money(result.supplier_cost)+"; your wallet charge "+money(result.customer_charge)+"; AILAT gross margin "+money(result.gross_profit)+". The actual supplier debit is checked after the API response.";
+  preview.style.display="block";sendActions.hidden=false;
+  showSend("info","Review the recipient count and total. Nothing has been sent or charged yet. Choose fingerprint or Transaction PIN to continue.");
+ }catch(error){errorBox.textContent=error.message||"Campaign validation failed."}
+ finally{button.disabled=false;button.textContent="Review Campaign";}
+});
+async function sendCampaign(method){
+ if(busy||submissionUncertain||!latestCampaign||!latestQuote)return;
+ if(!$("consent").checked){showSend("error","Please confirm recipient consent and transactional/OTP use.");return;}
+ busy=true;$("fingerprintBtn").disabled=true;$("pinBtn").disabled=true;
+ let dispatchAttempted=false;
+ try{
+  const user=await signedIn(),firebaseToken=await user.getIdToken(true);
+  const details={sender_id:latestCampaign.sender_id,phones:latestCampaign.phones,message:latestCampaign.message,
+   total_pages:Number(latestQuote.total_pages),customer_charge:Number(latestQuote.customer_charge)};
+  const intent={service_key:"bulk_sms",idempotency_key:requestKey,details};
+  showSend("info","Approve the exact campaign and "+money(latestQuote.customer_charge)+" wallet charge…");
+  const authorizationToken=await approveTransaction(firebaseToken,intent,method);
+  showSend("info","Approval received. Submitting the campaign securely…");
+  dispatchAttempted=true;
+  const {response,result}=await apiCall(firebaseToken,{action:"bulk_sms_send",service_key:"bulk_sms",idempotency_key:requestKey,
+   authorization_token:authorizationToken,customer_data:latestCampaign});
+  if(result.order_request){
+   const ref="Reference: "+result.order_request.reference+". ";
+   if(result.fulfillment_status==="success"&&result.payment_status==="charged"){
+    showSend("success",ref+"BilalSadaSub confirmed the SMS campaign was sent to "+result.recipients+" recipients. Wallet charged "+money(result.charged_amount)+".");
+    sendActions.hidden=true;submissionUncertain=true;return;
+   }
+   if(result.payment_status==="refunded"){
+    showSend("error",ref+"Supplier confirmed failure and the wallet refund was processed. You may review and submit a new attempt.");
+    requestKey=crypto.randomUUID();return;
+   }
+   if(result.payment_status==="not_charged"){
+    showSend("error",ref+(result.error||"Wallet was not charged; no SMS was sent.")+" Check your wallet and try again.");
+    requestKey=crypto.randomUUID();return;
+   }
+   if(result.payment_status==="charged"||response.status===202){
+    showSend("info",ref+"Payment is reserved and supplier status is pending. Do not submit again. Check Transaction History.");
+    sendActions.hidden=true;submissionUncertain=true;return;
+   }
+  }
+  if(!response.ok||!result.success)throw new Error(result.error||"Campaign submission failed.");
+  showSend("info","Campaign request recorded. Check Transaction History for its status.");sendActions.hidden=true;submissionUncertain=true;
+ }catch(error){
+  if(dispatchAttempted){showSend("info","The connection ended after submission began. The SMS may have been sent or payment reserved. Do not retry. Check Transaction History or contact support.");sendActions.hidden=true;submissionUncertain=true;}
+  else{showSend("error",error.message||"Transaction approval failed.");}
+ }finally{busy=false;if(!submissionUncertain){$("fingerprintBtn").disabled=false;$("pinBtn").disabled=false;}}
+}
+$("fingerprintBtn").addEventListener("click",()=>sendCampaign("fingerprint"));
+$("pinBtn").addEventListener("click",()=>sendCampaign("pin"));
+form.addEventListener("reset",()=>{resetPreview();setTimeout(updateStats,0);});
+updateStats();
 onAuthStateChanged(auth,async user=>{
- if(!user){location.replace("login.html");return}
- try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using this service.");location.replace("login.html")}}
- catch(error){console.error("Service access check failed:",error);location.replace("login.html")}
+ if(!user){location.replace("login.html");return;}
+ try{await user.reload();if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using Bulk SMS.");location.replace("login.html");}}
+ catch(error){console.error("Bulk SMS access check failed:",error);location.replace("login.html");}
 });
 </script>
 </body></html>

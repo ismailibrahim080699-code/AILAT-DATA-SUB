@@ -107,6 +107,13 @@ quoteBtn.addEventListener("click",async()=>{
   pinTest.textContent="Test Transaction PIN (No Purchase)";
   pinTest.addEventListener("click",testTransactionPin);
   quoteResult.append(document.createElement("br"),pinTest);
+  if(window.PublicKeyCredential&&navigator.credentials?.get){
+   const bioTest=document.createElement("button");
+   bioTest.type="button";bioTest.className="primary";bioTest.style.background="#ede9fe";bioTest.style.color="#4c1d95";
+   bioTest.textContent="Test Fingerprint / Passkey (No Purchase)";
+   bioTest.addEventListener("click",testFingerprintPasskey);
+   quoteResult.append(document.createElement("br"),bioTest);
+  }
   if(purchaseEnabled){
    const action=document.createElement("button");
    action.type="button";action.className="primary";action.textContent="Approve & Buy Cards";
@@ -201,6 +208,46 @@ async function testTransactionPin(){
   quoteResult.append(failure);
  }finally{
   if(testButton&&testButton.isConnected){testButton.disabled=false;testButton.textContent="Test Transaction PIN (No Purchase)";}
+ }
+}
+async function testFingerprintPasskey(){
+ const button=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Test Fingerprint / Passkey (No Purchase)");
+ if(button){button.disabled=true;button.textContent="Waiting for fingerprint...";}
+ try{
+  const {auth}=await import("./firebase.js");
+  const user=auth.currentUser;if(!user)throw new Error("Please sign in again.");
+  await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
+  const token=await user.getIdToken(true);
+  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+  const call=async body=>{
+   const response=await fetch(endpoint,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});
+   const result=await response.json().catch(()=>({}));
+   if(!response.ok||!result.success)throw new Error(result.error||"Fingerprint test failed.");
+   return result;
+  };
+  const begin=await call({action:"start_transaction_test"});
+  const options={...begin.options,challenge:b64urlToBytes(begin.options.challenge),
+   allowCredentials:(begin.options.allowCredentials||[]).map(item=>({...item,id:b64urlToBytes(item.id)}))};
+  const credential=await navigator.credentials.get({publicKey:options});
+  if(!credential)throw new Error("Fingerprint/passkey test was cancelled.");
+  const response={id:credential.id,rawId:bytesToB64url(credential.rawId),type:credential.type,
+   authenticatorAttachment:credential.authenticatorAttachment,
+   clientExtensionResults:credential.getClientExtensionResults(),
+   response:{clientDataJSON:bytesToB64url(credential.response.clientDataJSON),
+    authenticatorData:bytesToB64url(credential.response.authenticatorData),
+    signature:bytesToB64url(credential.response.signature),
+    userHandle:credential.response.userHandle?bytesToB64url(credential.response.userHandle):null}};
+  const finished=await call({action:"finish_transaction_test",response});
+  if(!finished.test_only||!finished.verified)throw new Error("Fingerprint test did not return a valid test-only result.");
+  const success=document.createElement("p");
+  success.style.cssText="color:#167647;font-weight:700;font-size:13px";
+  success.textContent="✓ Fingerprint/passkey verified successfully. No authorization was issued, no order was placed, and no wallet money was deducted.";
+  quoteResult.append(success);
+ }catch(error){
+  const failure=document.createElement("p");failure.style.cssText="color:#b42318;font-size:13px";
+  failure.textContent=error.message||"Fingerprint test failed.";quoteResult.append(failure);
+ }finally{
+  if(button&&button.isConnected){button.disabled=false;button.textContent="Test Fingerprint / Passkey (No Purchase)";}
  }
 }
 async function transactionAuthorization(user,token,intent,method){

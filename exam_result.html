@@ -16,7 +16,7 @@
 <main class="content">
 <section class="card">
 <div class="eyebrow">AVAILABLE EXAM SERVICES</div><h3>Choose your examination</h3><p class="sub">Live prices from BilalSadaSub. PIN purchase is temporarily disabled.</p>
-<div class="plans" id="plans"><p class="sub">Loading verified exam prices…</p></div>
+<div class="plans" id="plans"><p class="sub">Loading live exam prices…</p></div><p class="note" id="catalogueUpdated" aria-live="polite">Prices refresh automatically every 60 seconds while this page is open.</p>
 <label for="phone">Phone Number (optional)</label><input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit phone number">
 <div class="summary">
 <div class="sumrow"><span>Examination</span><strong id="selectedName">Select an exam</strong></div>
@@ -60,8 +60,8 @@ function updateSummary(){
  $("supplierPrice").textContent=selected?money(selected.supplier_amount):"—";
  $("markupPrice").textContent=selected?money(selected.markup_amount):"—";
  $("totalPrice").textContent=selected?money(selected.selling_amount):"—";
- $("fingerprintBtn").disabled=!selected||busy||orderSubmitted;
- $("pinBtn").disabled=!selected||busy||orderSubmitted;
+ $("fingerprintBtn").disabled=true;
+ $("pinBtn").disabled=true;
 }
 async function requestPin(){
  return new Promise(resolve=>{
@@ -120,15 +120,39 @@ async function process(method){
 }
 $("fingerprintBtn").addEventListener("click",()=>process("fingerprint"));
 $("pinBtn").addEventListener("click",()=>process("pin"));
-async function loadPlans(){
+let catalogueLoading=false;
+let lastCatalogueSuccess=0;
+async function loadPlans(silent=false){
+ if(catalogueLoading||document.hidden)return;
+ catalogueLoading=true;
+ const refreshLabel=$("catalogueUpdated");
+ if(!silent)setStatus("Loading the latest prices from BilalSadaSub…");
  try{
-  const r=await fetch(API+"?action=exam_plans",{headers:{"apikey":PUBLISHABLE_KEY}});
+  const r=await fetch(API+"?action=exam_plans",{headers:{"apikey":PUBLISHABLE_KEY},cache:"no-store"});
   const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||"Exam plans are unavailable.");
-  plans=Array.isArray(d.plans)?d.plans:[];
-  if(!plans.length)throw new Error("No verified Exam PIN plans are currently available.");
-  renderPlans();setStatus("Live BilalSadaSub exam prices loaded. Purchase is disabled; no payment can be made.");
- }catch(e){$("plans").textContent=e.message;setStatus(e.message,"#b42318")}
+  const incoming=Array.isArray(d.plans)?d.plans:[];
+  if(!incoming.length)throw new Error("No valid live Exam PIN plans were returned.");
+  const previous=selected?.exam_id;
+  plans=incoming;
+  selected=plans.find(p=>Number(p.exam_id)===Number(previous))||null;
+  renderPlans();updateSummary();
+  lastCatalogueSuccess=Date.now();
+  const stamp=new Date(lastCatalogueSuccess).toLocaleTimeString("en-NG",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  refreshLabel.textContent="Live prices · Last updated "+stamp+" · Auto-refresh every 60 seconds";
+  if(!silent||!selected)setStatus("Latest BilalSadaSub exam prices loaded. Purchase remains disabled; no payment can be made.");
+  else setStatus("Exam prices updated automatically. Your selected exam and new price are shown.");
+ }catch(e){
+  if(!plans.length)$("plans").textContent=e.message;
+  refreshLabel.textContent=lastCatalogueSuccess
+    ?"Could not refresh just now. Last successful update: "+new Date(lastCatalogueSuccess).toLocaleTimeString("en-NG")+". Retrying automatically."
+    :"Live catalogue unavailable. Retrying automatically.";
+  setStatus(e.message+" No payment was made.", "#b42318");
+ }finally{catalogueLoading=false}
 }
+document.addEventListener("visibilitychange",()=>{
+ if(!document.hidden)loadPlans(true);
+});
+window.setInterval(()=>loadPlans(true),60000);
 loadPlans();
 </script>
 </body>

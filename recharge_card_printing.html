@@ -95,7 +95,7 @@ quoteBtn.addEventListener("click",async()=>{
   const user=auth.currentUser;
   if(!user)throw new Error("Please sign in again.");
   const token=await user.getIdToken();
-  const response=await fetch(API_URL,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({action:"recharge_card_quote",plan_id:selectedPlan.plan_id,quantity,idempotency_key:crypto.randomUUID()})});
+  const response=await fetch(API_URL,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({action:"recharge_card_quote",plan_id:selectedPlan.plan_id,quantity,idempotency_key:(window.__ailatRechargeQuoteKey||(window.__ailatRechargeQuoteKey=crypto.randomUUID()))})});
   const result=await response.json();
   if(!response.ok||!result.success||!result.quote)throw new Error(result.error||"Could not create quote.");
   const q=result.quote;
@@ -200,9 +200,11 @@ async function purchaseQuote(q){
   if(!user)throw new Error("Please sign in again.");
   await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
   const token=await user.getIdToken(true);
-  const idempotencyKey=window.__ailatRechargeIdempotency||(window.__ailatRechargeIdempotency=crypto.randomUUID());
+  const idempotencyKey=q.idempotency_key;
+  if(!idempotencyKey)throw new Error("Quote authorization details are incomplete. Create a new quote.");
   const details={quote_reference:q.reference,plan_id:Number(q.plan_id),quantity:Number(q.quantity),
    customer_total:Number(q.customer_total),provider_expected_total:Number(q.provider_expected_total)};
+  if(!Number.isFinite(details.provider_expected_total))throw new Error("Supplier quote details are missing. Create a new quote.");
   const intent={service_key:"recharge_card",idempotency_key:idempotencyKey,
    quote_reference:q.reference,plan_id:details.plan_id,quantity:details.quantity,
    customer_total:details.customer_total,provider_expected_total:details.provider_expected_total,details};

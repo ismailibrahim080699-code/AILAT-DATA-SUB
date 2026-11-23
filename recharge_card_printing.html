@@ -226,7 +226,23 @@ async function purchaseQuote(q){
    body:JSON.stringify({action:"recharge_card_purchase",quote_reference:q.reference,authorization_token:authToken})});
   const result=await response.json().catch(()=>({}));
   if(result.fulfillment_status==="success"){
-   quoteResult.textContent="Success! "+result.quantity+" "+result.network+" recharge card(s) generated. Reference: "+result.order_reference+".";
+   quoteResult.textContent="Order successful. Retrieving your securely stored PINs...";
+   const pinsResponse=await fetch(API_URL+"?action=recharge_card_pins&reference="+encodeURIComponent(result.order_reference),{
+    method:"GET",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Accept":"application/json"},cache:"no-store"
+   });
+   const pinsResult=await pinsResponse.json().catch(()=>({}));
+   if(!pinsResponse.ok||!pinsResult.success||!Array.isArray(pinsResult.cards)){
+    quoteResult.textContent="Order completed, but PIN display needs attention. Reference: "+result.order_reference+". "+(pinsResult.error||"Please contact support; do not purchase again.");
+   }else{
+    const lines=["SUCCESS — "+pinsResult.network+" ₦"+pinsResult.face_value+" Recharge Cards","Order: "+pinsResult.order_reference,""];
+    for(const card of pinsResult.cards){
+     lines.push("Card "+card.pin_index+": "+card.pin);
+     lines.push("Load: "+card.load_code);
+     lines.push("");
+    }
+    lines.push("Keep these PINs private. Order reference: "+pinsResult.order_reference);
+    quoteResult.textContent=lines.join("\\n");
+   }
   }else if(response.status===202||result.fulfillment_status==="processing"||result.fulfillment_status==="pending_review"){
    quoteResult.textContent="Your payment/order is being checked. Reference: "+(result.order_reference||"pending")+". Do not submit again. "+(result.notice||result.error||"");
   }else if(result.code==="RECHARGE_CARD_LIVE_DISABLED"||response.status===503){

@@ -63,7 +63,7 @@ function renderPlans(){
  });
 }
 function isJambPlan(){return selected?.mode==="profile_code"}
-function getJambType(plan){const n=String(plan?.exam_name||"").toUpperCase();return n.includes("MOCK")?"MOCK":(n.includes("DIRECT ENTRY")||/\\bDE\\b/.test(n))?"DE":"UTME"}
+function getJambType(plan){const n=String(plan?.exam_name||"").toUpperCase();return n.includes("MOCK")?"MOCK":(n.includes("DIRECT ENTRY")||/\bDE\b/.test(n))?"DE":"UTME"}
 function currentQuantity(){return isJambPlan()?1:Math.max(1,Math.min(10,Number($("quantity").value||1)))}
 function updateSummary(){
  const isJamb=isJambPlan(),quantity=currentQuantity();
@@ -94,7 +94,7 @@ async function requestPin(){
 async function verifyJambProfile(){
  if(!isJambPlan()||busy)return;
  const profile_id=$("jambProfile").value.trim();
- if(!/^\\d{10}$/.test(profile_id)){setStatus("Enter the 10-digit JAMB profile code.", "#b42318");return}
+ if(!/^\d{10}$/.test(profile_id)){setStatus("Enter the 10-digit JAMB profile code.", "#b42318");return}
  busy=true;updateSummary();$("jambCandidate").textContent="Verifying profile with BilalSadaSub…";
  try{
   const user=await getUser();await user.reload();if(!user.emailVerified)throw new Error("Please verify your email before continuing.");
@@ -124,7 +124,7 @@ async function authorize(token,intent,method){
 async function process(method){
  if(!selected||busy||orderSubmitted)return;
  const phone=$("phone").value.trim(),isJamb=isJambPlan(),quantity=currentQuantity();
- if(phone&&!/^0[789][01]\\d{8}$/.test(phone)){setStatus("Enter a valid 11-digit Nigerian phone number.","#b42318");$("phone").focus();return}
+ if(phone&&!/^0[789][01]\d{8}$/.test(phone)){setStatus("Enter a valid 11-digit Nigerian phone number.","#b42318");$("phone").focus();return}
  const profileCode=isJamb?$("jambProfile").value.trim():"";
  if(isJamb&&(!jambVerification||jambVerification.profile_id!==profileCode||jambVerification.exam_id!==selected.exam_id||!$("jambConfirm").checked)){
   setStatus("Verify the JAMB profile and confirm the candidate name before payment.","#b42318");return;

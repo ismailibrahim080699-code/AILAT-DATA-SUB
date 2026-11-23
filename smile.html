@@ -121,5 +121,51 @@ function setAccountType(type){
 phoneType.addEventListener("click",()=>setAccountType("phone"));
 accountType.addEventListener("click",()=>setAccountType("account"));
 </script>
+
+<script type="module">
+import { auth, protectPage } from "./firebase.js";
+
+const SMILE_API = "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-smile-data";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+
+async function loadSmileSetup() {
+  const status = document.querySelector(".status");
+  const statusDot = document.querySelector(".status-dot");
+  const notice = document.querySelector(".notice");
+  try {
+    const allowed = await protectPage();
+    if (!allowed) return;
+    const user = auth.currentUser;
+    if (!user) throw new Error("Login session unavailable");
+    const token = await user.getIdToken(true);
+    const response = await fetch(SMILE_API + "?action=plans", {
+      method: "GET",
+      headers: {
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + token
+      },
+      cache: "no-store"
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success || !Array.isArray(result.plans) || !result.plans.length) {
+      throw new Error("Smile setup could not be loaded");
+    }
+    const plan = result.plans[0];
+    document.querySelector(".plan-name").textContent = plan.bundle + " Data";
+    document.querySelector(".plan-validity").textContent = "Valid for " + plan.validity;
+    document.querySelector(".price-line strong").textContent = "₦" + Number(plan.supplier_cost).toFixed(2);
+    document.querySelector(".price-line.sale strong").textContent = "₦" + Number(plan.selling_price).toFixed(2);
+    document.querySelector(".profit strong").textContent = "₦" + Number(plan.gross_difference).toFixed(2);
+    notice.innerHTML = "<strong>Integration preparation:</strong> Smile plan details are now being loaded securely from AILAT DATA's backend. Supplier Plan ID 25 is still only a reference; SMEAPI has not yet confirmed that it is the required BundleTypeCode. No payment or supplier request can be made until the API response and transaction-status flow are verified.";
+    status.innerHTML = '<span class="status-dot"></span> Secure backend connected · purchasing remains disabled';
+    statusDot.style.background = "#16a34a";
+  } catch (error) {
+    console.warn("Smile setup load failed:", error);
+    status.innerHTML = '<span class="status-dot"></span> Could not connect to Smile setup backend · please refresh';
+    statusDot.style.background = "#dc2626";
+  }
+}
+loadSmileSetup();
+</script>
 </body>
 </html>

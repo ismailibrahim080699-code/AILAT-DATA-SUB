@@ -50,7 +50,7 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
 const API_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-let plans=[],selectedNetwork=null,selectedPlan=null,authReady=false;
+let plans=[],selectedNetwork=null,selectedPlan=null,authReady=false,activeQuote=null;
 const planList=document.getElementById("planList"),message=document.getElementById("catalogMessage");
 const quoteBtn=document.getElementById("quoteBtn"),quantityInput=document.getElementById("quantity"),quoteResult=document.getElementById("quoteResult");
 function money(n){return "₦"+Number(n).toLocaleString("en-NG");}
@@ -99,8 +99,13 @@ quoteBtn.addEventListener("click",async()=>{
   const result=await response.json();
   if(!response.ok||!result.success||!result.quote)throw new Error(result.error||"Could not create quote.");
   const q=result.quote;
-  quoteResult.textContent="Quote created: "+q.reference+" | "+q.network+" "+money(q.face_value)+" × "+q.quantity+" | Total: "+money(q.customer_total)+". No wallet money has been deducted. Final purchase is not enabled yet.";
+  activeQuote=q;
+  quoteResult.textContent="Quote created: "+q.reference+" | "+q.network+" "+money(q.face_value)+" × "+q.quantity+" | Total: "+money(q.customer_total)+". No wallet money has been deducted yet.";
   quoteResult.classList.add("show");
+  const action=document.createElement("button");
+  action.type="button";action.className="primary";action.textContent="Approve & Buy Cards";
+  action.addEventListener("click",()=>purchaseQuote(q));
+  quoteResult.append(document.createElement("br"),action);
  }catch(error){quoteResult.textContent=error.message||"Quote request failed.";quoteResult.classList.add("show");}
  finally{updateQuoteButton();}
 });
@@ -114,7 +119,117 @@ async function loadCatalogue(){
   message.textContent="Catalogue updated. Select a denomination to create a secure quote.";
  }catch(error){message.textContent=error.message||"Failed to load catalogue.";}
 }
-loadCatalogue();</script>
+loadCatalogue();
+function canonical(value){
+ if(Array.isArray(value))return "["+value.map(canonical).join(",")+"]";
+ if(value&&typeof value==="object")return "{"+Object.keys(value).sort().map(k=>JSON.stringify(k)+":"+canonical(value[k])).join(",")+"}";
+ return JSON.stringify(value);
+}
+function b64urlToBytes(value){
+ const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");
+ const raw=atob(s+"=".repeat((4-s.length%4)%4));
+ return Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
+function bytesToB64url(buffer){
+ const bytes=new Uint8Array(buffer);let raw="";
+ for(const b of bytes)raw+=String.fromCharCode(b);
+ return btoa(raw).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
+}
+function showPinDialog(){
+ return new Promise(resolve=>{
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;inset:0;background:#160b2acc;z-index:9999;display:grid;place-items:center;padding:20px";
+  const panel=document.createElement("div");
+  panel.style.cssText="background:white;border-radius:18px;padding:22px;width:min(100%,360px);color:#24134d";
+  const heading=document.createElement("h3");heading.textContent="Enter Transaction PIN";
+  const note=document.createElement("p");note.textContent="Enter your 4-digit PIN to approve this recharge-card purchase.";
+  const input=document.createElement("input");input.type="password";input.inputMode="numeric";input.maxLength=4;input.autocomplete="one-time-code";
+  input.style.cssText="width:100%;padding:14px;border:1px solid #ddd3ef;border-radius:10px;font-size:22px;text-align:center;letter-spacing:12px";
+  const error=document.createElement("p");error.style.cssText="color:#b42318;font-size:12px;min-height:18px";
+  const actions=document.createElement("div");actions.style.cssText="display:flex;gap:10px;margin-top:12px";
+  const cancel=document.createElement("button");cancel.type="button";cancel.textContent="Cancel";cancel.className="primary";cancel.style.background="#eee8f7";cancel.style.color="#4c1d95";
+  const confirm=document.createElement("button");confirm.type="button";confirm.textContent="Approve";confirm.className="primary";
+  const finish=value=>{overlay.remove();resolve(value);};
+  cancel.onclick=()=>finish(null);
+  confirm.onclick=()=>{if(!/^\d{4}$/.test(input.value)){error.textContent="Enter all 4 digits.";return;}finish(input.value);};
+  input.addEventListener("keydown",e=>{if(e.key==="Enter")confirm.click();if(e.key==="Escape")cancel.click();});
+  input.addEventListener("input",()=>{input.value=input.value.replace(/\D/g,"").slice(0,4);});
+  actions.append(cancel,confirm);panel.append(heading,note,input,error,actions);overlay.append(panel);document.body.append(overlay);input.focus();
+ });
+}
+async function transactionAuthorization(user,token,intent,method){
+ const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+ const call=async body=>{
+  const response=await fetch(endpoint,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.success)throw new Error(result.error||"Transaction approval failed.");
+  return result;
+ };
+ if(method==="pin"){
+  const pin=await showPinDialog();
+  if(pin===null)throw new Error("Transaction approval cancelled.");
+  const result=await call({action:"authorize_with_pin",intent,pin});
+  if(!result.authorization_token)throw new Error("PIN approval did not return an authorization token.");
+  return result.authorization_token;
+ }
+ if(!window.PublicKeyCredential||!navigator.credentials?.get)throw new Error("Fingerprint/passkey is not supported on this device. Choose Transaction PIN.");
+ const begin=await call({action:"start_transaction",intent});
+ const options={...begin.options,challenge:b64urlToBytes(begin.options.challenge),
+  allowCredentials:(begin.options.allowCredentials||[]).map(item=>({...item,id:b64urlToBytes(item.id)}))};
+ const credential=await navigator.credentials.get({publicKey:options});
+ if(!credential)throw new Error("Fingerprint approval was cancelled.");
+ const response={id:credential.id,rawId:bytesToB64url(credential.rawId),type:credential.type,
+  authenticatorAttachment:credential.authenticatorAttachment,
+  clientExtensionResults:credential.getClientExtensionResults(),
+  response:{clientDataJSON:bytesToB64url(credential.response.clientDataJSON),
+   authenticatorData:bytesToB64url(credential.response.authenticatorData),
+   signature:bytesToB64url(credential.response.signature),
+   userHandle:credential.response.userHandle?bytesToB64url(credential.response.userHandle):null}};
+ const finished=await call({action:"finish_transaction",response});
+ if(!finished.authorization_token)throw new Error("Fingerprint approval did not return an authorization token.");
+ return finished.authorization_token;
+}
+async function purchaseQuote(q){
+ if(!authReady||!q||!q.reference)return;
+ const method=window.confirm("Press OK to approve with fingerprint/device unlock. Press Cancel to use Transaction PIN.")?"fingerprint":"pin";
+ const actionButton=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Approve & Buy Cards");
+ if(actionButton){actionButton.disabled=true;actionButton.textContent="Waiting for approval...";}
+ try{
+  const {auth}=await import("./firebase.js");
+  const user=auth.currentUser;
+  if(!user)throw new Error("Please sign in again.");
+  await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
+  const token=await user.getIdToken(true);
+  const idempotencyKey=window.__ailatRechargeIdempotency||(window.__ailatRechargeIdempotency=crypto.randomUUID());
+  const details={quote_reference:q.reference,plan_id:Number(q.plan_id),quantity:Number(q.quantity),
+   customer_total:Number(q.customer_total),provider_expected_total:Number(q.provider_expected_total)};
+  const intent={service_key:"recharge_card",idempotency_key:idempotencyKey,
+   quote_reference:q.reference,plan_id:details.plan_id,quantity:details.quantity,
+   customer_total:details.customer_total,provider_expected_total:details.provider_expected_total,details};
+  const authToken=await transactionAuthorization(user,token,intent,method);
+  quoteResult.textContent="Approval received. Submitting your recharge-card order...";
+  const response=await fetch(API_URL,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,
+   "Content-Type":"application/json","Accept":"application/json"},
+   body:JSON.stringify({action:"recharge_card_purchase",quote_reference:q.reference,authorization_token:authToken})});
+  const result=await response.json().catch(()=>({}));
+  if(result.fulfillment_status==="success"){
+   quoteResult.textContent="Success! "+result.quantity+" "+result.network+" recharge card(s) generated. Reference: "+result.order_reference+".";
+  }else if(response.status===202||result.fulfillment_status==="processing"||result.fulfillment_status==="pending_review"){
+   quoteResult.textContent="Your payment/order is being checked. Reference: "+(result.order_reference||"pending")+". Do not submit again. "+(result.notice||result.error||"");
+  }else if(result.code==="RECHARGE_CARD_LIVE_DISABLED"||response.status===503){
+   quoteResult.textContent=result.error||"Recharge-card purchase is not enabled yet. No wallet money was deducted.";
+  }else if(!response.ok||!result.success){
+   quoteResult.textContent=(result.error||"Purchase could not be completed.")+" If approval was not charged, you can try again after checking your wallet.";
+  }else{
+   quoteResult.textContent=result.notice||"Order status: "+(result.fulfillment_status||"processing")+". Reference: "+(result.order_reference||"pending");
+  }
+ }catch(error){
+  quoteResult.textContent=error.message||"Transaction could not be completed.";
+ }finally{
+  if(actionButton&&actionButton.isConnected){actionButton.disabled=false;actionButton.textContent="Approve & Buy Cards";}
+ }
+}
+</script>
 <script type="module">
 import { protectPage } from "./firebase.js";
 const allowed = await protectPage();

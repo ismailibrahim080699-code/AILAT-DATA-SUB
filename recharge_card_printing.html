@@ -50,14 +50,14 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
 const API_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-let plans=[],selectedNetwork=null,selectedPlan=null;
+let plans=[],selectedNetwork=null,selectedPlan=null,authReady=false;
 const planList=document.getElementById("planList"),message=document.getElementById("catalogMessage");
 const quoteBtn=document.getElementById("quoteBtn"),quantityInput=document.getElementById("quantity"),quoteResult=document.getElementById("quoteResult");
 function money(n){return "₦"+Number(n).toLocaleString("en-NG");}
 function updateQuoteButton(){
  const qty=Number(quantityInput.value);
- quoteBtn.disabled=!(selectedPlan&&Number.isSafeInteger(qty)&&qty>=1&&qty<=100);
- quoteBtn.textContent=selectedPlan?"Create order quote":"Choose a denomination";
+ quoteBtn.disabled=!(authReady&&selectedPlan&&Number.isSafeInteger(qty)&&qty>=1&&qty<=100);
+ quoteBtn.textContent=!authReady?"Checking your secure login...":(selectedPlan?"Create order quote":"Choose a denomination");
 }
 function renderPlans(){
  selectedPlan=null;updateQuoteButton();quoteResult.classList.remove("show");
@@ -83,7 +83,9 @@ document.querySelectorAll(".network").forEach(btn=>btn.addEventListener("click",
  renderPlans();
 }));
 quantityInput.addEventListener("input",updateQuoteButton);
+document.addEventListener("ailat-auth-ready",()=>{authReady=true;updateQuoteButton();});
 quoteBtn.addEventListener("click",async()=>{
+ if(!authReady){quoteResult.textContent="Please wait while we verify your login.";quoteResult.classList.add("show");return;}
  const quantity=Number(quantityInput.value);
  if(!selectedPlan||!Number.isSafeInteger(quantity)||quantity<1||quantity>100)return;
  quoteBtn.disabled=true;quoteBtn.textContent="Creating quote...";
@@ -113,4 +115,9 @@ async function loadCatalogue(){
  }catch(error){message.textContent=error.message||"Failed to load catalogue.";}
 }
 loadCatalogue();</script>
+<script type="module">
+import { protectPage } from "./firebase.js";
+const allowed = await protectPage();
+if (allowed) document.dispatchEvent(new Event("ailat-auth-ready"));
+</script>
 </body></html>

@@ -97,8 +97,10 @@ footer{text-align:center;color:#958ba5;font-size:10px;padding:18px}
   </div>
   <div class="notice"><strong>Important:</strong> Please confirm your Smile account details and selected bundle carefully. Purchase is temporarily unavailable while the service is being prepared.</div>
   <div class="status"><span class="status-dot"></span> Purchase activation is pending supplier API verification</div>
-  <button class="continue" type="button" disabled>Purchase Temporarily Disabled</button>
-  <p class="helper">Your wallet will not be charged from this page until the complete supplier response and transaction-status flow have been verified.</p>
+  <button class="continue" type="button" id="testAccountButton" style="background:#5b21b6;color:#fff;cursor:pointer">Test Account Details</button>
+  <p class="helper" id="testResult" role="status" aria-live="polite">This test checks only the details entered on this page. It will not contact SMEAPI, send data, or charge your wallet.</p>
+  <button class="continue" type="button" disabled style="margin-top:10px">Purchase Temporarily Disabled</button>
+  <p class="helper">Real purchases remain disabled until SMEAPI confirms the BundleTypeCode, response format, and transaction-status process.</p>
  </section>
 </main>
 <footer>AILAT DATA © 2026 · All Rights Reserved</footer>
@@ -148,6 +150,23 @@ function validateSmileDetails(){
  }
  return {actype:type==="phone"?"PhoneNumber":"AccountNumber",PhoneNumber:value};
 }
+document.getElementById("testAccountButton").addEventListener("click",()=>{
+ const result=document.getElementById("testResult");
+ const details=validateSmileDetails();
+ if(!details){
+  result.textContent="Please select an account type and enter valid account details before testing.";
+  result.style.color="#b91c1c";
+  return;
+ }
+ if(!smileProductSelect.value){
+  smileProductSelect.focus();
+  result.textContent="Please select a Smile bundle before testing.";
+  result.style.color="#b91c1c";
+  return;
+ }
+ result.textContent="Account details passed the basic format check. No supplier request was sent and no wallet money was deducted. This does not confirm that the Smile account exists.";
+ result.style.color="#166534";
+});
 const smileProductSelect=document.getElementById("smileProductSelect");
 const selectedSmilePlan=document.getElementById("selectedSmilePlan");
 smileProductSelect.addEventListener("change",()=>{

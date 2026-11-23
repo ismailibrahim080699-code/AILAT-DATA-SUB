@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ha">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#4c1d95">
-<title>Buga Katin Caji | AILAT DATA</title>
+<title>Recharge Card Printing | AILAT DATA</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#24134d;font-family:Arial,Helvetica,sans-serif}
@@ -30,20 +30,20 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 </style>
 </head>
 <body>
-<header><a href="dashboard.html" aria-label="Komawa shafin farko">‹</a><strong>AILAT DATA</strong></header>
+<header><a href="dashboard.html" aria-label="Back to dashboard">‹</a><strong>AILAT DATA</strong></header>
 <main><section class="panel">
-<h1>Buga Katin Caji</h1>
-<p class="sub">Zaɓi kamfanin sadarwa domin ganin nau’o’in kati da farashinsu. Farashin sayarwa daidai yake da kuɗin da ke jikin kati.</p>
-<h2 class="section-title">1. Zaɓi Kamfanin Sadarwa</h2>
+<h1>Recharge Card Printing</h1>
+<p class="sub">Select a network to view available recharge card denominations and prices. Selling prices match the card face value.</p>
+<h2 class="section-title">1. Select Network</h2>
 <div class="networks" id="networkChoices">
-<button class="network" data-network="MTN" aria-pressed="false"><img class="network-logo" src="assets/network-logos/mtn.svg" alt="Alamar MTN"><span class="network-label">MTN</span></button>
-<button class="network" data-network="GLO" aria-pressed="false"><img class="network-logo" src="assets/network-logos/glo.svg" alt="Alamar Glo"><span class="network-label">GLO</span></button>
-<button class="network" data-network="AIRTEL" aria-pressed="false"><img class="network-logo" src="assets/network-logos/airtel.svg" alt="Alamar Airtel"><span class="network-label">AIRTEL</span></button>
+<button class="network" data-network="MTN" aria-pressed="false"><img class="network-logo" src="assets/network-logos/mtn.svg" alt="MTN logo"><span class="network-label">MTN</span></button>
+<button class="network" data-network="GLO" aria-pressed="false"><img class="network-logo" src="assets/network-logos/glo.svg" alt="Glo logo"><span class="network-label">GLO</span></button>
+<button class="network" data-network="AIRTEL" aria-pressed="false"><img class="network-logo" src="assets/network-logos/airtel.svg" alt="Airtel logo"><span class="network-label">AIRTEL</span></button>
 </div>
-<h2 class="section-title">2. Zaɓi Nau’in Kati</h2>
-<div class="plans" id="planList"><div class="empty">Da fatan za a taɓa MTN, GLO ko AIRTEL domin ganin nau’o’in kati.</div></div>
-<div class="notice"><strong>🔒 Har yanzu ba a kunna sayen kati ba.</strong><br>Wannan jerin farashi ne kawai. Za a kunna saye bayan an tabbatar da yadda mai kaya ke samar da PIN da kuma yadda za a cire kuɗi daga walat cikin aminci. A yanzu ba a karɓar kuɗi ko aika odar kati a wannan shafin.</div>
-<button class="refresh" id="refreshCatalogue" type="button">Sabunta farashin katuna</button>
+<h2 class="section-title">2. Select Denomination</h2>
+<div class="plans" id="planList"><div class="empty">Please select MTN, GLO, or Airtel to view available denominations.</div></div>
+<div class="notice"><strong>🔒 Recharge card purchases are not enabled yet.</strong><br>This page currently displays prices only. Purchases will be enabled after the supplier PIN-generation process and secure wallet deductions have been verified. No payment is collected and no order is submitted on this page yet.</div>
+<button class="refresh" id="refreshCatalogue" type="button">Refresh Prices</button>
 <p class="status" id="catalogMessage" aria-live="polite"></p>
 </section></main>
 <script>
@@ -52,15 +52,15 @@ const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let plans=[];let selectedNetwork=null;
 const planList=document.getElementById("planList"),message=document.getElementById("catalogMessage");
 function renderPlans(){
- if(!selectedNetwork){planList.innerHTML='<div class="empty">Da fatan za a taɓa network ɗaya domin ganin packages ɗinsa.</div>';return;}
+ if(!selectedNetwork){planList.innerHTML='<div class="empty">Please select a network to view its packages.</div>';return;}
  const items=plans.filter(p=>String(p.network).toUpperCase()===selectedNetwork);
  planList.innerHTML="";
- if(!items.length){planList.innerHTML='<div class="empty">Babu kati a wannan kamfanin sadarwa a yanzu.</div>';return;}
+ if(!items.length){planList.innerHTML='<div class="empty">No recharge cards are currently available for this network.</div>';return;}
  items.forEach(p=>{
   const card=document.createElement("div");card.className="plan";
   const left=document.createElement("div");
   const name=document.createElement("div");name.className="plan-name";name.textContent=selectedNetwork+" ₦"+Number(p.face_value).toLocaleString("en-NG");
-  const code=document.createElement("div");code.className="plan-code";code.textContent="Lambar saka kati: "+p.load_code+"  •  Duba ma’aunin kati: "+p.balance_code;
+  const code=document.createElement("div");code.className="plan-code";code.textContent="Load Code: "+p.load_code+"  •  Check Airtime Balance: "+p.balance_code;
   left.append(name,code);
   const price=document.createElement("div");price.className="price";price.textContent="₦"+Number(p.selling_price).toLocaleString("en-NG");
   card.append(left,price);planList.append(card);
@@ -73,16 +73,16 @@ document.querySelectorAll(".network").forEach(btn=>btn.addEventListener("click",
 }));
 async function loadCatalogue(){
  const button=document.getElementById("refreshCatalogue");
- button.disabled=true;button.textContent="Ana sabuntawa...";
- message.textContent="Ana ɗauko farashin katuna...";
+ button.disabled=true;button.textContent="Refreshing...";
+ message.textContent="Loading catalogue...";
  try{
   const response=await fetch(CATALOG_URL,{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
   const result=await response.json();
-  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Ba a samu farashin katuna ba.");
+  if(!response.ok||!result.success||!Array.isArray(result.plans))throw new Error(result.error||"Could not load recharge card prices.");
   plans=result.plans;renderPlans();
-  message.textContent="An sabunta farashin katuna. Za mu gyara farashi da hannu idan mai kaya ya canza shi.";
- }catch(error){message.textContent=error.message||"An kasa sabunta farashin katuna.";}
- finally{button.disabled=false;button.textContent="Sabunta jerin farashi";}
+  message.textContent="Catalogue updated. Prices are maintained manually and will be updated if the supplier changes them.";
+ }catch(error){message.textContent=error.message||"Failed to refresh catalogue.";}
+ finally{button.disabled=false;button.textContent="Refresh Prices";}
 }
 document.getElementById("refreshCatalogue").addEventListener("click",loadCatalogue);
 loadCatalogue();

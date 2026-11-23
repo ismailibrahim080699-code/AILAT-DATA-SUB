@@ -114,11 +114,40 @@ function setAccountType(type){
  accountLabel.hidden=false;
  accountNumber.disabled=false;
  accountNumber.placeholder=isPhone?"Enter Smile phone number":"Enter Smile account number";
- accountHelp.textContent=isPhone?"Enter the phone number linked to the Smile account.":"Enter the Smile account number exactly as registered.";
+ accountHelp.textContent=isPhone?"Enter the phone number linked to the Smile account. The supplier request will use actype: PhoneNumber.":"Enter the Smile account number exactly as registered. The supplier request will use actype: AccountNumber.";
  accountNumber.value="";
- accountNumber.inputMode="numeric";
+ accountNumber.inputMode=isPhone?"tel":"text";
+ accountNumber.autocomplete="off";
+ accountNumber.setAttribute("data-actype",isPhone?"PhoneNumber":"AccountNumber");
+ accountNumber.setCustomValidity("");
 }
 accountTypeSelect.addEventListener("change",()=>setAccountType(accountTypeSelect.value));
+accountNumber.addEventListener("input",()=>{
+ accountNumber.setCustomValidity("");
+ accountNumber.value=accountNumber.value.trim();
+});
+function validateSmileDetails(){
+ const type=accountTypeSelect.value;
+ const value=accountNumber.value.trim();
+ if(type!=="phone" && type!=="account"){
+  accountTypeSelect.focus();
+  return false;
+ }
+ if(!value){
+  accountNumber.setCustomValidity("Please enter your Smile account details.");
+  accountNumber.reportValidity();
+  return false;
+ }
+ if(type==="phone"){
+  const normalized=value.replace(/[\\s()-]/g,"");
+  if(!/^\\+?[0-9]{10,15}$/.test(normalized)){
+   accountNumber.setCustomValidity("Enter a valid Smile phone number.");
+   accountNumber.reportValidity();
+   return false;
+  }
+ }
+ return {actype:type==="phone"?"PhoneNumber":"AccountNumber",PhoneNumber:value};
+}
 const smileProductSelect=document.getElementById("smileProductSelect");
 const selectedSmilePlan=document.getElementById("selectedSmilePlan");
 smileProductSelect.addEventListener("change",()=>{
@@ -160,11 +189,11 @@ async function loadSmileSetup() {
     document.querySelector(".price-line.sale strong").textContent = "₦" + Number(plan.selling_price).toFixed(2);
     notice.innerHTML = "<strong>Important:</strong> Please confirm your Smile account details and selected bundle carefully. Purchase is temporarily unavailable while the service is being prepared.";
     status.innerHTML = '<span class="status-dot"></span> Secure backend connected · purchasing remains disabled';
-    statusDot.style.background = "#16a34a";
+    status.querySelector(".status-dot").style.background = "#16a34a";
   } catch (error) {
     console.warn("Smile setup load failed:", error);
     status.innerHTML = '<span class="status-dot"></span> Could not connect to Smile setup backend · please refresh';
-    statusDot.style.background = "#dc2626";
+    status.querySelector(".status-dot").style.background = "#dc2626";
   }
 }
 loadSmileSetup();

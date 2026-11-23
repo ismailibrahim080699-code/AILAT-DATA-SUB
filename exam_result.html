@@ -12,20 +12,27 @@
 </head>
 <body>
 <div class="wrap">
-<header><a href="dashboard.html">‹</a><h2>Exam PIN / Result Checker</h2><p>Live exam catalogue · Purchase temporarily disabled</p></header>
+<header><a href="dashboard.html">‹</a><h2>Exam PIN / Result Checker</h2><p>Live exam catalogue · Secure PIN delivery</p></header>
 <main class="content">
 <section class="card">
-<div class="eyebrow">AVAILABLE EXAM SERVICES</div><h3>Choose your examination</h3><p class="sub">Live prices from BilalSadaSub. PIN purchase is temporarily disabled.</p>
+<div class="eyebrow">AVAILABLE EXAM SERVICES</div><h3>Choose your examination</h3><p class="sub">Live prices from BilalSadaSub. Review your exam, quantity or verified JAMB candidate before approving payment.</p>
 <div class="plans" id="plans"><p class="sub">Loading live exam prices…</p></div><p class="note" id="catalogueUpdated" aria-live="polite">Prices refresh automatically every 60 seconds while this page is open.</p>
 <label for="phone">Phone Number (optional)</label><input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit phone number">
+<div id="quantityWrap"><label for="quantity">Number of PINs (1–10)</label><select id="quantity"><option value="1">1 PIN</option><option value="2">2 PINs</option><option value="3">3 PINs</option><option value="4">4 PINs</option><option value="5">5 PINs</option><option value="6">6 PINs</option><option value="7">7 PINs</option><option value="8">8 PINs</option><option value="9">9 PINs</option><option value="10">10 PINs</option></select></div>
+<div id="jambFields" class="hidden">
+<label for="jambProfile">JAMB Profile Code (10 digits)</label><input id="jambProfile" type="text" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit profile code">
+<button class="secondary" type="button" id="verifyJambBtn" style="width:100%;margin-top:10px">Verify JAMB Candidate</button>
+<p class="note" id="jambCandidate" aria-live="polite">Verify the profile before payment.</p>
+<label style="display:flex;align-items:center;gap:9px;font-weight:600"><input id="jambConfirm" type="checkbox" style="width:auto"> I confirm this candidate name is correct</label>
+</div>
 <div class="summary">
 <div class="sumrow"><span>Examination</span><strong id="selectedName">Select an exam</strong></div>
 <div class="sumrow hidden" id="supplierRow"><span>Supplier price (Admin only)</span><strong id="supplierPrice">—</strong></div>
 <div class="sumrow hidden" id="markupRow"><span>AILAT markup (Admin only)</span><strong id="markupPrice">—</strong></div>
 <div class="sumrow total"><span>Total to pay</span><strong id="totalPrice">—</strong></div>
 </div>
-<div class="actions"><button class="primary" id="fingerprintBtn" disabled>Purchase unavailable</button><button class="secondary" id="pinBtn" disabled>Purchase unavailable</button></div>
-<p class="note">Live catalogue preview only. No PIN purchase, supplier order or wallet charge can be made from this page yet.</p>
+<div class="actions"><button class="primary" id="fingerprintBtn" disabled>Buy with Fingerprint</button><button class="secondary" id="pinBtn" disabled>Buy with Transaction PIN</button></div>
+<p class="note">Your wallet is charged only after you approve the exact total. If the supplier confirms failure, AILAT DATA automatically refunds the wallet. Never repeat an order marked as processing.</p>
 <div class="status" id="status" role="status" aria-live="polite"></div>
 <div class="result hidden" id="pinResult"></div>
 </section>
@@ -40,7 +47,7 @@ const auth=getAuth(app);
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const PASSKEY_API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-let plans=[],selected=null,requestKey="",busy=false,orderSubmitted=false;
+let plans=[],selected=null,requestKey="",busy=false,orderSubmitted=false,jambVerification=null;
 const $=id=>document.getElementById(id);
 const money=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 function getUser(){return new Promise((resolve,reject)=>{const unsub=onAuthStateChanged(auth,u=>{unsub();if(!u)reject(new Error("Please log in first."));else resolve(u)},e=>{unsub();reject(e)})})}
@@ -52,16 +59,27 @@ function renderPlans(){
   const b=document.createElement("button");b.type="button";b.className="plan"+(selected?.exam_id===p.exam_id?" active":"");
   const left=document.createElement("span"),name=document.createElement("strong"),desc=document.createElement("small"),price=document.createElement("span");
   name.textContent=p.exam_name;desc.textContent=(p.mode==="profile_code"?"JAMB profile-code PIN":"Single PIN")+" · BilalSadaSub live";left.append(name,desc);price.className="price";price.textContent=money(p.selling_amount);b.append(left,price);
-  b.addEventListener("click",()=>{selected=p;requestKey=makeRequestKey();orderSubmitted=false;renderPlans();updateSummary()});root.append(b);
+  b.addEventListener("click",()=>{selected=p;requestKey=makeRequestKey();orderSubmitted=false;jambVerification=null;$("jambProfile").value="";$("jambConfirm").checked=false;$("jambCandidate").textContent="Verify the profile before payment.";renderPlans();updateSummary()});root.append(b);
  });
 }
+function isJambPlan(){return selected?.mode==="profile_code"}
+function getJambType(plan){const n=String(plan?.exam_name||"").toUpperCase();return n.includes("MOCK")?"MOCK":(n.includes("DIRECT ENTRY")||/\\bDE\\b/.test(n))?"DE":"UTME"}
+function currentQuantity(){return isJambPlan()?1:Math.max(1,Math.min(10,Number($("quantity").value||1)))}
 function updateSummary(){
+ const isJamb=isJambPlan(),quantity=currentQuantity();
  $("selectedName").textContent=selected?.exam_name||"Select an exam";
- $("supplierPrice").textContent=selected?money(selected.supplier_amount):"—";
- $("markupPrice").textContent=selected?money(selected.markup_amount):"—";
- $("totalPrice").textContent=selected?money(selected.selling_amount):"—";
- $("fingerprintBtn").disabled=true;
- $("pinBtn").disabled=true;
+ $("quantityWrap").classList.toggle("hidden",isJamb);
+ $("jambFields").classList.toggle("hidden",!isJamb);
+ const isAdmin=!!selected&&Number.isFinite(Number(selected.supplier_amount))&&Number.isFinite(Number(selected.markup_amount));
+ $("supplierRow").classList.toggle("hidden",!isAdmin);
+ $("markupRow").classList.toggle("hidden",!isAdmin);
+ $("supplierPrice").textContent=isAdmin?money(selected.supplier_amount):"—";
+ $("markupPrice").textContent=isAdmin?money(selected.markup_amount):"—";
+ $("totalPrice").textContent=selected?money(Number(selected.selling_amount)*quantity):"—";
+ const jambReady=!isJamb||(jambVerification&&jambVerification.exam_id===selected?.exam_id&&jambVerification.profile_id===$("jambProfile").value.trim()&&$("jambConfirm").checked);
+ const ready=!!selected&&!busy&&!orderSubmitted&&jambReady;
+ $("fingerprintBtn").disabled=!ready;
+ $("pinBtn").disabled=!ready;
 }
 async function requestPin(){
  return new Promise(resolve=>{
@@ -72,6 +90,24 @@ async function requestPin(){
   $("cancelPin").onclick=()=>finish(null);
   $("submitPin").onclick=()=>{const pin=boxes.map(b=>b.value).join("");if(!/^\d{4}$/.test(pin)){error.textContent="Enter all four digits.";return}finish(pin)};
  });
+}
+async function verifyJambProfile(){
+ if(!isJambPlan()||busy)return;
+ const profile_id=$("jambProfile").value.trim();
+ if(!/^\\d{10}$/.test(profile_id)){setStatus("Enter the 10-digit JAMB profile code.", "#b42318");return}
+ busy=true;updateSummary();$("jambCandidate").textContent="Verifying profile with BilalSadaSub…";
+ try{
+  const user=await getUser();await user.reload();if(!user.emailVerified)throw new Error("Please verify your email before continuing.");
+  const token=await user.getIdToken(true);
+  const r=await fetch(API,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({action:"verify_jamb",profile_id})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.success)throw new Error(d.error||"JAMB profile could not be verified.");
+  jambVerification={profile_id:d.profile_id,name:d.name,exam_id:selected.exam_id};
+  $("jambCandidate").textContent="Verified candidate: "+d.name+". Confirm the name below before payment.";
+  $("jambConfirm").checked=false;
+  setStatus("JAMB profile verified. Check the candidate name and confirm it before purchasing.","#17663b");
+ }catch(e){jambVerification=null;$("jambCandidate").textContent=e.message||"Profile verification failed.";setStatus(e.message||"JAMB verification failed.","#b42318")}
+ finally{busy=false;updateSummary()}
 }
 async function authorize(token,intent,method){
  const headers={"Authorization":"Bearer "+token,"Content-Type":"application/json"};
@@ -87,30 +123,57 @@ async function authorize(token,intent,method){
 }
 async function process(method){
  if(!selected||busy||orderSubmitted)return;
- const phone=$("phone").value.trim();
- if(phone&&!/^0[789][01]\d{8}$/.test(phone)){setStatus("Enter a valid 11-digit Nigerian phone number.","#b42318");$("phone").focus();return}
+ const phone=$("phone").value.trim(),isJamb=isJambPlan(),quantity=currentQuantity();
+ if(phone&&!/^0[789][01]\\d{8}$/.test(phone)){setStatus("Enter a valid 11-digit Nigerian phone number.","#b42318");$("phone").focus();return}
+ const profileCode=isJamb?$("jambProfile").value.trim():"";
+ if(isJamb&&(!jambVerification||jambVerification.profile_id!==profileCode||jambVerification.exam_id!==selected.exam_id||!$("jambConfirm").checked)){
+  setStatus("Verify the JAMB profile and confirm the candidate name before payment.","#b42318");return;
+ }
  busy=true;updateSummary();$("pinResult").classList.add("hidden");
  try{
   const user=await getUser();await user.reload();if(!user.emailVerified)throw new Error("Please verify your email before purchasing Exam PIN.");
   const token=await user.getIdToken(true);
-  const intent={service_key:"exam",idempotency_key:requestKey,details:{exam_id:selected.exam_id,exam_name:selected.exam_name,quantity:1,supplier_amount:selected.supplier_amount,markup_amount:selected.markup_amount,selling_amount:selected.selling_amount,phone}};
+  const total=Math.round(Number(selected.selling_amount)*quantity*100)/100;
+  const jambType=isJamb?getJambType(selected):"";
+  const verifiedName=isJamb?jambVerification.name:"";
+  const intent={service_key:"exam",idempotency_key:requestKey,details:{
+   exam_id:Number(selected.exam_id),exam_name:selected.exam_name,mode:selected.mode,quantity,
+   selling_amount:total,phone,profile_code:profileCode,jamb_type:jambType,verified_name:verifiedName
+  }};
   setStatus(method==="pin"?"Waiting for Transaction PIN approval…":"Waiting for fingerprint approval…");
   const authorization_token=await authorize(token,intent,method);
   setStatus("Approval successful. Sending your order securely…");
-  const response=await fetch(API,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({service_key:"exam",idempotency_key:requestKey,authorization_token,customer_data:{exam_id:selected.exam_id,quantity:1,phone}})});
+  const response=await fetch(API,{method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+   body:JSON.stringify({service_key:"exam",idempotency_key:requestKey,authorization_token,
+    customer_data:{exam_id:Number(selected.exam_id),quantity,phone,profile_code:profileCode,jamb_type:jambType,verified_name:verifiedName}})});
   const result=await response.json().catch(()=>({}));
+  if(result.verified_name&&isJamb){
+   jambVerification={profile_id:profileCode,name:result.verified_name,exam_id:selected.exam_id};
+   $("jambCandidate").textContent="Supplier now verifies this candidate as: "+result.verified_name+". Confirm the updated name before paying.";
+   $("jambConfirm").checked=false;
+  }
   if(result.order_request?.reference){
-   orderSubmitted=true;
+   orderSubmitted=result.payment_status!=="not_charged"&&result.payment_status!=="refunded";
    if(result.fulfillment_status==="success"&&Array.isArray(result.issued_pins)&&result.issued_pins.length){
-    const issued=result.issued_pins[0];const box=$("pinResult");box.classList.remove("hidden");
-    const heading=document.createElement("strong");heading.textContent=selected.exam_name+" PIN generated";
-    const pin=document.createElement("div");pin.textContent="PIN: "+issued.pin;
-    const serial=document.createElement("div");serial.textContent="Serial Number: "+issued.serial;
+    const box=$("pinResult");box.classList.remove("hidden");
+    const heading=document.createElement("strong");heading.textContent=selected.exam_name+" PIN purchase successful";
+    const details=document.createElement("div");
+    result.issued_pins.forEach((item,index)=>{
+     const line=document.createElement("div");line.style.marginTop="9px";
+     line.textContent=(result.issued_pins.length>1?"PIN "+(index+1)+": ":"PIN: ")+item.pin+(item.serial?" · Serial: "+item.serial:"");
+     details.append(line);
+    });
     const ref=document.createElement("div");ref.textContent="Reference: "+result.order_request.reference;
-    const copy=document.createElement("button");copy.type="button";copy.textContent="Copy PIN and Serial";copy.onclick=()=>navigator.clipboard?.writeText("PIN: "+issued.pin+"\nSerial: "+issued.serial);
-    box.replaceChildren(heading,pin,serial,ref,copy);setStatus("Payment successful. Your exam PIN is ready.","#17663b");
+    const copy=document.createElement("button");copy.type="button";copy.textContent="Copy PIN(s) and Serial(s)";
+    copy.onclick=()=>navigator.clipboard?.writeText(result.issued_pins.map((item,index)=>(result.issued_pins.length>1?"PIN "+(index+1)+": ":"PIN: ")+item.pin+(item.serial?"\\nSerial: "+item.serial:"")).join("\\n\\n"));
+    box.replaceChildren(heading,details,ref,copy);
+    setStatus("Payment successful. Your exam PIN details are ready.","#17663b");
    }else if(result.payment_status==="refunded"||result.fulfillment_status==="failed"){
     setStatus((result.error||"Supplier could not issue the PIN.")+" Your wallet was refunded. Reference: "+result.order_request.reference,"#b42318");
+    requestKey=makeRequestKey();orderSubmitted=false;
+   }else if(result.payment_status==="not_charged"){
+    setStatus((result.error||"Wallet was not charged.")+" You can add funds and try again. No PIN was requested.","#b42318");
+    requestKey=makeRequestKey();orderSubmitted=false;
    }else{
     setStatus((result.notice||"Your order is being processed. Do not submit again.")+" Reference: "+result.order_request.reference,"#805600");
    }
@@ -120,6 +183,11 @@ async function process(method){
 }
 $("fingerprintBtn").addEventListener("click",()=>process("fingerprint"));
 $("pinBtn").addEventListener("click",()=>process("pin"));
+$("quantity").addEventListener("change",()=>{requestKey=makeRequestKey();orderSubmitted=false;updateSummary()});
+$("phone").addEventListener("input",()=>{requestKey=makeRequestKey();orderSubmitted=false});
+$("jambProfile").addEventListener("input",()=>{jambVerification=null;$("jambConfirm").checked=false;$("jambCandidate").textContent="Verify the profile before payment.";requestKey=makeRequestKey();orderSubmitted=false;updateSummary()});
+$("jambConfirm").addEventListener("change",updateSummary);
+$("verifyJambBtn").addEventListener("click",verifyJambProfile);
 let catalogueLoading=false;
 let lastCatalogueSuccess=0;
 async function loadAdminPricing(){

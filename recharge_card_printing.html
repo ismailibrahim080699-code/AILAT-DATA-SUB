@@ -102,6 +102,11 @@ quoteBtn.addEventListener("click",async()=>{
   activeQuote=q;
   quoteResult.textContent="Quote created: "+q.reference+" | "+q.network+" "+money(q.face_value)+" × "+q.quantity+" | Total: "+money(q.customer_total)+". No wallet money has been deducted yet.";
   quoteResult.classList.add("show");
+  const cryptoTest=document.createElement("button");
+  cryptoTest.type="button";cryptoTest.className="primary";cryptoTest.style.background="#ede9fe";cryptoTest.style.color="#4c1d95";
+  cryptoTest.textContent="Test Encrypted PIN Delivery (No Purchase)";
+  cryptoTest.addEventListener("click",testEncryptedPinDelivery);
+  quoteResult.append(document.createElement("br"),cryptoTest);
   const pinTest=document.createElement("button");
   pinTest.type="button";pinTest.className="primary";pinTest.style.background="#ede9fe";pinTest.style.color="#4c1d95";
   pinTest.textContent="Test Transaction PIN (No Purchase)";
@@ -179,6 +184,31 @@ function showPinDialog(noteText="Enter your 4-digit PIN to approve this recharge
   input.addEventListener("input",()=>{input.value=input.value.replace(/\D/g,"").slice(0,4);});
   actions.append(cancel,confirm);panel.append(heading,note,input,error,actions);overlay.append(panel);document.body.append(overlay);input.focus();
  });
+}
+async function testEncryptedPinDelivery(){
+ const button=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Test Encrypted PIN Delivery (No Purchase)");
+ if(button){button.disabled=true;button.textContent="Testing encryption...";}
+ try{
+  const {auth}=await import("./firebase.js");
+  const user=auth.currentUser;if(!user)throw new Error("Please sign in again.");
+  await user.reload();if(!user.emailVerified)throw new Error("Please verify your email first.");
+  const token=await user.getIdToken(true);
+  const response=await fetch(API_URL+"?action=recharge_card_crypto_self_test",{
+   method:"POST",headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json","Accept":"application/json"},
+   body:JSON.stringify({}),cache:"no-store"
+  });
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.success||!result.synthetic_only||!result.test_record_deleted)
+   throw new Error(result.error||"Encrypted PIN delivery self-test failed.");
+  const success=document.createElement("p");success.style.cssText="color:#167647;font-weight:700;font-size:13px";
+  success.textContent="✓ Synthetic PIN encryption, database round-trip, decryption, and test-record deletion verified. No real PIN, supplier, order, authorization, or wallet was used.";
+  quoteResult.append(success);
+ }catch(error){
+  const failure=document.createElement("p");failure.style.cssText="color:#b42318;font-size:13px";
+  failure.textContent=error.message||"Encrypted PIN delivery test failed.";quoteResult.append(failure);
+ }finally{
+  if(button&&button.isConnected){button.disabled=false;button.textContent="Test Encrypted PIN Delivery (No Purchase)";}
+ }
 }
 async function testTransactionPin(){
  const testButton=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Test Transaction PIN (No Purchase)");

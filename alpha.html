@@ -50,10 +50,10 @@ const phone=document.getElementById("alphaPhone");
 const button=document.getElementById("testAlpha");
 const result=document.getElementById("testResult");
 button.addEventListener("click",function(){
- const normalized=phone.value.replace(/[\\s()-]/g,"");
+ const normalized=phone.value.replace(/[\s()-]/g,"");
  result.style.display="block";
  result.classList.remove("error");
- if(!/^\\+?[0-9]{10,15}$/.test(normalized)){
+ if(!/^\+?[0-9]{10,15}$/.test(normalized)){
   result.classList.add("error");
   result.textContent="Please enter a valid recipient phone number (10–15 digits). No request was sent and no wallet money was deducted.";
   return;

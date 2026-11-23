@@ -36,12 +36,12 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 <p class="sub">Zaɓi network domin ganin denominations da farashin katin. Farashin siyarwa daidai yake da adadin kati.</p>
 <h2 class="section-title">1. Zaɓi Network</h2>
 <div class="networks" id="networkChoices">
-<button class="network" data-network="MTN" aria-pressed="true"><img class="network-logo" src="assets/network-logos/mtn.svg" alt="MTN official logo"><span class="network-label">MTN</span></button>
+<button class="network" data-network="MTN" aria-pressed="false"><img class="network-logo" src="assets/network-logos/mtn.svg" alt="MTN official logo"><span class="network-label">MTN</span></button>
 <button class="network" data-network="GLO" aria-pressed="false"><img class="network-logo" src="assets/network-logos/glo.svg" alt="Glo official logo"><span class="network-label">GLO</span></button>
 <button class="network" data-network="AIRTEL" aria-pressed="false"><img class="network-logo" src="assets/network-logos/airtel.svg" alt="Airtel official logo"><span class="network-label">AIRTEL</span></button>
 </div>
 <h2 class="section-title">2. Zaɓi Adadin Kati</h2>
-<div class="plans" id="planList"><div class="empty">Ana loda jerin katuna...</div></div>
+<div class="plans" id="planList"><div class="empty">Da fatan za a taɓa MTN, GLO ko AIRTEL domin ganin packages.</div></div>
 <div class="notice"><strong>🔒 Siyan kati bai buɗe ba tukuna.</strong><br>Wannan jerin farashi ne kawai. Za a kunna saye bayan an tabbatar da tsarin samar da PIN daga mai kaya da kuma cire kuɗin wallet cikin aminci. Ba a karɓar kuɗi ko aika oda a wannan shafin yanzu.</div>
 <button class="refresh" id="refreshCatalogue" type="button">Sabunta jerin farashi</button>
 <p class="status" id="catalogMessage" aria-live="polite"></p>
@@ -49,9 +49,10 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 <script>
 const CATALOG_URL="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests?action=recharge_card_plans";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
-let plans=[];let selectedNetwork="MTN";
+let plans=[];let selectedNetwork=null;
 const planList=document.getElementById("planList"),message=document.getElementById("catalogMessage");
 function renderPlans(){
+ if(!selectedNetwork){planList.innerHTML='<div class="empty">Da fatan za a taɓa network ɗaya domin ganin packages ɗinsa.</div>';return;}
  const items=plans.filter(p=>String(p.network).toUpperCase()===selectedNetwork);
  planList.innerHTML="";
  if(!items.length){planList.innerHTML='<div class="empty">Babu kati a wannan network a yanzu.</div>';return;}

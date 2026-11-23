@@ -78,8 +78,13 @@ footer{text-align:center;color:#958ba5;font-size:10px;padding:18px}
  </section>
 
  <section class="card">
-  <h3 class="section-title">Available Smile Bundle</h3>
-  <div class="plan">
+  <h3 class="section-title">Smile Bundle</h3>
+  <label for="smileProductSelect">Select Smile Product</label>
+  <select id="smileProductSelect" autocomplete="off">
+   <option value="" selected disabled>Select Smile Product</option>
+   <option value="smile-5gb-7days">5GB Data · 7 Days · ₦500.00</option>
+  </select>
+  <div class="plan" id="selectedSmilePlan" hidden style="margin-top:14px">
    <div class="plan-top">
     <div>
      <div class="plan-name">5GB Data</div>
@@ -117,6 +122,11 @@ function setAccountType(type){
  accountNumber.inputMode="numeric";
 }
 accountTypeSelect.addEventListener("change",()=>setAccountType(accountTypeSelect.value));
+const smileProductSelect=document.getElementById("smileProductSelect");
+const selectedSmilePlan=document.getElementById("selectedSmilePlan");
+smileProductSelect.addEventListener("change",()=>{
+ selectedSmilePlan.hidden=smileProductSelect.value!=="smile-5gb-7days";
+});
 </script>
 
 <script type="module">

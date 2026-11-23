@@ -20,8 +20,8 @@
 <label for="phone">Phone Number (optional)</label><input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit phone number">
 <div class="summary">
 <div class="sumrow"><span>Examination</span><strong id="selectedName">Select an exam</strong></div>
-<div class="sumrow"><span>Supplier price</span><strong id="supplierPrice">—</strong></div>
-<div class="sumrow"><span>Service charge</span><strong id="markupPrice">—</strong></div>
+<div class="sumrow hidden" id="supplierRow"><span>Supplier price (Admin only)</span><strong id="supplierPrice">—</strong></div>
+<div class="sumrow hidden" id="markupRow"><span>AILAT markup (Admin only)</span><strong id="markupPrice">—</strong></div>
 <div class="sumrow total"><span>Total to pay</span><strong id="totalPrice">—</strong></div>
 </div>
 <div class="actions"><button class="primary" id="fingerprintBtn" disabled>Purchase unavailable</button><button class="secondary" id="pinBtn" disabled>Purchase unavailable</button></div>
@@ -40,6 +40,7 @@ const auth=getAuth(app);
 const API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-order-requests";
 const PASSKEY_API="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
 const PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
+const ADMIN_UID="xTnnQP1rHhVlEk049aUhvgh7kVb2";
 let plans=[],selected=null,requestKey="",busy=false,orderSubmitted=false;
 const $=id=>document.getElementById(id);
 const money=n=>"₦"+Number(n).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -122,6 +123,18 @@ $("fingerprintBtn").addEventListener("click",()=>process("fingerprint"));
 $("pinBtn").addEventListener("click",()=>process("pin"));
 let catalogueLoading=false;
 let lastCatalogueSuccess=0;
+async function loadAdminPricing(){
+ $("supplierRow").classList.add("hidden");$("markupRow").classList.add("hidden");
+ const user=await getUser().catch(()=>null);
+ if(!user||user.uid!==ADMIN_UID)return null;
+ try{
+  const token=await user.getIdToken(true);
+  const r=await fetch(API+"?action=admin_exam_plans",{headers:{"apikey":PUBLISHABLE_KEY,"Authorization":"Bearer "+token},cache:"no-store"});
+  const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||"Admin pricing unavailable.");
+  $("supplierRow").classList.remove("hidden");$("markupRow").classList.remove("hidden");
+  return Array.isArray(d.plans)?d.plans:null;
+ }catch(e){console.warn("Admin-only exam pricing unavailable:",e.message);return null}
+}
 async function loadPlans(silent=false){
  if(catalogueLoading||document.hidden)return;
  catalogueLoading=true;
@@ -132,8 +145,10 @@ async function loadPlans(silent=false){
   const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||"Exam plans are unavailable.");
   const incoming=Array.isArray(d.plans)?d.plans:[];
   if(!incoming.length)throw new Error("No valid live Exam PIN plans were returned.");
+  const adminPlans=await loadAdminPricing();
+  const privateById=new Map((adminPlans||[]).map(p=>[String(p.exam_id),p]));
   const previous=selected?.exam_id;
-  plans=incoming;
+  plans=incoming.map(p=>({...p,...(privateById.get(String(p.exam_id))||{})}));
   selected=plans.find(p=>Number(p.exam_id)===Number(previous))||null;
   renderPlans();updateSummary();
   lastCatalogueSuccess=Date.now();

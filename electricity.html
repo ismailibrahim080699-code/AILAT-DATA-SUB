@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#4c1d95">
-<title>Electricity Payment - AILAT DATA</title>
+<title>Electricity Payment - AILAT DATA SUB</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
 <style>
 :root{color-scheme:light}
@@ -50,7 +50,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
 <header>
  <div class="top">
   <a class="back" href="dashboard.html" aria-label="Back to dashboard">‹</a>
-  <div class="brand">AILAT DATA</div>
+  <div class="brand">AILAT DATA SUB</div>
  </div>
  <div class="top" style="display:block">
   <h1>Electricity Bill Payment</h1>
@@ -108,7 +108,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   <button id="buyElectricityBtn" type="button" hidden>Pay with Fingerprint</button>
   <button id="pinElectricityBtn" class="secondary" type="button" hidden>Pay with Transaction PIN</button>
   <div id="purchaseResult" class="result" role="status" aria-live="polite"></div>
-  <p class="note">The preview uses AILAT DATA's 10% service margin. Supplier charges are checked against the customer total before a successful order is confirmed.</p>
+  <p class="note">The preview uses AILAT DATA SUB's 10% service margin. Supplier charges are checked against the customer total before a successful order is confirmed.</p>
  </section>
 
  <div class="secure"><span aria-hidden="true">◆</span><div><b>Secure test mode</b><br>Electricity testing is temporarily paused while the server-side dry-run flow is secured. Live payment remains disabled. No order, wallet debit, supplier request or token generation is available from this page.</div></div>
@@ -121,7 +121,7 @@ footer{text-align:center;color:#8a80a0;font-size:11px;padding:10px 15px 24px}
   <div class="pin-actions"><button id="cancelPin" class="secondary" type="button">Cancel</button><button id="submitPin" type="button">Approve</button></div>
  </div>
 </div>
-<footer>AILAT DATA © 2026</footer>
+<footer>AILAT DATA SUB © 2026</footer>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -230,7 +230,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
     "<div class='summary-row'><span>Meter number</span><strong>"+escapeHtml(verifiedMeter.meterNumber)+"</strong></div>"+
     "<div class='summary-row'><span>Meter type</span><strong>"+escapeHtml(verifiedMeter.meterType.toUpperCase())+"</strong></div>"+
     "<div class='summary-row'><span>Electricity amount</span><strong>"+escapeHtml(money(quote.requested_amount))+"</strong></div>"+
-    "<div class='summary-row'><span>AILAT DATA service margin (10%)</span><strong>"+escapeHtml(money(quote.markup_amount))+"</strong></div>"+
+    "<div class='summary-row'><span>AILAT DATA SUB service margin (10%)</span><strong>"+escapeHtml(money(quote.markup_amount))+"</strong></div>"+
     "<div class='summary-row'><span>Estimated customer total</span><strong>"+escapeHtml(money(quote.customer_total))+"</strong></div>"+
     "<p class='note'>This is a read-only estimate. Supplier charges will be reconciled before live vending. No wallet deduction, supplier order or token generation has taken place.</p>";
   }catch(error){

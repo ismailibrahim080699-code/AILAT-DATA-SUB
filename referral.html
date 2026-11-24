@@ -42,6 +42,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:380px){.wallet-main{font-size:29px}.card{padding:18px}}
 </style>
   <link rel="stylesheet" href="assets/ailat-theme.css?v=1">
+<link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>
 <body>
 <header>
@@ -266,5 +267,6 @@ document.getElementById("shareLink").addEventListener("click",async()=>{
  }catch(error){if(error.name!=="AbortError")showMessage("Unable to share link.","red");}
 });
 </script>
+<script src="assets/ailat-popups.js?v=1"></script>
 </body>
 </html>

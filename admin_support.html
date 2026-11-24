@@ -34,6 +34,7 @@ button:disabled{opacity:.55}
 .empty{background:white;border-radius:14px;padding:18px;color:#777;font-size:13px}
 footer{text-align:center;padding:20px;color:#9aa5a9;font-size:10px}
 </style>
+<link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>
 <body>
 <header><a class="back" href="dashboard.html" aria-label="Back">‹</a><h1>Support Administration</h1><p>Review customer tickets and send official support replies.</p></header>
@@ -128,5 +129,6 @@ onAuthStateChanged(auth,async user=>{
  }catch(error){ticketsBox.textContent=error.message;}
 });
 </script>
+<script src="assets/ailat-popups.js?v=1"></script>
 </body>
 </html>

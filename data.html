@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <meta name="theme-color" content="#4c1d95">
-<title>Buy Data - AILAT DATA</title>
+<title>Buy Data - AILAT DATA SUB</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
@@ -247,7 +247,7 @@ button:disabled{opacity:.48;cursor:not-allowed}
 
 <header>
 <a href="dashboard.html" class="back">‹</a>
-<img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA">
+<img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA SUB">
 <h2>Buy Data</h2>
 </header>
 
@@ -347,7 +347,7 @@ Choose your network and preferred data plan.
 
 <p id="planAvailability" class="note" aria-live="polite"></p>
 <div class="demo" style="background:#fff8e7;color:#805600;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;margin-top:15px">
-<strong>Price information:</strong> Displayed prices are AILAT DATA selling prices. This form only records a request; it does not debit a wallet or deliver data.
+<strong>Price information:</strong> Displayed prices are AILAT DATA SUB selling prices. This form only records a request; it does not debit a wallet or deliver data.
 </div>
 
 <button id="continueDataBtn" onclick="continuePurchase()" disabled>Choose a data bundle</button>
@@ -370,7 +370,7 @@ const SUPABASE_PUBLISHABLE_KEY="sb_publishable_9wmzpjzVhnby_E3jogTjRw_c22XiDEC";
 let DATA_PLANS=[];
 let catalogRequestId=0;
 
-// AILAT DATA's own stable network identifiers. These are not supplier IDs.
+// AILAT DATA SUB's own stable network identifiers. These are not supplier IDs.
 const AILAT_NETWORK_IDS = Object.freeze({
  mtn:1,
  airtel:2,
@@ -472,7 +472,7 @@ function renderPlans(){
   });
  }
  const note=document.getElementById("planAvailability");
- if(note) note.textContent=matching.length+" bundles available for "+selectedNetwork+". Prices shown are AILAT DATA selling prices.";
+ if(note) note.textContent=matching.length+" bundles available for "+selectedNetwork+". Prices shown are AILAT DATA SUB selling prices.";
  updateContinueButton();
 }
 const phoneInput=document.getElementById("phone");

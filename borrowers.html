@@ -54,6 +54,24 @@ textarea{resize:vertical;min-height:75px}
 .notice{font-size:11px;color:#76688e;line-height:1.6;margin:0 0 13px}
 .error{color:#b91c1c}
 @media(max-width:380px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.summary{gap:8px}.stat{padding:12px}.stat strong{font-size:18px}.borrower-top{flex-direction:column}.amount{font-size:14px}}
+
+/* Custom delete confirmation */
+.delete-overlay{position:fixed;inset:0;z-index:9999;background:rgba(25,12,48,.58);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}
+.delete-overlay.show{display:flex}
+.delete-dialog{width:min(100%,390px);background:#fff;border:1px solid #eee7fa;border-radius:22px;padding:24px 21px 19px;box-shadow:0 22px 70px #1f123955;animation:modalIn .18s ease-out}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.delete-icon{width:48px;height:48px;border-radius:15px;background:#fff1f2;color:#be123c;display:grid;place-items:center;font-size:25px;margin-bottom:15px}
+.delete-dialog h2{font-size:19px;color:#24134d;margin:0 0 9px}
+.delete-dialog p{font-size:13px;color:#756887;line-height:1.65;margin:0}
+.delete-record-name{font-weight:800;color:#4c1d95;overflow-wrap:anywhere}
+.delete-warning{font-size:11px!important;color:#a16207!important;background:#fffbeb;border-radius:10px;padding:10px 11px;margin-top:13px!important}
+.delete-actions{display:flex;gap:10px;margin-top:21px}
+.delete-actions button{flex:1;border:0;border-radius:11px;padding:13px 10px;font-weight:800;font-size:13px;cursor:pointer}
+.delete-cancel{background:#f3e8ff;color:#5b21b6}
+.delete-confirm{background:linear-gradient(135deg,#be123c,#e11d48);color:#fff}
+.delete-confirm:disabled{opacity:.6}
+@media(prefers-reduced-motion:reduce){.delete-dialog{animation:none}}
+
 </style>
 </head>
 <body>
@@ -87,6 +105,20 @@ textarea{resize:vertical;min-height:75px}
   <div id="records" class="list"><div class="message">Loading your records...</div></div>
  </section>
 </main>
+
+<div class="delete-overlay" id="deleteOverlay" role="presentation">
+ <section class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteTitle" aria-describedby="deleteDescription">
+  <div class="delete-icon" aria-hidden="true">!</div>
+  <h2 id="deleteTitle">Delete borrower record?</h2>
+  <p id="deleteDescription">Are you sure you want to delete the record for <span class="delete-record-name" id="deleteRecordName">this customer</span>?</p>
+  <p class="delete-warning">This action cannot be undone. The borrower record will be permanently removed.</p>
+  <div class="delete-actions">
+   <button type="button" class="delete-cancel" id="cancelDelete">Cancel</button>
+   <button type="button" class="delete-confirm" id="confirmDelete">Yes, Delete</button>
+  </div>
+ </section>
+</div>
+
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -97,7 +129,7 @@ const form=document.getElementById("borrowerForm");
 const recordsEl=document.getElementById("records");
 const saveBtn=document.getElementById("saveBtn");
 const formMessage=document.getElementById("formMessage");
-let currentUser=null, records=[], editingId=null, busy=false;
+let currentUser=null, records=[], editingId=null, busy=false, pendingDeleteId=null;
 
 const el=id=>document.getElementById(id);
 const money=value=>"₦"+Number(value||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -178,6 +210,35 @@ form.addEventListener("submit",async event=>{
   busy=false;saveBtn.disabled=false;if(!editingId)saveBtn.textContent="Save Record";
  }
 });
+
+function closeDeleteModal(){
+ el("deleteOverlay").classList.remove("show");
+ pendingDeleteId=null;
+ el("confirmDelete").disabled=false;
+ el("confirmDelete").textContent="Yes, Delete";
+}
+el("cancelDelete").addEventListener("click",closeDeleteModal);
+el("deleteOverlay").addEventListener("click",event=>{
+ if(event.target===el("deleteOverlay"))closeDeleteModal();
+});
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape"&&el("deleteOverlay").classList.contains("show"))closeDeleteModal();
+});
+el("confirmDelete").addEventListener("click",async()=>{
+ if(!pendingDeleteId||!currentUser||busy)return;
+ const id=pendingDeleteId;
+ busy=true;el("confirmDelete").disabled=true;el("confirmDelete").textContent="Deleting...";
+ try{
+  await deleteDoc(doc(db,"users",currentUser.uid,"borrowers",id));
+  closeDeleteModal();
+  await loadRecords();
+ }catch(error){
+  console.error("Borrower delete error:",error);
+  el("deleteDescription").textContent="Could not delete this record. Please check your connection and try again.";
+  el("confirmDelete").disabled=false;el("confirmDelete").textContent="Try Again";
+ }finally{busy=false;}
+});
+
 el("cancelEdit").addEventListener("click",resetForm);
 el("search").addEventListener("input",render);
 el("filter").addEventListener("change",render);
@@ -195,10 +256,11 @@ recordsEl.addEventListener("click",async event=>{
   window.scrollTo({top:0,behavior:"smooth"});return;
  }
  if(action==="delete"){
-  busy=true;button.disabled=true;
-  try{await deleteDoc(doc(db,"users",currentUser.uid,"borrowers",id));await loadRecords();}
-  catch(error){console.error(error);alert("Could not delete this record. Please try again.");}
-  finally{busy=false;}return;
+  pendingDeleteId=id;
+  el("deleteRecordName").textContent=record.customerName||"this customer";
+  el("deleteOverlay").classList.add("show");
+  el("cancelDelete").focus();
+  return;
  }
  if(action==="pay"||action==="unpay"){
   const paid=action==="pay";

@@ -1,0 +1,15 @@
+/* AILAT DATA SUB — shared branded dialogs */
+#ailat-dialog-backdrop{position:fixed;inset:0;z-index:2147483000;background:rgba(20,10,42,.58);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:18px}
+#ailat-dialog-backdrop.open{display:flex}
+#ailat-dialog{width:min(100%,390px);background:#fff;border:1px solid #eee7fa;border-radius:22px;padding:23px 20px 18px;box-shadow:0 22px 70px #1f123955;font-family:Arial,sans-serif;animation:ailatDialogIn .18s ease-out}
+@keyframes ailatDialogIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+#ailat-dialog .ailat-dialog-icon{width:47px;height:47px;border-radius:15px;background:#f3e8ff;color:#6d28d9;display:grid;place-items:center;font-size:24px;font-weight:900;margin-bottom:14px}
+#ailat-dialog[data-kind=success] .ailat-dialog-icon{background:#dcfce7;color:#15803d}
+#ailat-dialog[data-kind=error] .ailat-dialog-icon,#ailat-dialog[data-kind=confirm] .ailat-dialog-icon{background:#fff1f2;color:#be123c}
+#ailat-dialog h2{font-size:19px;color:#24134d;margin:0 0 9px}
+#ailat-dialog p{font-size:13px;color:#756887;line-height:1.65;margin:0;overflow-wrap:anywhere}
+#ailat-dialog .ailat-dialog-actions{display:flex;gap:10px;margin-top:21px}
+#ailat-dialog button{flex:1;border:0;border-radius:11px;padding:13px 10px;font-weight:800;font-size:13px;cursor:pointer}
+#ailat-dialog .ailat-dialog-cancel{background:#f3e8ff;color:#5b21b6}
+#ailat-dialog .ailat-dialog-ok{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff}
+#ailat-dialog[data-kind=confirm] .ailat-dialog-ok{background:linear-gradient(135deg,#be123c,#e11d48)}

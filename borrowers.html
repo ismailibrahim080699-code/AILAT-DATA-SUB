@@ -265,7 +265,7 @@ recordsEl.addEventListener("click",async event=>{
  }
  if(action==="pay"||action==="unpay"){
   const paid=action==="pay";
-  if(paid&&!confirm("Confirm that this customer has paid "+money(record.amount)+"?"))return;
+  if(paid&&!(await AILAT.confirm("Confirm that this customer has paid "+money(record.amount)+"?",{title:"Confirm Payment",okText:"Yes, Mark Paid"})))return;
   busy=true;button.disabled=true;
   try{
    await updateDoc(doc(db,"users",currentUser.uid,"borrowers",id),{status:paid?"paid":"unpaid",paidAt:paid?serverTimestamp():null,updatedAt:serverTimestamp()});

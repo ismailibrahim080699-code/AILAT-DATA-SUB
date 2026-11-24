@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
-<title>Transactions - AILAT DATA</title>
+<title>Transactions - AILAT DATA SUB</title>
 
 <style>
 *{box-sizing:border-box}
@@ -151,8 +151,8 @@ header p{margin:8px 0 0;font-size:14px;opacity:.9}
 
 <header>
 <a class="top-back" href="dashboard.html" aria-label="Back to dashboard">‹</a>
-<img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA">
- <h2>AILAT DATA</h2>
+<img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA SUB">
+ <h2>AILAT DATA SUB</h2>
  <p>Transaction History</p>
 </header>
 
@@ -283,7 +283,7 @@ function renderTransactions(items){
    isPaidExam ? `<div>Supplier price per PIN: ${formatAmount(supplierUnit)}</div>` : "",
    isPaidExam ? `<div>Customer price per PIN: ${formatAmount(examSellingTotal / examQuantity)}</div>` : "",
    isPaidExam ? `<div>Total supplier cost: ${formatAmount(examSupplierTotal)}</div>` : "",
-   isPaidExam && Number.isFinite(examProfitTotal) && examProfitTotal >= 0 ? `<div>AILAT DATA gross profit: ${formatAmount(examProfitTotal)}</div>` : ""
+   isPaidExam && Number.isFinite(examProfitTotal) && examProfitTotal >= 0 ? `<div>AILAT DATA SUB gross profit: ${formatAmount(examProfitTotal)}</div>` : ""
   ].join("") : "";
   const providerPlanId = item.supplier_plan_id ?? customer.supplier_plan_id;
   const providerNetworkId = item.supplier_network_id ?? customer.provider_network_id;

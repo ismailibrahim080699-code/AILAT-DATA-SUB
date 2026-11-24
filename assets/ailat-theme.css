@@ -1,4 +1,4 @@
-/* AILAT DATA shared premium navy + teal theme */
+/* AILAT DATA SUB shared premium navy + teal theme */
 :root{--ailat-navy:#102a43;--ailat-teal:#0f766e;--ailat-deep:#155e75;--ailat-bg:#edf2f5;--ailat-text:#172b3a;--ailat-muted:#718693;--ailat-border:#dce7ec;--ailat-soft:#e1f0ef}
 body{background:var(--ailat-bg)!important;color:var(--ailat-text)!important}
 header{background:linear-gradient(135deg,var(--ailat-navy),var(--ailat-teal),var(--ailat-deep))!important;color:#fff!important}
@@ -20,7 +20,7 @@ a{color:var(--ailat-teal)}
 footer{color:#81939e}
 
 
-/* AILAT DATA shared premium theme */
+/* AILAT DATA SUB shared premium theme */
 :root{--ailat-navy:#101b2d;--ailat-navy-2:#17263b;--ailat-teal:#13b8a6;--ailat-teal-dark:#0e9488;--ailat-bg:#f3f6f8;--ailat-card:#fff;--ailat-text:#172b3a;--ailat-muted:#718096;--ailat-border:#e2e9ee;--ailat-soft:#e7f7f5}
 *{box-sizing:border-box}
 body{background:var(--ailat-bg)!important;color:var(--ailat-text)!important}

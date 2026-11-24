@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
-<title>My Referral - AILAT DATA</title>
+<title>My Referral - AILAT DATA SUB</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#f5f3ff,#e9e2ff);color:#24134d}
@@ -45,7 +45,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 </head>
 <body>
 <header>
-<img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA">
+<img class="brand-mark" src="assets/ailat-mark.svg" alt="AILAT DATA SUB">
 <a href="dashboard.html">← Back to Dashboard</a>
 <h2>My Referral</h2>
 <p>Invite friends and earn from eligible successful transactions.</p>
@@ -261,7 +261,7 @@ document.getElementById("copyLink").addEventListener("click",async()=>{
 document.getElementById("shareLink").addEventListener("click",async()=>{
  if(!referralLink)return;
  try{
-  if(navigator.share)await navigator.share({title:"Join AILAT DATA",text:"Register on AILAT DATA using my referral link:",url:referralLink});
+  if(navigator.share)await navigator.share({title:"Join AILAT DATA SUB",text:"Register on AILAT DATA SUB using my referral link:",url:referralLink});
   else{await navigator.clipboard.writeText(referralLink);showMessage("Referral link copied. You can share it now!");}
  }catch(error){if(error.name!=="AbortError")showMessage("Unable to share link.","red");}
 });

@@ -195,7 +195,6 @@ recordsEl.addEventListener("click",async event=>{
   window.scrollTo({top:0,behavior:"smooth"});return;
  }
  if(action==="delete"){
-  if(!confirm("Delete this borrower record? This cannot be undone."))return;
   busy=true;button.disabled=true;
   try{await deleteDoc(doc(db,"users",currentUser.uid,"borrowers",id));await loadRecords();}
   catch(error){console.error(error);alert("Could not delete this record. Please try again.");}

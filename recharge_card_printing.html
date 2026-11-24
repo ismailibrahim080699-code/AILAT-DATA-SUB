@@ -28,6 +28,7 @@ h1{font-size:25px;margin:2px 0 8px}.sub{color:#766b8c;font-size:14px;line-height
 .empty{padding:18px;text-align:center;color:#817694;background:#faf8ff;border-radius:12px}
 @media(max-width:420px){.panel{padding:18px}h1{font-size:22px}.plan{padding:13px}.price{font-size:16px}}
 </style>
+<link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>
 <body>
 <header><a href="dashboard.html" aria-label="Back to dashboard">‹</a><strong>AILAT DATA SUB</strong></header>
@@ -271,4 +272,5 @@ import { protectPage } from "./firebase.js";
 const allowed = await protectPage();
 if (allowed) document.dispatchEvent(new Event("ailat-auth-ready"));
 </script>
+<script src="assets/ailat-popups.js?v=1"></script>
 </body></html>

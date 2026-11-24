@@ -125,9 +125,16 @@ async function loadCatalogue(){
   const statusResponse=await fetch(API_URL+"?action=recharge_card_status",{headers:{"apikey":PUBLISHABLE_KEY,"Accept":"application/json"},cache:"no-store"});
   const status=await statusResponse.json().catch(()=>({}));
   purchaseEnabled=!!(statusResponse.ok&&status.success&&status.purchase_enabled);
-  message.textContent=purchaseEnabled
-   ?"Catalogue updated. Secure purchase checks are configured; Transaction PIN/fingerprint approval is still required."
-   :"Catalogue updated. Recharge-card purchases are not available yet. Please check again later. No wallet funds have been deducted." ;
+  if(purchaseEnabled){
+   message.textContent="Catalogue updated. Security checks are configured. Every purchase still requires Transaction PIN or device approval.";
+  }else{
+   const checks=status&&status.checks?status.checks:{};
+   const missing=[];
+   if(checks.supplier_configured===false)missing.push("Supplier API key");
+   if(checks.encryption_configured===false)missing.push("PIN encryption key");
+   if(checks.live_switch_enabled===false)missing.push("Live purchase safety switch (currently OFF)");
+   message.textContent="Catalogue updated. Purchases are safely disabled. "+(missing.length?"Pending checks: "+missing.join("; ")+". ":"")+"You can create quotes, but no wallet funds are deducted and no supplier order is sent.";
+  }
  }catch(error){message.textContent=error.message||"Failed to load catalogue.";}
 }
 loadCatalogue();

@@ -210,7 +210,7 @@ async function transactionAuthorization(user,token,intent,method){
 }
 async function purchaseQuote(q){
  if(!authReady||!q||!q.reference)return;
- const method=window.confirm("Press OK to approve with fingerprint/device unlock. Press Cancel to use Transaction PIN.")?"fingerprint":"pin";
+ const method=await AILAT.choose("Choose how you want to approve this recharge-card purchase.",{title:"Secure Purchase Approval",choices:[{label:"Fingerprint / Device Unlock",value:"fingerprint"},{label:"Transaction PIN",value:"pin"}]});\n  if(!method)return;
  const actionButton=[...quoteResult.querySelectorAll("button")].find(b=>b.textContent==="Approve & Buy Cards");
  if(actionButton){actionButton.disabled=true;actionButton.textContent="Waiting for approval...";}
  try{

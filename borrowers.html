@@ -73,6 +73,7 @@ textarea{resize:vertical;min-height:75px}
 @media(prefers-reduced-motion:reduce){.delete-dialog{animation:none}}
 
 </style>
+<link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>
 <body>
 <header><div class="head"><a class="back" href="dashboard.html" aria-label="Back">‹</a><div><h1>Borrowers</h1><p>Track products and services given on credit</p></div></div></header>
@@ -283,5 +284,6 @@ onAuthStateChanged(auth,async user=>{
  }catch(error){console.error(error);recordsEl.innerHTML='<div class="empty error">Unable to verify your account. Please sign in again.</div>';}
 });
 </script>
+<script src="assets/ailat-popups.js?v=1"></script>
 </body>
 </html>

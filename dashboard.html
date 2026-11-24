@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#102a43">
-<title>AILAT DATA | Dashboard</title>
+<title>AILAT DATA SUB | Dashboard</title>
 
 <style>
 *{box-sizing:border-box}
@@ -214,7 +214,7 @@ footer{
   </button>
 
   <div class="brand">
-   AILAT DATA
+   AILAT DATA SUB
    <small>SMART DIGITAL SERVICES</small>
   </div>
  </div>
@@ -339,13 +339,13 @@ footer{
 </div>
 
  <section class="info-card">
-  <h3>Welcome to AILAT DATA</h3>
+  <h3>Welcome to AILAT DATA SUB</h3>
   <p>Manage your digital services and transactions from one convenient dashboard.</p>
  </section>
 </div>
 
 <footer>
- AILAT DATA © 2026<br>
+ AILAT DATA SUB © 2026<br>
  All Rights Reserved
 </footer>
 
@@ -364,7 +364,7 @@ footer{
   </div>
 
   <h3 id="menuName">My Account</h3>
-  <small>AILAT DATA Member</small><br>
+  <small>AILAT DATA SUB Member</small><br>
 
   <button class="change-photo"
    onclick="document.getElementById('photoInput').click()">
@@ -501,7 +501,7 @@ async function checkAdminSupportAccess(user){
     if(knownSupportTicketRefs){
      const arrivals=tickets.filter(t=>t.ticket_ref&&!knownSupportTicketRefs.has(t.ticket_ref));
      if(arrivals.length && "Notification" in window && Notification.permission==="granted"){
-      new Notification("AILAT DATA — New Support Ticket",{body:arrivals.length+" new customer ticket(s) need your attention."});
+      new Notification("AILAT DATA SUB — New Support Ticket",{body:arrivals.length+" new customer ticket(s) need your attention."});
      }
     }
     knownSupportTicketRefs=refs;

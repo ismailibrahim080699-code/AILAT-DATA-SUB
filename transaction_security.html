@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101b2d"><title>Transaction Security - AILAT DATA</title>
+<meta name="theme-color" content="#101b2d"><title>Transaction Security - AILAT DATA SUB</title>
 <link rel="stylesheet" href="assets/ailat-theme.css?v=2">
 <style>
 /* Premium PIN setup presentation */
@@ -151,7 +151,7 @@ main>.card .section-toggle{min-height:82px!important;padding:13px 15px!important
 <button class="action secondary" id="testBiometricBtn" type="button" disabled>Test fingerprint / device unlock</button>
 <div id="passkeyList" style="margin-top:12px"></div>
 <p class="message" id="bioMessage" role="status" aria-live="polite"></p>
-<div class="note">Your fingerprint or face template must remain on your device. AILAT DATA must never collect biometric images or templates. Biometric templates stay on your device; AILAT DATA stores only a cryptographic passkey.</div>
+<div class="note">Your fingerprint or face template must remain on your device. AILAT DATA SUB must never collect biometric images or templates. Biometric templates stay on your device; AILAT DATA SUB stores only a cryptographic passkey.</div>
 </div>
 </section>
 <section class="card twofa-card"><div class="section-toggle twofa-row" aria-label="Login two-factor authentication"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="M12 11v5m0-9h.01"/></svg></span><span><h2>Activate Login 2FA</h2><span class="sub">Extra verification when signing in</span></span></span><span class="switch-wrap"><input type="checkbox" disabled aria-label="Login two-factor authentication unavailable"><span class="switch-track"></span></span></div><p class="twofa-note">Login 2FA is not connected yet. This option will become available after secure sign-in verification is implemented.</p></section><section class="card"><h2>Security controls</h2>
@@ -162,7 +162,7 @@ main>.card .section-toggle{min-height:82px!important;padding:13px 15px!important
 </section>
 <a class="back" href="settings.html" style="margin-top:10px;background:#eee9f8;color:#5b21b6">Back to Settings</a>
 <a class="back" href="dashboard.html">Back to Dashboard</a>
-</main><footer>AILAT DATA © 2026 · Account Security</footer>
+</main><footer>AILAT DATA SUB © 2026 · Account Security</footer>
 <script type="module">
 import { app } from "./firebase.js";
 import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -305,7 +305,7 @@ onAuthStateChanged(auth,async user=>{
    ]);
    deviceAuthAvailable=!!available;
    status.textContent=available?"Device authentication available":"Device authentication not detected";
-   detail.textContent=available?"You can register this phone. Your device will ask for fingerprint, face unlock, or its screen lock. AILAT DATA will not receive your biometric data.":"This browser did not detect a built-in authenticator. Check your phone's screen lock and browser support.";
+   detail.textContent=available?"You can register this phone. Your device will ask for fingerprint, face unlock, or its screen lock. AILAT DATA SUB will not receive your biometric data.":"This browser did not detect a built-in authenticator. Check your phone's screen lock and browser support.";
    registerBtn.disabled=!available;
    $("testBiometricBtn").disabled=!available||!document.querySelector("#passkeyList .row");
   }catch(e){status.textContent="Device support check unavailable";detail.textContent=e.message;registerBtn.disabled=true;}

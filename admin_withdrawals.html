@@ -17,7 +17,8 @@ h1{font-size:22px;margin:8px 0}p{font-size:13px;line-height:1.6;color:#75658f}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.approve{background:#15803d}.reject{background:#b91c1c}.paid{background:#0369a1}
 button:disabled{opacity:.5}.empty{background:white;border-radius:14px;padding:22px;text-align:center;color:#75658f}
 .warning{padding:12px;border-radius:10px;background:#fff7ed;color:#92400e;font-size:12px;line-height:1.6}
-</style></head>
+</style><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
+</head>
 <body>
 <header><a href="dashboard.html">← Dashboard</a><h1>Customer Withdrawal Requests</h1><div style="font-size:12px;opacity:.85">Secure AILAT DATA SUB Admin</div></header>
 <main>
@@ -83,4 +84,5 @@ onAuthStateChanged(auth,async user=>{
  admin=user;await load();}
  catch(e){statusEl.textContent="Could not verify sign-in. Please log in again.";}
 });
-</script></body></html>
+</script><script src="assets/ailat-popups.js?v=1"></script>
+</body></html>

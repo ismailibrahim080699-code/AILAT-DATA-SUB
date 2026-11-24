@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4c1d95">
+<link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
+<title>Borrowers - AILAT DATA SUB</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}
+header{background:linear-gradient(135deg,#4c1d95,#6d28d9,#7c3aed);color:#fff;padding:22px 18px 27px;border-radius:0 0 25px 25px;box-shadow:0 7px 22px #5b21b633}
+.head{max-width:650px;margin:auto;display:flex;align-items:center;gap:12px}
+.back{width:40px;height:40px;border-radius:12px;background:#ffffff20;color:#fff;text-decoration:none;display:grid;place-items:center;font-size:28px}
+header h1{font-size:22px;margin:0}
+header p{font-size:12px;margin:6px 0 0;opacity:.9}
+.container{max-width:650px;margin:auto;padding:18px 15px 35px}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:17px}
+.stat{background:#fff;border:1px solid #eee7fa;border-radius:16px;padding:15px;box-shadow:0 4px 15px #00000008}
+.stat small{display:block;color:#82749b;font-size:11px;font-weight:700}
+.stat strong{display:block;font-size:21px;margin-top:8px;overflow-wrap:anywhere}
+.stat.unpaid strong{color:#b45309}
+.stat.paid strong{color:#15803d}
+.card{background:#fff;border:1px solid #eee7fa;border-radius:18px;padding:17px;margin-bottom:16px;box-shadow:0 4px 15px #00000008}
+.card h2{font-size:16px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.field{margin-bottom:12px}
+.field.full{grid-column:1/-1}
+label{display:block;font-size:11px;font-weight:700;color:#5b477e;margin-bottom:6px}
+input,select,textarea{width:100%;border:1px solid #e4d9f5;border-radius:10px;padding:12px;font:14px Arial;background:#fff;color:#24134d;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#7c3aed;box-shadow:0 0 0 3px #7c3aed18}
+textarea{resize:vertical;min-height:75px}
+.primary,.secondary,.danger,.small-btn{border:0;border-radius:10px;padding:12px 14px;font-weight:800;cursor:pointer}
+.primary{width:100%;background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff}
+.primary:disabled{opacity:.6;cursor:wait}
+.secondary{background:#f3e8ff;color:#6d28d9}
+.danger{background:#fee2e2;color:#b91c1c}
+.form-actions{display:flex;gap:9px}
+.form-actions button{flex:1}
+.toolbar{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+.toolbar input{flex:1;min-width:0}
+.list{display:grid;gap:11px}
+.borrower{border:1px solid #eee7fa;border-radius:14px;padding:14px}
+.borrower-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.borrower h3{font-size:14px;margin:0 0 5px;overflow-wrap:anywhere}
+.muted{font-size:11px;color:#887b9e;line-height:1.6;overflow-wrap:anywhere}
+.amount{font-weight:900;font-size:15px;white-space:nowrap}
+.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:10px;font-weight:800;margin-top:9px}
+.status.unpaid{background:#fef3c7;color:#92400e}
+.status.paid{background:#dcfce7;color:#166534}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.small-btn{font-size:11px;padding:9px 11px}
+.empty,.message{text-align:center;color:#85799a;padding:26px 10px;font-size:13px;line-height:1.6}
+.notice{font-size:11px;color:#76688e;line-height:1.6;margin:0 0 13px}
+.error{color:#b91c1c}
+@media(max-width:380px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.summary{gap:8px}.stat{padding:12px}.stat strong{font-size:18px}.borrower-top{flex-direction:column}.amount{font-size:14px}}
+</style>
+</head>
+<body>
+<header><div class="head"><a class="back" href="dashboard.html" aria-label="Back">‹</a><div><h1>Borrowers</h1><p>Track products and services given on credit</p></div></div></header>
+<main class="container">
+ <section class="summary">
+  <div class="stat unpaid"><small>Outstanding Debt</small><strong id="outstanding">₦0.00</strong></div>
+  <div class="stat paid"><small>Payments Received</small><strong id="received">₦0.00</strong></div>
+ </section>
+ <section class="card">
+  <h2 id="formTitle">Add Borrower Record</h2>
+  <p class="notice">Record data, airtime, recharge cards or any product/service you gave a customer on credit. This page only tracks what is owed; it does not send products or charge your wallet.</p>
+  <form id="borrowerForm">
+   <div class="grid">
+    <div class="field"><label for="customerName">Customer name *</label><input id="customerName" maxlength="80" required placeholder="Customer's name"></div>
+    <div class="field"><label for="phone">Phone number *</label><input id="phone" maxlength="20" required inputmode="tel" placeholder="080..."></div>
+    <div class="field"><label for="service">Product / Service *</label><select id="service" required><option value="">Choose service</option><option>Data</option><option>Airtime</option><option>Recharge Card</option><option>Data Card</option><option>Electricity</option><option>Cable TV</option><option>Exam PIN</option><option>Other</option></select></div>
+    <div class="field"><label for="item">Bundle / Description</label><input id="item" maxlength="120" placeholder="e.g. MTN 2GB, ₦1,000 card"></div>
+    <div class="field"><label for="amount">Amount owed (₦) *</label><input id="amount" type="number" min="0.01" max="100000000" step="0.01" required inputmode="decimal" placeholder="0.00"></div>
+    <div class="field"><label for="quantity">Quantity</label><input id="quantity" type="number" min="1" max="100000" step="1" inputmode="numeric" placeholder="1"></div>
+    <div class="field"><label for="dueDate">Due date (optional)</label><input id="dueDate" type="date"></div>
+    <div class="field full"><label for="notes">Notes (optional)</label><textarea id="notes" maxlength="500" placeholder="Any extra details..."></textarea></div>
+   </div>
+   <div class="form-actions"><button class="primary" id="saveBtn" type="submit">Save Record</button><button class="secondary" id="cancelEdit" type="button" hidden>Cancel</button></div>
+   <p id="formMessage" class="notice" role="status" aria-live="polite"></p>
+  </form>
+ </section>
+ <section class="card">
+  <h2>My Borrowers</h2>
+  <div class="toolbar"><input id="search" type="search" placeholder="Search name, phone or service..."><select id="filter" aria-label="Filter records" style="max-width:125px"><option value="all">All</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+  <div id="records" class="list"><div class="message">Loading your records...</div></div>
+ </section>
+</main>
+<script type="module">
+import { app } from "./firebase.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+const auth=getAuth(app), db=getFirestore(app);
+const form=document.getElementById("borrowerForm");
+const recordsEl=document.getElementById("records");
+const saveBtn=document.getElementById("saveBtn");
+const formMessage=document.getElementById("formMessage");
+let currentUser=null, records=[], editingId=null, busy=false;
+
+const el=id=>document.getElementById(id);
+const money=value=>"₦"+Number(value||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+const safe=value=>String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+function dateText(value){
+ if(!value)return "Not set";
+ if(typeof value==="string")return value;
+ const date=value?.toDate?value.toDate():new Date(value);
+ return Number.isNaN(date.getTime())?"Not set":date.toLocaleDateString("en-NG",{dateStyle:"medium"});
+}
+function setMessage(message,isError=false){formMessage.textContent=message;formMessage.className=isError?"notice error":"notice";}
+function resetForm(){
+ form.reset();editingId=null;el("formTitle").textContent="Add Borrower Record";
+ saveBtn.textContent="Save Record";el("cancelEdit").hidden=true;setMessage("");
+}
+function updateSummary(){
+ const outstanding=records.filter(r=>r.status!=="paid").reduce((sum,r)=>sum+Number(r.amount||0),0);
+ const received=records.filter(r=>r.status==="paid").reduce((sum,r)=>sum+Number(r.amount||0),0);
+ el("outstanding").textContent=money(outstanding);el("received").textContent=money(received);
+}
+function render(){
+ updateSummary();
+ const term=el("search").value.trim().toLowerCase(), filter=el("filter").value;
+ const visible=records.filter(r=>{
+  const matches=(String(r.customerName||"")+" "+String(r.phone||"")+" "+String(r.service||"")+" "+String(r.item||"")).toLowerCase().includes(term);
+  return matches&&(filter==="all"||String(r.status||"unpaid")===filter);
+ });
+ if(!visible.length){recordsEl.innerHTML='<div class="empty">No borrower records found.<br>Add a record above when you give a customer something on credit.</div>';return;}
+ recordsEl.innerHTML=visible.map(r=>{
+  const status=r.status==="paid"?"paid":"unpaid";
+  return '<article class="borrower" data-id="'+safe(r.id)+'"><div class="borrower-top"><div><h3>'+safe(r.customerName)+'</h3><div class="muted">'+safe(r.phone)+' · '+safe(r.service)+(r.item?' · '+safe(r.item):'')+'</div></div><div class="amount">'+money(r.amount)+'</div></div><div class="muted">Quantity: '+safe(r.quantity||1)+' · Added: '+safe(dateText(r.createdAt))+' · Due: '+safe(dateText(r.dueDate))+'</div>'+(r.notes?'<div class="muted">Notes: '+safe(r.notes)+'</div>':'')+'<span class="status '+status+'">'+(status==="paid"?"PAID":"UNPAID")+'</span><div class="actions">'+(status==="paid"?'<button class="small-btn secondary" data-action="unpay">Mark Unpaid</button>':'<button class="small-btn primary" data-action="pay">Mark Paid</button>')+'<button class="small-btn secondary" data-action="edit">Edit</button><button class="small-btn danger" data-action="delete">Delete</button></div></article>';
+ }).join("");
+}
+async function loadRecords(){
+ recordsEl.innerHTML='<div class="message">Loading your records...</div>';
+ try{
+  const snapshot=await getDocs(collection(db,"users",currentUser.uid,"borrowers"));
+  records=snapshot.docs.map(d=>({id:d.id,...d.data()}));
+  records.sort((a,b)=>{
+   const av=a.createdAt?.toMillis?a.createdAt.toMillis():0;
+   const bv=b.createdAt?.toMillis?b.createdAt.toMillis():0;
+   return bv-av;
+  });
+  render();
+ }catch(error){
+  console.error("Borrowers load error:",error);
+  recordsEl.innerHTML='<div class="empty error">Could not load your records. Check your internet connection and Firestore Rules, then refresh.</div>';
+ }
+}
+form.addEventListener("submit",async event=>{
+ event.preventDefault();if(!currentUser||busy)return;
+ const amount=Number(el("amount").value),quantity=el("quantity").value?Number(el("quantity").value):1;
+ const data={
+  customerName:el("customerName").value.trim(),
+  phone:el("phone").value.trim(),
+  service:el("service").value,
+  item:el("item").value.trim(),
+  amount,
+  quantity,
+  dueDate:el("dueDate").value||"",
+  notes:el("notes").value.trim()
+ };
+ if(!data.customerName||!data.phone||!data.service||!Number.isFinite(amount)||amount<=0||!Number.isSafeInteger(quantity)||quantity<1){
+  setMessage("Please enter a valid name, phone, service, amount and quantity.",true);return;
+ }
+ busy=true;saveBtn.disabled=true;saveBtn.textContent=editingId?"Updating...":"Saving...";
+ try{
+  if(editingId){
+   await updateDoc(doc(db,"users",currentUser.uid,"borrowers",editingId),{...data,updatedAt:serverTimestamp()});
+  }else{
+   await addDoc(collection(db,"users",currentUser.uid,"borrowers"),{...data,status:"unpaid",createdAt:serverTimestamp(),updatedAt:serverTimestamp(),paidAt:null});
+  }
+  resetForm();await loadRecords();
+ }catch(error){
+  console.error("Borrower save error:",error);
+  setMessage("Could not save. Please check your connection and Firestore Rules, then try again.",true);
+ }finally{
+  busy=false;saveBtn.disabled=false;if(!editingId)saveBtn.textContent="Save Record";
+ }
+});
+el("cancelEdit").addEventListener("click",resetForm);
+el("search").addEventListener("input",render);
+el("filter").addEventListener("change",render);
+recordsEl.addEventListener("click",async event=>{
+ const button=event.target.closest("button[data-action]");if(!button||busy)return;
+ const card=button.closest("[data-id]"),id=card?.dataset.id,record=records.find(r=>r.id===id);
+ if(!record||!currentUser)return;
+ const action=button.dataset.action;
+ if(action==="edit"){
+  editingId=id;el("customerName").value=record.customerName||"";el("phone").value=record.phone||"";
+  el("service").value=record.service||"";el("item").value=record.item||"";
+  el("amount").value=record.amount??"";el("quantity").value=record.quantity??1;
+  el("dueDate").value=record.dueDate||"";el("notes").value=record.notes||"";
+  el("formTitle").textContent="Edit Borrower Record";saveBtn.textContent="Update Record";el("cancelEdit").hidden=false;
+  window.scrollTo({top:0,behavior:"smooth"});return;
+ }
+ if(action==="delete"){
+  if(!confirm("Delete this borrower record? This cannot be undone."))return;
+  busy=true;button.disabled=true;
+  try{await deleteDoc(doc(db,"users",currentUser.uid,"borrowers",id));await loadRecords();}
+  catch(error){console.error(error);alert("Could not delete this record. Please try again.");}
+  finally{busy=false;}return;
+ }
+ if(action==="pay"||action==="unpay"){
+  const paid=action==="pay";
+  if(paid&&!confirm("Confirm that this customer has paid "+money(record.amount)+"?"))return;
+  busy=true;button.disabled=true;
+  try{
+   await updateDoc(doc(db,"users",currentUser.uid,"borrowers",id),{status:paid?"paid":"unpaid",paidAt:paid?serverTimestamp():null,updatedAt:serverTimestamp()});
+   await loadRecords();
+  }catch(error){console.error(error);alert("Could not update payment status. Please try again.");}
+  finally{busy=false;}
+ }
+});
+onAuthStateChanged(auth,async user=>{
+ if(!user){window.location.replace("login.html");return;}
+ currentUser=user;
+ try{
+  await user.reload();
+  if(!user.emailVerified){await signOut(auth);alert("Please verify your email before using AILAT DATA.");window.location.replace("login.html");return;}
+  await loadRecords();
+ }catch(error){console.error(error);recordsEl.innerHTML='<div class="empty error">Unable to verify your account. Please sign in again.</div>';}
+});
+</script>
+</body>
+</html>

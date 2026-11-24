@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#102a43">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
-<title>AILAT DATA | Customer Support</title>
+<title>AILAT DATA SUB | Customer Support</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#303342;font-family:Arial,sans-serif}
 header{position:relative;padding:18px 18px 20px;background:#f4f5f7;color:#303342;border-radius:0;min-height:98px}
@@ -52,7 +52,7 @@ footer{text-align:center;padding:20px;color:#9aa5a9;font-size:10px}
  <section class="card">
   <h2>My support tickets</h2>
   <p>Only tickets belonging to your signed-in account are shown here.</p>
-  <div id="replyNotice" class="reply-alert" role="status" aria-live="polite" hidden>🔔 You have a new reply from AILAT DATA Support.</div>
+  <div id="replyNotice" class="reply-alert" role="status" aria-live="polite" hidden>🔔 You have a new reply from AILAT DATA SUB Support.</div>
   <div id="ticketList" class="hint">Loading your tickets…</div>
   <button type="button" id="refreshBtn" style="background:#e1f0ef;color:#0f766e">Refresh Tickets</button>
  </section>
@@ -61,7 +61,7 @@ footer{text-align:center;padding:20px;color:#9aa5a9;font-size:10px}
   <p><a href="faqs.html">Frequently Asked Questions</a> · <a href="transaction_history.html">Transaction History</a> · <a href="settings.html">Account Settings</a></p>
  </section>
 </main>
-<footer>AILAT DATA © 2026 · All Rights Reserved</footer>
+<footer>AILAT DATA SUB © 2026 · All Rights Reserved</footer>
 <script type="module">
 import {app} from "./firebase.js";
 import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -110,7 +110,7 @@ function renderTickets(tickets){
  const unread=latestTickets.filter(isReplyUnread).length;
  const notice=document.getElementById("replyNotice");
  notice.hidden=unread===0;
- notice.textContent=unread===1?"🔔 You have 1 new reply from AILAT DATA Support.":"🔔 You have "+unread+" new replies from AILAT DATA Support.";
+ notice.textContent=unread===1?"🔔 You have 1 new reply from AILAT DATA SUB Support.":"🔔 You have "+unread+" new replies from AILAT DATA SUB Support.";
  if(latestTickets.length===0){
   addText(ticketList,"p","","You have not submitted any support tickets yet.");
   return;

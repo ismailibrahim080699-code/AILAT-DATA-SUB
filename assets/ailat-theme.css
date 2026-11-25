@@ -1,38 +1,56 @@
-/* AILAT DATA SUB shared premium navy + teal theme */
-:root{--ailat-navy:#102a43;--ailat-teal:#0f766e;--ailat-deep:#155e75;--ailat-bg:#edf2f5;--ailat-text:#172b3a;--ailat-muted:#718693;--ailat-border:#dce7ec;--ailat-soft:#e1f0ef}
-body{background:var(--ailat-bg)!important;color:var(--ailat-text)!important}
-header{background:linear-gradient(135deg,var(--ailat-navy),var(--ailat-teal),var(--ailat-deep))!important;color:#fff!important}
-header h1,header h2,header h3,header p{color:#fff}
-.card,.profile-card,.transaction,.wallet-stat,.preview{background:#fff;border-color:var(--ailat-border);box-shadow:0 6px 20px #102a430d}
-h1,h2,h3,.card h3,.transaction-title,.message h3{color:var(--ailat-navy)}
-p,.subtitle,.note,.hint,.small,.details,.label,.meta,.empty{color:var(--ailat-muted)}
-input,select,textarea{border-color:#d4e0e5!important;background:#fbfdfe!important;color:var(--ailat-text)!important}
-input:focus,select:focus,textarea:focus{border-color:var(--ailat-teal)!important;outline:none}
-button,.button,.primary{background:linear-gradient(135deg,var(--ailat-teal),var(--ailat-deep))!important;color:#fff!important}
-button.secondary,.secondary,.refresh{background:var(--ailat-soft)!important;color:var(--ailat-teal)!important}
-a{color:var(--ailat-teal)}
-.back{color:var(--ailat-teal)}
-.network,.purchase-types .type-option{border-color:var(--ailat-border);background:#fff;color:var(--ailat-text)}
-.network.active,.purchase-types .type-option.active{border-color:var(--ailat-teal)!important;background:var(--ailat-soft)!important;color:var(--ailat-teal)!important}
-.network .network-name,.network.active .network-name{color:var(--ailat-teal)}
-.code,.link,.message-icon,.result,.notice,.reply,.wallet-stat{background:var(--ailat-soft);color:#345b57;border-color:#c8e2df}
-.status.request-recorded,.pill{background:var(--ailat-soft);color:var(--ailat-teal)}
-footer{color:#81939e}
-
-
-/* AILAT DATA SUB shared premium theme */
-:root{--ailat-navy:#101b2d;--ailat-navy-2:#17263b;--ailat-teal:#13b8a6;--ailat-teal-dark:#0e9488;--ailat-bg:#f3f6f8;--ailat-card:#fff;--ailat-text:#172b3a;--ailat-muted:#718096;--ailat-border:#e2e9ee;--ailat-soft:#e7f7f5}
+/* AILAT DATA — GLOBAL PREMIUM MIDNIGHT NAVY & CHAMPAGNE GOLD THEME */
+:root{
+ --ailat-navy:#14263f;--ailat-navy-2:#1d3b5b;--ailat-navy-3:#294f70;
+ --ailat-gold:#d7bd82;--ailat-gold-deep:#b8944e;--ailat-gold-soft:#f6f0e2;
+ --ailat-bg:#f4f6f9;--ailat-card:#fff;--ailat-text:#1b2d44;--ailat-muted:#7d8999;
+ --ailat-border:#e3e9ef;--ailat-soft:#edf2f6;
+}
 *{box-sizing:border-box}
+html{background:var(--ailat-bg)}
 body{background:var(--ailat-bg)!important;color:var(--ailat-text)!important}
-header{background:linear-gradient(135deg,var(--ailat-navy),var(--ailat-navy-2))!important;color:#fff!important}
-.card,.security-card,.settings-card,.panel{background:var(--ailat-card)!important;border-color:var(--ailat-border)!important;color:var(--ailat-text)!important}
-h1,h2,h3,h4,strong,label{color:inherit}
-.sub,.muted,.description,footer{color:var(--ailat-muted)!important}
-.symbol,.icon-box,.service-icon{background:var(--ailat-soft)!important;color:var(--ailat-teal-dark)!important}
-button,.action,.back{background:var(--ailat-teal-dark)!important;color:#fff!important;border-color:transparent!important}
-button.secondary,.action.secondary,.back.secondary{background:#e7f7f5!important;color:#087f76!important}
-input,select,textarea,.field{background:#fff!important;color:var(--ailat-text)!important;border:1px solid var(--ailat-border)!important}
-.status{background:#e7f7f5!important;color:#087f76!important}
-.note{background:#f0f7f8!important;color:#536777!important}
-.row{border-color:var(--ailat-border)!important}
-a{color:var(--ailat-teal-dark)}
+header,.top:not(.topbar),.page-header,.hero-header{
+ background:linear-gradient(125deg,var(--ailat-navy),var(--ailat-navy-2) 68%,var(--ailat-navy-3))!important;
+ color:#fff!important;border-color:#d7bd8255!important;
+}
+header h1,header h2,header h3,header p,.top h1,.top h2,.top p{color:inherit}
+header a,.top a{color:inherit}
+.card,.panel,.profile-card,.transaction,.borrower,.summary-card,.content-card,.settings-card,.stat,.preview{
+ background:var(--ailat-card)!important;border-color:var(--ailat-border)!important;
+ box-shadow:0 5px 18px #14263f0c;
+}
+h1,h2,h3,h4,.card h2,.card h3{color:var(--ailat-text)}
+p,.subtitle,.hint,.muted,.note,.small,.details{color:var(--ailat-muted)}
+label,.field-label{color:#354b64}
+input,select,textarea{border-color:#dce3eb!important;color:var(--ailat-text)!important;background:#fff!important}
+input:focus,select:focus,textarea:focus{border-color:var(--ailat-gold-deep)!important;box-shadow:0 0 0 3px #d7bd8228!important;outline:none}
+button,.button,.btn,.action,.link-button{
+ background:linear-gradient(135deg,var(--ailat-navy),var(--ailat-navy-2))!important;
+ color:#fff!important;border-color:transparent!important;
+}
+button:focus-visible,a:focus-visible{outline:3px solid var(--ailat-gold);outline-offset:2px}
+button:disabled{opacity:.58}
+.primary,.submit-btn,.fund-button,.confirm-button,.login-button{
+ background:linear-gradient(135deg,#ead8a9,#c9aa68)!important;color:#172b43!important;
+ border:1px solid #c7a75f!important;
+}
+.secondary,.back.secondary,.cancel-button,.refresh{
+ background:var(--ailat-gold-soft)!important;color:#29445f!important;border:1px solid #e8dcc0!important;
+}
+.back{color:inherit}
+.refresh,.icon-button,.tool-button{background:var(--ailat-gold-soft)!important;color:#29445f!important;border-color:#e8dcc0!important}
+a{color:#294f73}
+.network,.purchase-types .type-option{border-color:var(--ailat-border);background:#fff;color:var(--ailat-text)}
+.network.active,.purchase-types .type-option.active{border-color:var(--ailat-gold-deep)!important;background:var(--ailat-gold-soft)!important;color:#5d4925!important}
+.network .network-name,.network.active .network-name{color:#29445f}
+.code,.link,.message-icon,.result,.notice,.reply{background:var(--ailat-gold-soft);color:#594a2c;border-color:#eadcb9}
+.status.request-recorded,.pill,.badge{background:var(--ailat-gold-soft);color:#70572a;border-color:#e7d7b4}
+footer{color:#8792a1}
+.wallet{background:linear-gradient(125deg,#14263f 0%,#1c3b5e 58%,#285276 100%)!important;border:1px solid #d9c28a55!important;color:#fff!important}
+.wallet-label,.wallet-caption,.wallet-status{color:#e5d5ae!important}
+.wallet .balance{color:#fff!important}
+.wallet-primary{background:linear-gradient(135deg,#f4e6bd,#d5b875)!important;color:#172b43!important}
+.wallet-secondary{background:#ffffff10!important;border:1px solid #d9c28a65!important;color:#fff!important}
+.service .icon,.symbol,.icon-box,.service-icon{background:linear-gradient(145deg,#f7f0df,#eee3c6)!important;color:#80652e!important}
+.services-toggle{background:linear-gradient(135deg,#fff,#f7f3e8)!important;border-color:#e3d5b3!important;color:#27435f!important}
+.info-card{background:linear-gradient(125deg,#14263f,#24486c)!important;color:#fff!important}
+.info-card h3,.info-card p{color:#f3e6c7!important}

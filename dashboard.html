@@ -175,6 +175,16 @@ button,a{touch-action:manipulation}
 @media(max-width:380px){.wallet{padding:19px 16px}.wallet-actions-row{gap:6px}.wallet-primary,.wallet-secondary{font-size:10px}.services{gap:9px}.service{min-height:116px;padding:13px 10px}.service p{font-size:11px}}
 @supports (-webkit-touch-callout:none){body{min-height:100vh;min-height:-webkit-fill-available}.account-menu{height:100%;height:-webkit-fill-available}}
 
+
+/* Cleaner premium services layout + expandable list */
+.extra-service{display:none}
+.services.show-all .extra-service{display:flex}
+.services-toggle{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:250px;min-height:45px;margin:17px auto 0;padding:11px 18px;border:1px solid #e4d8f2;border-radius:14px;background:linear-gradient(135deg,#fff,#f5efff);color:#5521a5;font:800 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 5px 15px #3512540c;cursor:pointer;touch-action:manipulation}
+.services-toggle svg{width:17px;height:17px;transition:transform .2s}
+.services-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.services-toggle:active{transform:scale(.98)}
+@media(min-width:560px){.services-toggle{margin-top:20px}}
+
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>
@@ -266,47 +276,49 @@ button,a{touch-action:manipulation}
    <p>Gift Cards</p>
   </a>
 
-  <a class="service" href="referral.html">
+  <a class="service extra-service" href="referral.html">
    <div class="icon"><i data-lucide="gift"></i></div>
    <p>Referral</p>
   </a>
 
-  <a class="service" href="borrowers.html">
+  <a class="service extra-service" href="borrowers.html">
    <div class="icon"><i data-lucide="users"></i></div>
    <p>Debtors</p>
   </a>
 
-  <a class="service" href="bulk_sms.html">
+  <a class="service extra-service" href="bulk_sms.html">
    <div class="icon"><i data-lucide="message-square-text"></i></div>
    <p>Bulk SMS <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
-  <a class="service" href="data_card_printing.html">
+  <a class="service extra-service" href="data_card_printing.html">
    <div class="icon"><i data-lucide="printer"></i></div>
    <p>Data Card Printing <small style="display:block;color:#6b8795;margin-top:4px">Secure PIN Printing</small></p>
   </a>
 
-  <a class="service" href="esim.html">
+  <a class="service extra-service" href="esim.html">
    <div class="icon"><i data-lucide="globe-2"></i></div>
    <p>eSIM</p>
   </a>
 
-  <a class="service" href="smile.html">
+  <a class="service extra-service" href="smile.html">
    <div class="icon"><i data-lucide="wifi"></i></div>
    <p>Buy Smile <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
-  <a class="service" href="alpha.html">
+  <a class="service extra-service" href="alpha.html">
    <div class="icon"><i data-lucide="signal"></i></div>
    <p>Buy Alpha <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
-  <a class="service" href="kirani.html">
+  <a class="service extra-service" href="kirani.html">
    <div class="icon"><i data-lucide="radio-tower"></i></div>
    <p>Buy Kirani <small style="display:block;color:#6b8795;margin-top:4px">Pre-API Setup</small></p>
   </a>
 
 </div>
+ <button class="services-toggle" id="servicesToggle" type="button" aria-expanded="false" onclick="toggleMoreServices()">See More Services <i data-lucide="chevron-down"></i></button>
+
 
  <section class="info-card">
   <h3>Welcome to AILAT DATA SUB</h3>
@@ -364,6 +376,21 @@ button,a{touch-action:manipulation}
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 if(window.lucide) lucide.createIcons();
+</script>
+
+<script>
+
+window.toggleMoreServices=function(){
+ const grid=document.querySelector(".services");
+ const button=document.getElementById("servicesToggle");
+ const expanded=grid.classList.toggle("show-all");
+ button.setAttribute("aria-expanded",String(expanded));
+ button.innerHTML=expanded
+  ? 'Show Less <i data-lucide="chevron-up"></i>'
+  : 'See More Services <i data-lucide="chevron-down"></i>';
+ if(window.lucide)lucide.createIcons();
+};
+
 </script>
 
 <script type="module">

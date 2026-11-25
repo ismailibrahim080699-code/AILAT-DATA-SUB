@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#4c1d95">
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
-<title>Borrowers - AILAT DATA SUB</title>
+<title>Debtors - AILAT DATA SUB</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f3ff;color:#24134d}
@@ -76,14 +76,14 @@ textarea{resize:vertical;min-height:75px}
 <link rel="stylesheet" href="assets/ailat-popups.css?v=2">
 </head>
 <body>
-<header><div class="head"><a class="back" href="dashboard.html" aria-label="Back">‹</a><div><h1>Borrowers</h1><p>Track products and services given on credit</p></div></div></header>
+<header><div class="head"><a class="back" href="dashboard.html" aria-label="Back">‹</a><div><h1>Debtors</h1><p>Track products and services given on credit</p></div></div></header>
 <main class="container">
  <section class="summary">
   <div class="stat unpaid"><small>Outstanding Debt</small><strong id="outstanding">₦0.00</strong></div>
   <div class="stat paid"><small>Payments Received</small><strong id="received">₦0.00</strong></div>
  </section>
  <section class="card">
-  <h2 id="formTitle">Add Borrower Record</h2>
+  <h2 id="formTitle">Add Debtor Record</h2>
   <p class="notice">Record data, airtime, recharge cards or any product/service you gave a customer on credit. This page only tracks what is owed; it does not send products or charge your wallet.</p>
   <form id="borrowerForm">
    <div class="grid">
@@ -101,7 +101,7 @@ textarea{resize:vertical;min-height:75px}
   </form>
  </section>
  <section class="card">
-  <h2>My Borrowers</h2>
+  <h2>My Debtors</h2>
   <div class="toolbar"><input id="search" type="search" placeholder="Search name, phone or service..."><select id="filter" aria-label="Filter records" style="max-width:125px"><option value="all">All</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
   <div id="records" class="list"><div class="message">Loading your records...</div></div>
  </section>
@@ -110,9 +110,9 @@ textarea{resize:vertical;min-height:75px}
 <div class="delete-overlay" id="deleteOverlay" role="presentation">
  <section class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteTitle" aria-describedby="deleteDescription">
   <div class="delete-icon" aria-hidden="true">!</div>
-  <h2 id="deleteTitle">Delete borrower record?</h2>
+  <h2 id="deleteTitle">Delete debtor record?</h2>
   <p id="deleteDescription">Are you sure you want to delete the record for <span class="delete-record-name" id="deleteRecordName">this customer</span>?</p>
-  <p class="delete-warning">This action cannot be undone. The borrower record will be permanently removed.</p>
+  <p class="delete-warning">This action cannot be undone. The debtor record will be permanently removed.</p>
   <div class="delete-actions">
    <button type="button" class="delete-cancel" id="cancelDelete">Cancel</button>
    <button type="button" class="delete-confirm" id="confirmDelete">Yes, Delete</button>
@@ -143,7 +143,7 @@ function dateText(value){
 }
 function setMessage(message,isError=false){formMessage.textContent=message;formMessage.className=isError?"notice error":"notice";}
 function resetForm(){
- form.reset();editingId=null;el("formTitle").textContent="Add Borrower Record";
+ form.reset();editingId=null;el("formTitle").textContent="Add Debtor Record";
  saveBtn.textContent="Save Record";el("cancelEdit").hidden=true;setMessage("");
 }
 function updateSummary(){
@@ -158,7 +158,7 @@ function render(){
   const matches=(String(r.customerName||"")+" "+String(r.phone||"")+" "+String(r.service||"")+" "+String(r.item||"")).toLowerCase().includes(term);
   return matches&&(filter==="all"||String(r.status||"unpaid")===filter);
  });
- if(!visible.length){recordsEl.innerHTML='<div class="empty">No borrower records found.<br>Add a record above when you give a customer something on credit.</div>';return;}
+ if(!visible.length){recordsEl.innerHTML='<div class="empty">No debtor records found.<br>Add a record above when you give a customer something on credit.</div>';return;}
  recordsEl.innerHTML=visible.map(r=>{
   const status=r.status==="paid"?"paid":"unpaid";
   return '<article class="borrower" data-id="'+safe(r.id)+'"><div class="borrower-top"><div><h3>'+safe(r.customerName)+'</h3><div class="muted">'+safe(r.phone)+' · '+safe(r.service)+(r.item?' · '+safe(r.item):'')+'</div></div><div class="amount">'+money(r.amount)+'</div></div><div class="muted">Quantity: '+safe(r.quantity||1)+' · Added: '+safe(dateText(r.createdAt))+' · Due: '+safe(dateText(r.dueDate))+'</div>'+(r.notes?'<div class="muted">Notes: '+safe(r.notes)+'</div>':'')+'<span class="status '+status+'">'+(status==="paid"?"PAID":"UNPAID")+'</span><div class="actions">'+(status==="paid"?'<button class="small-btn secondary" data-action="unpay">Mark Unpaid</button>':'<button class="small-btn primary" data-action="pay">Mark Paid</button>')+'<button class="small-btn secondary" data-action="edit">Edit</button><button class="small-btn danger" data-action="delete">Delete</button></div></article>';
@@ -176,7 +176,7 @@ async function loadRecords(){
   });
   render();
  }catch(error){
-  console.error("Borrowers load error:",error);
+  console.error("Debtors load error:",error);
   recordsEl.innerHTML='<div class="empty error">Could not load your records. Check your internet connection and Firestore Rules, then refresh.</div>';
  }
 }
@@ -205,7 +205,7 @@ form.addEventListener("submit",async event=>{
   }
   resetForm();await loadRecords();
  }catch(error){
-  console.error("Borrower save error:",error);
+  console.error("Debtor save error:",error);
   setMessage("Could not save. Please check your connection and Firestore Rules, then try again.",true);
  }finally{
   busy=false;saveBtn.disabled=false;if(!editingId)saveBtn.textContent="Save Record";
@@ -234,7 +234,7 @@ el("confirmDelete").addEventListener("click",async()=>{
   closeDeleteModal();
   await loadRecords();
  }catch(error){
-  console.error("Borrower delete error:",error);
+  console.error("Debtor delete error:",error);
   el("deleteDescription").textContent="Could not delete this record. Please check your connection and try again.";
   el("confirmDelete").disabled=false;el("confirmDelete").textContent="Try Again";
  }finally{busy=false;}
@@ -253,7 +253,7 @@ recordsEl.addEventListener("click",async event=>{
   el("service").value=record.service||"";el("item").value=record.item||"";
   el("amount").value=record.amount??"";el("quantity").value=record.quantity??1;
   el("dueDate").value=record.dueDate||"";el("notes").value=record.notes||"";
-  el("formTitle").textContent="Edit Borrower Record";saveBtn.textContent="Update Record";el("cancelEdit").hidden=false;
+  el("formTitle").textContent="Edit Debtor Record";saveBtn.textContent="Update Record";el("cancelEdit").hidden=false;
   window.scrollTo({top:0,behavior:"smooth"});return;
  }
  if(action==="delete"){

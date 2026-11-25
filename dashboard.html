@@ -79,6 +79,52 @@ footer{text-align:center;color:#91899e;font-size:10px;padding:27px 10px 32px;lin
 @media(min-width:850px){body{background:linear-gradient(180deg,#24113f 0,#32165a 275px,var(--bg) 275px)}header{padding-top:28px;padding-bottom:38px}.container{padding-top:0}.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.service{min-height:145px}.wallet{padding:30px 34px}.header-welcome{margin-top:35px}}
 @media(max-width:380px){.services{gap:9px}.service{min-height:116px;padding:14px 9px}.service p{font-size:11px}.brand{font-size:18px}.wallet{padding:19px}.balance{font-size:29px}}
 @media(prefers-reduced-motion:reduce){.service,.account-menu{transition:none}}
+
+/* AILAT DATA — BilalSada-inspired app dashboard refresh */
+body{background:#f4f2f8;color:#211536;letter-spacing:0}
+header{background:#fff;color:#25163e;padding:17px 18px 22px;box-shadow:0 2px 18px #25163e08;border-bottom:1px solid #eee9f5;overflow:hidden}
+header:before,header:after{display:none}
+.topbar{gap:12px}
+.profile-button{width:45px;height:45px;border-radius:15px;background:#f1eaff;border:1px solid #e8ddfa;color:#5a2aa5;backdrop-filter:none}
+.brand{font-size:18px;letter-spacing:.5px;color:#281541}
+.brand small{font-size:9px;letter-spacing:1.8px;color:#8d819e;opacity:1}
+.header-welcome{margin-top:22px}
+.header-welcome h2{font-size:22px;color:#24143c;letter-spacing:-.5px}
+.header-welcome p{color:#92879f;font-size:12px}
+.container{padding-top:0}
+.wallet{margin-top:0;background:linear-gradient(135deg,#32145f 0%,#54259b 58%,#7540c5 100%);color:#fff;border:0;border-radius:23px;padding:21px 20px 18px;box-shadow:0 15px 30px #48217c30}
+.wallet:after{width:190px;height:190px;right:-68px;top:-98px;background:#ffffff0a;border:1px solid #ffffff16;box-shadow:0 0 0 28px #ffffff06,0 0 0 58px #ffffff04}
+.wallet-top{align-items:center}
+.wallet-label{color:#e5d8f8;font-size:10px;letter-spacing:1.1px}
+.wallet-actions{position:relative;z-index:2}
+.wallet-icon{background:#ffffff16;border:1px solid #ffffff30;color:#fff;border-radius:11px;width:34px;height:34px}
+.wallet-caption{position:relative;z-index:1;color:#e2d5f3;font-size:11px;margin-top:21px}
+.balance{color:#fff;font-size:clamp(31px,7vw,39px);font-weight:850;letter-spacing:-1px;margin:7px 0 3px}
+.wallet-status{color:#d6c4eb;font-size:10px;margin-top:5px}
+.wallet-actions-row{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin-top:20px}
+.wallet-primary,.wallet-secondary{min-height:42px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:11px;font-weight:800;cursor:pointer;padding:9px 6px}
+.wallet-primary{background:#fff;color:#492184}
+.wallet-secondary{background:#ffffff16;color:#fff;border:1px solid #ffffff32}
+.wallet-primary svg,.wallet-secondary svg{width:15px;height:15px}
+.section-heading{margin:27px 2px 13px;align-items:center}
+.section-heading h3{font-size:17px;color:#25163e}
+.section-heading span{font-size:10px;color:#9a90a6}
+.services{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.service{min-height:112px;border:1px solid #eee9f4;border-radius:16px;padding:13px 8px 12px;align-items:center;text-align:center;justify-content:center;box-shadow:0 4px 14px #24143c08}
+.service .icon{width:43px;height:43px;border-radius:14px;margin-bottom:9px;background:#f0e8ff;color:#5a2aa5}
+.service:nth-child(3n+2) .icon{background:#eaf2ff;color:#3567a8}
+.service:nth-child(3n) .icon{background:#fff2e3;color:#a66b22}
+.service p{font-size:11px;line-height:1.3}
+.service p small{font-size:8px!important}
+.info-card{background:#fff;color:#281841;border:1px solid #eee9f4;border-radius:17px;box-shadow:0 5px 18px #24143c08;padding:17px;margin-top:18px}
+.info-card h3{color:#281841;font-size:14px}
+.info-card p{color:#81768f;font-size:11px}
+footer{padding-bottom:26px}
+.account-menu{border-radius:0 20px 20px 0}
+@media(min-width:560px){.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.service{min-height:125px}.container{padding-left:24px;padding-right:24px}}
+@media(min-width:850px){body{background:#f4f2f8}header{padding:22px 24px 25px}.header-welcome{margin-top:24px}.services{grid-template-columns:repeat(4,minmax(0,1fr))}.wallet{padding:25px 28px}.container{padding-top:18px}}
+@media(max-width:360px){.wallet-actions-row{gap:5px}.wallet-primary,.wallet-secondary{font-size:10px}.services{gap:7px}.service{min-height:105px}}
+
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>
@@ -108,29 +154,19 @@ footer{text-align:center;color:#91899e;font-size:10px;padding:27px 10px 32px;lin
 
  <section class="wallet">
   <div class="wallet-top">
-   <span class="wallet-label">My Wallet Balance</span>
+   <span class="wallet-label"><i data-lucide="wallet" style="width:15px;height:15px;vertical-align:-3px;margin-right:5px"></i> WALLET OVERVIEW</span>
    <div class="wallet-actions">
-    <button class="wallet-icon" id="toggleBalance" title="Hide balance">
-     <i data-lucide="eye"></i>
-    </button>
-    <button class="wallet-icon" id="refreshWallet" title="Refresh wallet">
-     <i data-lucide="refresh-cw"></i>
-    </button>
+    <button class="wallet-icon" id="toggleBalance" title="Hide balance" aria-label="Toggle balance"><i data-lucide="eye"></i></button>
+    <button class="wallet-icon" id="refreshWallet" title="Refresh wallet" aria-label="Refresh wallet"><i data-lucide="refresh-cw"></i></button>
    </div>
   </div>
-
+  <div class="wallet-caption">Available balance</div>
   <div class="balance" id="walletBalance">Loading...</div>
-
-  <div class="wallet-bottom">
-   <small>Available Wallet Balance</small>
-   <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end">
-    <button class="fund-button" onclick="fundWallet()">Fund Wallet</button>
-    <a class="fund-button" href="withdrawal.html" style="text-decoration:none;display:inline-flex;align-items:center">Withdraw</a>
-   </div>
-  </div>
-
-  <div class="wallet-status" id="walletStatus">
-   Connecting to wallet...
+  <div class="wallet-status" id="walletStatus">Connecting to wallet...</div>
+  <div class="wallet-actions-row">
+   <button class="wallet-primary" onclick="fundWallet()"><i data-lucide="plus-circle"></i> Add Money</button>
+   <a class="wallet-secondary" href="withdrawal.html"><i data-lucide="arrow-up-right"></i> Withdraw</a>
+   <a class="wallet-secondary" href="transaction_history.html"><i data-lucide="receipt-text"></i> History</a>
   </div>
  </section>
 

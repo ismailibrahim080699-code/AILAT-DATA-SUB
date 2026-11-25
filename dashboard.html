@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#102a43">
+<meta name="theme-color" content="#4c1d95">
 <title>AILAT DATA SUB | Dashboard</title>
 
 <style>
@@ -201,6 +201,53 @@ footer{
  .brand{font-size:20px}
  .balance{font-size:28px}
 }
+
+/* AILAT DATA SUB premium dashboard refresh */
+:root{color-scheme:light;--ailat-purple:#4c1d95;--ailat-violet:#7c3aed;--ailat-ink:#24134d;--ailat-muted:#766b8d;--ailat-line:#e9e2f5;--ailat-bg:#f7f5fc}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 90% 5%,#eee7ff 0,transparent 30%),var(--ailat-bg);color:var(--ailat-ink);letter-spacing:.05px}
+header{background:linear-gradient(125deg,#241044 0%,#4c1d95 52%,#7c3aed 100%);padding:25px 20px 43px;border-radius:0 0 32px 32px;box-shadow:0 14px 36px #4c1d9530}
+header:before{background:#ffffff12}
+header:after{background:#ffffff10}
+.topbar,.header-welcome,.container{max-width:900px;margin-left:auto;margin-right:auto}
+.profile-button{background:#ffffff;color:var(--ailat-purple);border:2px solid #ffffff90;box-shadow:0 5px 18px #16052e35}
+.brand{font-size:22px;letter-spacing:1.1px}
+.brand small{font-size:9px;letter-spacing:2.3px}
+.header-welcome{margin-top:27px}
+.header-welcome h2{font-size:clamp(21px,4vw,27px);font-weight:850;letter-spacing:-.5px}
+.header-welcome p{font-size:12px;letter-spacing:.2px}
+.container{max-width:900px;padding:22px 17px 28px}
+.wallet{background:linear-gradient(125deg,#28104f 0%,#5120a0 55%,#7c3aed 100%);border:1px solid #ffffff24;border-radius:25px;padding:23px;box-shadow:0 15px 35px #4c1d9528}
+.wallet:after{width:205px;height:205px;right:-62px;top:-85px;background:#ffffff0d}
+.wallet-label{font-size:13px;letter-spacing:.2px}
+.balance{font-size:clamp(30px,6vw,38px);letter-spacing:-.6px}
+.wallet-icon{border-radius:12px;background:#ffffff20;border-color:#ffffff50}
+.fund-button{background:#fff;color:#4c1d95;border-radius:12px;padding:12px 17px;box-shadow:0 4px 12px #16052e18;font-weight:850}
+.fund-button:active{transform:scale(.97)}
+.section-heading{margin:30px 2px 16px}
+.section-heading h3{font-size:18px;color:#24134d;letter-spacing:-.25px}
+.section-heading span{color:#817595;font-size:11px}
+.services{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.service{min-height:122px;padding:17px 9px 15px;border:1px solid var(--ailat-line);border-radius:20px;background:linear-gradient(150deg,#fff,#fbfaff);color:var(--ailat-ink);box-shadow:0 6px 18px #32105f0a;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.service:active{transform:scale(.975);box-shadow:0 3px 9px #32105f12}
+.service .icon{width:49px;height:49px;border-radius:16px;background:linear-gradient(145deg,#f0eaff,#e5d9ff);color:#5b21b6;margin-bottom:11px}
+.service .icon svg{width:23px;height:23px;stroke-width:2.1}
+.service p{font-size:11.5px;line-height:1.45;font-weight:800}
+.service p small{color:#887a9e!important;font-weight:600;font-size:9px!important}
+.info-card{border:1px solid var(--ailat-line);border-radius:20px;padding:19px;background:linear-gradient(145deg,#fff,#fcfaff);box-shadow:0 7px 20px #32105f09}
+.info-card h3{font-size:15px;color:var(--ailat-ink)}
+.info-card p{color:var(--ailat-muted);font-size:12px}
+footer{color:#8c81a0}
+.account-menu{background:#fdfcff;border-right:1px solid var(--ailat-line)}
+.close-menu{background:#f0eaff;color:#5b21b6}
+.menu-avatar{background:linear-gradient(135deg,#f0eaff,#dfd0ff);color:#5b21b6;box-shadow:0 5px 18px #4c1d9520}
+.change-photo{background:#f0eaff;color:#5b21b6}
+.menu-links a{color:#4c1d95;border-bottom-color:#f0ebf8}
+.menu-links a:active{background:#f3edff}
+@media(min-width:520px){.services{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.service{min-height:132px}.container{padding-left:22px;padding-right:22px}}
+@media(min-width:760px){.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.container{padding-top:26px}.wallet{padding:27px 29px}}
+@media(max-width:380px){.services{gap:10px}.service{min-height:116px}.brand{font-size:19px}.balance{font-size:28px}.wallet{padding:19px}}
+@media(prefers-reduced-motion:reduce){.service,.account-menu{transition:none}}
+
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>

@@ -185,6 +185,19 @@ button,a{touch-action:manipulation}
 .services-toggle:active{transform:scale(.98)}
 @media(min-width:560px){.services-toggle{margin-top:20px}}
 
+
+/* Compact four-across service tiles */
+.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.service{min-width:0;min-height:91px;padding:10px 4px 9px;border-radius:13px;align-items:center;justify-content:center;text-align:center;box-shadow:0 3px 11px #30144f09}
+.service .icon{width:32px;height:32px;min-width:32px;border-radius:10px;margin:0 0 7px}
+.service .icon svg{width:17px;height:17px;stroke-width:2.1}
+.service p{width:100%;font-size:9px;line-height:1.2;font-weight:800;overflow-wrap:anywhere}
+.service p small{font-size:7px!important;line-height:1.15;margin-top:3px}
+.services-toggle{margin-top:14px;min-height:40px;font-size:11px}
+@media(min-width:560px){.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.service{min-height:105px;padding:12px 7px}.service .icon{width:36px;height:36px;margin-bottom:8px}.service .icon svg{width:19px;height:19px}.service p{font-size:10px}}
+@media(min-width:850px){.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.service{min-height:116px;padding:14px 9px}.service .icon{width:39px;height:39px}.service p{font-size:11px}}
+@media(max-width:340px){.services{gap:6px}.service{min-height:85px;padding:8px 2px}.service p{font-size:8px}.service .icon{width:29px;height:29px;min-width:29px}.service .icon svg{width:16px;height:16px}}
+
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 </head>

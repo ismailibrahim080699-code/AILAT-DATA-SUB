@@ -705,47 +705,6 @@ async function enforceFirstTransactionPin(user){
 }
 
 
-async function optionalBiometricGate(user){
- const gate=document.getElementById("ailatUnlockGate");
- const message=document.getElementById("ailatUnlockMessage");
- const fingerprint=document.getElementById("ailatFingerprintButton");
- const fallback=document.getElementById("ailatPasswordFallback");
- const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
- const call=async(method="GET",body=null)=>{
-  const token=await user.getIdToken(true);
-  const response=await fetch(endpoint,{method,headers:{"Authorization":"Bearer "+token,...(body?{"Content-Type":"application/json"}:{})},...(body?{body:JSON.stringify(body)}:{})});
-  const data=await response.json().catch(()=>({success:false,error:"Security service response was invalid."}));
-  if(!response.ok||!data.success)throw new Error(data.error||"Biometric service unavailable.");
-  return data;
- };
- const toBytes=value=>{const x=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(x+"=".repeat((4-x.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
- const options=o=>({...o,challenge:toBytes(o.challenge),allowCredentials:(o.allowCredentials||[]).map(c=>({...c,id:toBytes(c.id)}))});
- const b64=b=>{const a=new Uint8Array(b);let x="";for(const n of a)x+=String.fromCharCode(n);return btoa(x).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
- const serialize=c=>({id:c.id,rawId:b64(c.rawId),type:c.type,authenticatorAttachment:c.authenticatorAttachment,clientExtensionResults:c.getClientExtensionResults(),response:{clientDataJSON:b64(c.response.clientDataJSON),authenticatorData:b64(c.response.authenticatorData),signature:b64(c.response.signature),userHandle:c.response.userHandle?b64(c.response.userHandle):null}});
- let hasPasskey=false;
- try{const saved=await call();hasPasskey=!!saved.passkeys?.length;}catch(e){console.warn("Optional passkey lookup:",e);}
- if(!hasPasskey)return;
- gate.style.display="flex";
- let settled=false;
- const continueToDashboard=()=>{if(settled)return;settled=true;gate.style.display="none";};
- const usePassword=async()=>{if(settled)return;settled=true;try{await signOut(auth);}finally{window.location.replace("login.html");}};
- fallback.addEventListener("click",usePassword,{once:true});
- gate.addEventListener("click",e=>{if(e.target===gate)usePassword();});
- fingerprint.addEventListener("click",async()=>{
-  if(settled)return;
-  fingerprint.disabled=true;message.textContent="Ana tabbatar da yatsanka...";
-  try{
-   if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials?.get)throw new Error("Na'urar ba ta goyon bayan fingerprint a wannan browser. Yi amfani da email da password.");
-   const begin=await call("POST",{action:"start_authentication"});
-   const credential=await navigator.credentials.get({publicKey:options(begin.options)});
-   if(!credential)throw new Error("Ba a kammala tabbatar da yatsa ba.");
-   const verified=await call("POST",{action:"finish_authentication",response:serialize(credential)});
-   if(!verified.verified)throw new Error("Ba a tabbatar da na'urar ba.");
-   continueToDashboard();
-  }catch(e){message.textContent=(e.message||"Fingerprint bai yi aiki ba.")+" Ka iya amfani da email da password.";fingerprint.disabled=false;}
- });
-}
-
 onAuthStateChanged(auth,async(user)=>{
  if(!user){
   window.location.href = "login.html";
@@ -764,8 +723,7 @@ onAuthStateChanged(auth,async(user)=>{
    return;
   }
 
-  // Offer optional fingerprint unlock for an already signed-in account; password fallback remains available.
-  await optionalBiometricGate(user);
+  // Fingerprint is offered only on the login screen; password login proceeds directly to the dashboard.
 
   await enforceFirstTransactionPin(user);
 

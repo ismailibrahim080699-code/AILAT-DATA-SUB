@@ -260,6 +260,16 @@ footer{color:#8290a2}
 #ailatUnlockGate .unlock-fingerprint{width:104px;height:104px;margin:20px auto;border:2px solid #e2b84f;border-radius:50%;display:grid;place-items:center;background:#ffffff0c;color:#f3d98e;font-size:54px;cursor:pointer}
 #ailatUnlockGate button{width:100%;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#f3dfaa,#d3aa50);color:#10243d;font-weight:700}
 #ailatUnlockGate .unlock-hint{color:#e4eaf2;font-size:13px;line-height:1.6}
+
+/* Dashboard header: remove the large brand logo and tighten the top spacing */
+.topbar{min-height:46px;justify-content:flex-start}
+.brand-logo{display:none!important}
+header{padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:22px}
+.header-welcome{margin-top:15px}
+@media(min-width:850px){
+ header{padding-top:22px;padding-bottom:25px}
+ .header-welcome{margin-top:18px}
+}
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 
@@ -291,7 +301,6 @@ footer{color:#8290a2}
    <img id="topPhoto" alt="Profile">
   </button>
 
-  <div class="brand-logo" role="img" aria-label="AILAT DATA SUB"><img src="assets/ailat-logo.svg" alt="AILAT DATA SUB official logo" style="display:block;width:205px;max-width:calc(100vw - 115px);height:auto"></div>
  </div>
 
  <div class="header-welcome">

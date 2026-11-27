@@ -42,7 +42,7 @@ function protectPage() {
 
         if (!user.emailVerified) {
           await signOut(auth);
-          alert("Please verify your email before using AILAT DATA.");
+          alert("Please verify your email before using AILAT DATA SUB.");
           window.location.replace("login.html");
           resolve(false);
           return;

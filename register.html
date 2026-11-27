@@ -204,6 +204,25 @@ if(urlReferralCode){
  referralInput.value = urlReferralCode;
 }
 
+// OPTIONAL DEVICE BIOMETRIC ENROLLMENT AFTER SUCCESSFUL REGISTRATION
+function decodeB64url(value){const v=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(v+"=".repeat((4-v.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));}
+function encodeB64url(buffer){const bytes=new Uint8Array(buffer);let raw="";for(const byte of bytes)raw+=String.fromCharCode(byte);return btoa(raw).replace(/\\+/g,"-").replace(/\\//g,"_").replace(/=+$/g,"");}
+async function registerTransactionBiometric(user){
+ if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials?.create)throw new Error("This browser does not support device fingerprint registration. Use Chrome on a supported phone.");
+ const token=await user.getIdToken(true);
+ const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+ const call=async(action,response)=>{const res=await fetch(endpoint,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({action,...(response?{response}:{})})});const data=await res.json().catch(()=>({}));if(!res.ok||!data.success)throw new Error(data.error||"Biometric setup could not be completed.");return data;};
+ const begin=await call("start_registration");
+ const options=begin.options;
+ options.challenge=decodeB64url(options.challenge);
+ options.user.id=decodeB64url(options.user.id);
+ options.excludeCredentials=(options.excludeCredentials||[]).map(item=>({...item,id:decodeB64url(item.id)}));
+ const credential=await navigator.credentials.create({publicKey:options});
+ if(!credential)throw new Error("Device biometric registration was cancelled.");
+ const response={id:credential.id,rawId:encodeB64url(credential.rawId),type:credential.type,authenticatorAttachment:credential.authenticatorAttachment,clientExtensionResults:credential.getClientExtensionResults(),response:{clientDataJSON:encodeB64url(credential.response.clientDataJSON),attestationObject:encodeB64url(credential.response.attestationObject),transports:credential.response.getTransports?credential.response.getTransports():[]}};
+ return call("finish_registration",response);
+}
+
 // REGISTRATION
 
 form.addEventListener("submit", async function(event){
@@ -331,10 +350,21 @@ form.addEventListener("submit", async function(event){
 
   await sendEmailVerification(result.user);
 
-  alert(
-   "Account created successfully! A verification email has been sent to your email address. Please open your email and click Verify Email before logging in."
-  );
+  let biometricMessage = "You can enable fingerprint later in Settings > Transaction Security.";
+  const wantsBiometric = window.confirm("Account created successfully!\n\nWould you like to set up fingerprint / device biometric now to approve transactions?\n\nChoose OK to set it up, or Cancel to do it later.");
+  if(wantsBiometric){
+   try{
+    button.textContent = "Setting up fingerprint...";
+    const biometricResult = await registerTransactionBiometric(createdUser);
+    biometricMessage = biometricResult.message || "Fingerprint setup completed successfully.";
+   }catch(biometricError){
+    console.error("Registration biometric setup:",biometricError);
+    biometricMessage = "Fingerprint was not enabled now: " + biometricError.message + "\\nYou can enable it later in Settings > Transaction Security.";
+   }
+  }
 
+  alert("Account created successfully! A verification email has been sent. Please verify your email before logging in.\\n\\n" + biometricMessage);
+  try{await auth.signOut();}catch(signOutError){console.error("Post-registration sign out:",signOutError);}
   window.location.href = "login.html";
 
  }catch(error){

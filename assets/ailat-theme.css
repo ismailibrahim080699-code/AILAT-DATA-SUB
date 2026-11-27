@@ -111,3 +111,65 @@ input:focus,select:focus,textarea:focus{border-color:var(--ailat-blue)!important
 }
 .brand-mark{width:44px;height:44px;object-fit:contain}
 footer{color:var(--ailat-muted)!important}
+
+
+/* ACCESSIBLE CONTRAST FIXES — preserve readable text on selectable/light cards */
+.bundle-card,
+.plan-card,
+.plan,
+.provider,
+.tab,
+.pin-link,
+.pin-cancel,
+.new-request,
+.check-order,
+.verify:disabled,
+.type-option{
+  color:#203047!important;
+}
+.bundle-card,
+.plan-card,
+.plan,
+.provider,
+.tab,
+.type-option{
+  background:#fff!important;
+  border:1px solid #dfe5ed!important;
+}
+.bundle-card .bundle-data,
+.bundle-card strong.bundle-data{color:#172b46!important}
+.bundle-card .bundle-validity{color:#58677b!important}
+.bundle-card .bundle-price{color:#173f70!important}
+.bundle-card .bundle-select{color:#64748b!important}
+.bundle-card .bundle-tag{background:#fff5dc!important;color:#765313!important}
+.bundle-card.selected{
+  background:#fff9e9!important;
+  border:2px solid #bd9138!important;
+}
+.bundle-card.selected .bundle-data,
+.bundle-card.selected .bundle-price,
+.bundle-card.selected .bundle-select{color:#17324f!important}
+.bundle-card.selected .bundle-tag{background:#f4e4bd!important;color:#634916!important}
+.type-option strong{color:#203047!important}
+.type-option span{color:#66758a!important}
+.type-option.active{
+  background:#fff6df!important;
+  border:2px solid #b88426!important;
+  color:#203047!important;
+}
+.type-option.active strong,.type-option.active span{color:#203047!important}
+.provider{color:#202536!important}
+.provider[aria-pressed="true"]{
+  background:#f0faf4!important;border:2px solid #198754!important;color:#155c38!important;
+}
+.tab{color:#4c347c!important}
+.tab.active{background:#142d4c!important;border-color:#142d4c!important;color:#fff!important}
+.plan{color:#203047!important;background:#fff!important}
+.plan.active,.plan.selected{background:#fff6df!important;border:2px solid #b88426!important;color:#203047!important}
+.pin-link{background:transparent!important;color:#315d91!important;border:0!important}
+.pin-cancel,.new-request{
+  background:#f1f4f8!important;color:#34465f!important;border:1px solid #e0e6ee!important;
+}
+.verify:disabled{background:#edf0f4!important;color:#64748b!important;border:1px solid #e0e5ec!important;opacity:1!important}
+.check-order{background:#fff6df!important;color:#5d471c!important;border:1px solid #e5d3a8!important}
+.bundle-empty{background:#f7f9fc!important;color:#536277!important;border-color:#d9e0e9!important}

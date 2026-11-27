@@ -143,6 +143,13 @@ a{
  text-align:center;
  margin-top:20px;
 }
+
+#ailatBiometricPrompt{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:22px;background:#07152ff2;color:#fff;text-align:center}
+#ailatBiometricPrompt .bio-card{width:min(100%,350px);padding:28px 22px;border:1px solid #e2b84f77;border-radius:22px;background:linear-gradient(145deg,#102d52,#07152f);box-shadow:0 20px 60px #0006}
+#ailatBiometricPrompt .bio-icon{width:96px;height:96px;margin:20px auto;border:2px solid #e2b84f;border-radius:50%;display:grid;place-items:center;color:#f3d98e;font-size:48px}
+#ailatBiometricPrompt p{color:#e7edf6;line-height:1.5;font-size:13px}
+#ailatBiometricPrompt .bio-cancel{width:100%;padding:13px;border:1px solid #e2b84f;border-radius:10px;background:#ffffff12;color:#fff;font-weight:700}
+
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
 <link rel="stylesheet" href="assets/ailat-popups.css?v=1">
@@ -153,6 +160,7 @@ a{
 </head>
 
 <body>
+<div id="ailatBiometricPrompt" role="dialog" aria-modal="true" aria-label="Fingerprint sign in"><div class="bio-card"><div style="font-weight:800;letter-spacing:1px;color:#f3d98e">AILAT DATA SUB</div><h2 style="color:#fff;margin:18px 0 6px">Sign in with fingerprint</h2><div class="bio-icon">◎</div><p id="ailatBioMessage">Touch your fingerprint sensor to continue, or tap anywhere outside this window to use your email and password.</p><button type="button" class="bio-cancel" id="ailatBioCancel">Use Email &amp; Password</button></div></div>
 
 <div class="container">
 
@@ -212,7 +220,7 @@ Don't have an account?
 
 <script type="module">
 import { app } from "./firebase.js";
-import { getAuth, signInWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 const auth=getAuth(app);
 const form=document.getElementById("loginForm"),button=document.getElementById("loginBtn"),passwordInput=document.getElementById("password"),togglePassword=document.getElementById("togglePassword"),resendBtn=document.getElementById("resendBtn"),formMessage=document.getElementById("formMessage");
 function showLoginMessage(message,type="error"){formMessage.textContent=message;formMessage.className="form-message show "+type;}
@@ -232,6 +240,43 @@ async function verifyRegisteredDevice(user){
  if(!verified.verified)throw new Error("Fingerprint verification was not successful.");
  return true;
 }
+
+let biometricPromptHandled=false;
+onAuthStateChanged(auth,async user=>{
+ if(biometricPromptHandled||!user)return;
+ biometricPromptHandled=true;
+ try{
+  await user.reload();
+  if(!user.emailVerified)return;
+  const saved=await passkeyRequest(user);
+  if(!saved.passkeys?.length)return;
+  const prompt=document.getElementById("ailatBiometricPrompt");
+  const message=document.getElementById("ailatBioMessage");
+  const cancel=async()=>{
+   prompt.style.display="none";
+   document.body.style.overflow="";
+   try{await signOut(auth);}catch(e){console.warn("Sign-out before password fallback:",e);}
+   form.style.display="";
+  };
+  prompt.style.display="flex";
+  document.body.style.overflow="hidden";
+  form.style.display="none";
+  document.getElementById("ailatBioCancel").addEventListener("click",cancel,{once:true});
+  prompt.addEventListener("click",event=>{if(event.target===prompt)cancel();},{once:true});
+  try{
+   if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials?.get)throw new Error("Fingerprint sign-in is not available in this browser. Use your email and password.");
+   message.textContent="Touch your fingerprint sensor to sign in. You can cancel and use your password at any time.";
+   const verified=await verifyRegisteredDevice(user);
+   if(verified){prompt.style.display="none";document.body.style.overflow="";window.location.replace("dashboard.html");}
+  }catch(error){
+   message.textContent=(error.message||"Fingerprint sign-in was not completed.")+" You can use your email and password instead.";
+   document.getElementById("ailatBioCancel").textContent="Continue with Email & Password";
+   document.getElementById("ailatBioCancel").onclick=cancel;
+   prompt.onclick=event=>{if(event.target===prompt)cancel();};
+  }
+ }catch(error){console.warn("Optional fingerprint prompt:",error);}
+});
+
 form.addEventListener("submit",async event=>{
  event.preventDefault();formMessage.className="form-message";formMessage.textContent="";
  const email=document.getElementById("email").value.trim(),password=passwordInput.value;

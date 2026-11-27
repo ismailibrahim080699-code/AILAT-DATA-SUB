@@ -77,3 +77,37 @@ footer{color:#8792a1}
 
 /* Official AILAT connected-network identity: navy, electric blue and gold */
 :root{--ailat-navy:#07152f;--ailat-navy-2:#102d52;--ailat-navy-3:#1765a8;--ailat-gold:#e2b84f;--ailat-gold-deep:#b88426;--ailat-gold-soft:#fff6df}
+
+
+/* AILAT DATA SUB — unified official identity across every page */
+:root{
+ --ailat-navy:#07152f;--ailat-navy-2:#102d52;--ailat-navy-3:#1765a8;
+ --ailat-blue:#168bff;--ailat-electric:#29bfff;
+ --ailat-gold:#e2b84f;--ailat-gold-deep:#b88426;--ailat-gold-soft:#fff6df;
+ --ailat-bg:#f3f6fb;--ailat-card:#fff;--ailat-text:#14243b;--ailat-muted:#74849a;
+ --ailat-border:#e1e8f1;
+}
+html,body{background-color:var(--ailat-bg)!important;color:var(--ailat-text)!important}
+header,.top,.page-header,.hero-header,.header,.navbar,.topbar{
+ background:linear-gradient(125deg,var(--ailat-navy),var(--ailat-navy-2) 65%,#174b79)!important;
+ color:#fff!important;border-color:#e2b84f66!important;
+}
+header h1,header h2,header h3,header p,header a,.top h1,.top h2,.top h3,.top p,.top a{color:inherit}
+button,.button,.btn,.primary,.submit-btn,.confirm-button,.login-button,.action-button{
+ border-color:var(--ailat-gold-deep)!important;
+}
+button:not(.secondary):not(.back):not(.icon-button):not(.refresh),
+.button,.btn,.primary,.submit-btn,.confirm-button,.login-button,.action-button{
+ background:linear-gradient(135deg,var(--ailat-navy),#174b79)!important;color:#fff!important;
+}
+.primary,.submit-btn,.confirm-button,.login-button,.fund-button,.wallet-primary{
+ background:linear-gradient(135deg,#f3dfaa,#d3aa50)!important;color:#10243d!important;
+ border:1px solid var(--ailat-gold-deep)!important;
+}
+a{color:#1765a8}
+input:focus,select:focus,textarea:focus{border-color:var(--ailat-blue)!important;box-shadow:0 0 0 3px #168bff22!important}
+.card,.panel,.content-card,.settings-card,.profile-card,.summary-card,.form-card{
+ border-color:var(--ailat-border)!important;
+}
+.brand-mark{width:44px;height:44px;object-fit:contain}
+footer{color:var(--ailat-muted)!important}

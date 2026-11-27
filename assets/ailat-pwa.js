@@ -1,0 +1,1 @@
+(()=>{if(!("serviceWorker" in navigator))return;window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js",{scope:"/"}).then(reg=>reg.update().catch(()=>{})).catch(error=>console.error("AILAT app update registration failed:",error));});})();

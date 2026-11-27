@@ -211,3 +211,33 @@ footer{color:var(--ailat-muted)!important}
 .purchase-types .type-option.active strong,
 .purchase-types .type-option.active span{color:#10243d!important}
 .bundle-empty{background:#f3f6fb!important;color:#536277!important;border-color:#d9e0e9!important}
+
+
+/* WHITE TYPE ON COLOURED AILAT SURFACES — keep white/light cards untouched */
+.wallet,.wallet *,
+.info-card,.info-card *,
+.colored-card,.colored-card *,
+.gradient-card,.gradient-card *,
+.balance-card,.balance-card *,
+.wallet-card,.wallet-card *,
+.hero-card,.hero-card *,
+.stat-card,.stat-card *,
+.promo-card,.promo-card *,
+.action-card,.action-card *,
+.feature-card,.feature-card *,
+.service .icon,.ico,
+.network.active,.network.active *,
+.purchase-types .type-option.active,.purchase-types .type-option.active *,
+.tab.active,.tab.active *,
+.plan.active,.plan.selected,.plan.active *,
+.bundle-card,.bundle-card *{
+ color:#fff!important;
+}
+.wallet-primary,.wallet-primary *,
+.wallet-secondary,.wallet-secondary *,
+.wallet .wallet-primary,.wallet .wallet-primary *{
+ color:#fff!important;
+}
+.wallet-icon,.wallet-icon *,.service .icon svg,.ico svg{color:#fff!important;stroke:currentColor!important}
+.info-card a,.info-card strong,.info-card span,.info-card p,
+.wallet a,.wallet strong,.wallet span,.wallet p{color:#fff!important}

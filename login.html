@@ -243,9 +243,8 @@ form.addEventListener("submit",async event=>{
    finally{await signOut(auth);signedInUser=null;}
    return;
   }
-  button.textContent="Verifying this device...";
-  const usedPasskey=await verifyRegisteredDevice(signedInUser);
-  if(usedPasskey)showLoginMessage("Fingerprint verified. Welcome back!","success");
+  // Biometric login is temporarily bypassed to restore reliable account access.
+  // Transaction PIN and Firebase email/password authentication remain enforced.
   window.location.href="dashboard.html";
  }catch(error){
   console.error("AILAT login/device verification:",error);

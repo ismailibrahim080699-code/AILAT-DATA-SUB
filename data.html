@@ -237,6 +237,52 @@ button:disabled{opacity:.48;cursor:not-allowed}
  .network .network-name{font-size:10px}
 }
 .brand-mark{width:34px;height:34px;object-fit:contain;flex:0 0 34px;vertical-align:middle}
+
+/* DATA PLAN CARDS — make quantity, validity and selling price unmistakable */
+.bundle-grid{gap:12px}
+.bundle-card{
+ min-height:142px!important;padding:14px 13px!important;
+ background:linear-gradient(145deg,#07152f,#12365c)!important;
+ border:1px solid #315477!important;color:#fff!important;
+ display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+ text-align:left!important;
+}
+.bundle-card .bundle-card-top{display:block!important}
+.bundle-card .bundle-data{
+ display:block!important;color:#fff!important;font-size:22px!important;
+ line-height:1.25!important;font-weight:800!important;letter-spacing:-.35px!important;
+ overflow-wrap:anywhere;
+}
+.bundle-card .bundle-validity{
+ display:block!important;color:#fff!important;font-size:13px!important;
+ line-height:1.4!important;font-weight:600!important;margin-top:9px!important;
+}
+.bundle-card .bundle-card-bottom{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:7px!important;padding-top:10px!important;border-top:1px solid #ffffff35!important;
+}
+.bundle-card .bundle-price{
+ display:block!important;color:#fff!important;font-size:17px!important;
+ line-height:1.25!important;font-weight:800!important;
+}
+.bundle-card .bundle-select{
+ color:#fff!important;font-size:10px!important;font-weight:800!important;
+}
+.bundle-card.selected{
+ background:linear-gradient(145deg,#173e65,#0b2441)!important;
+ border:2px solid #e2b84f!important;padding:13px 12px!important;
+ box-shadow:0 0 0 2px #e2b84f22,0 5px 14px #07152f24!important;
+}
+.bundle-card.selected .bundle-data,
+.bundle-card.selected .bundle-validity,
+.bundle-card.selected .bundle-price,
+.bundle-card.selected .bundle-select{color:#fff!important}
+@media(max-width:360px){
+ .bundle-card{min-height:136px!important;padding:12px 10px!important}
+ .bundle-card .bundle-data{font-size:20px!important}
+ .bundle-card .bundle-validity{font-size:12px!important}
+ .bundle-card .bundle-price{font-size:15px!important}
+}
 </style>
   
 <link rel="stylesheet" href="assets/ailat-popups.css?v=1">
@@ -458,12 +504,12 @@ function renderPlans(){
    top.append(data);
    const validity=document.createElement("div");
    validity.className="bundle-validity";
-   validity.textContent=item.validity;
+   validity.textContent="Validity: "+(item.validity || "As listed");
    const bottom=document.createElement("div");
    bottom.className="bundle-card-bottom";
    const amount=document.createElement("strong");
    amount.className="bundle-price";
-   amount.textContent=formatPrice(item.amount);
+   amount.textContent="Price: "+formatPrice(item.amount);
    const action=document.createElement("span");
    action.className="bundle-select";
    action.textContent=String(item.id)===selectedPlanId?"SELECTED":"SELECT";

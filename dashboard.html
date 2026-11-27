@@ -670,7 +670,7 @@ async function enforceFirstTransactionPin(user){
  return await new Promise(resolve=>{
   save.addEventListener("click",async()=>{
    clean(first);clean(second);
-   if(!/^\\d{4}$/.test(first.value)||!/^\\d{4}$/.test(second.value)){error.textContent="Please enter exactly 4 digits in both fields.";return;}
+   if(!/^\d{4}$/.test(first.value)||!/^\d{4}$/.test(second.value)){error.textContent="Please enter exactly 4 digits in both fields.";return;}
    if(first.value!==second.value){error.textContent="The two PIN entries do not match.";second.value="";second.focus();return;}
    save.disabled=true;save.textContent="Saving securely…";error.textContent="";
    try{

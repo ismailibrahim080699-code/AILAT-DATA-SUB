@@ -253,6 +253,13 @@ footer{color:#8290a2}
 .advert-placeholder-content strong{font-size:clamp(15px,4vw,22px);font-weight:900;color:#fff}
 .advert-placeholder-content small{font-size:10px;color:#d2dce8}
 @media(min-width:560px){.advert-banner{aspect-ratio:16/5}}
+
+/* Optional biometric unlock gate */
+#ailatUnlockGate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:linear-gradient(145deg,#07152f,#102d52 65%,#1765a8);color:#fff;text-align:center}
+#ailatUnlockGate .unlock-panel{width:min(100%,360px);padding:30px 22px;border:1px solid #e2b84f66;border-radius:24px;background:#ffffff0d;backdrop-filter:blur(12px)}
+#ailatUnlockGate .unlock-fingerprint{width:104px;height:104px;margin:20px auto;border:2px solid #e2b84f;border-radius:50%;display:grid;place-items:center;background:#ffffff0c;color:#f3d98e;font-size:54px;cursor:pointer}
+#ailatUnlockGate button{width:100%;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#f3dfaa,#d3aa50);color:#10243d;font-weight:700}
+#ailatUnlockGate .unlock-hint{color:#e4eaf2;font-size:13px;line-height:1.6}
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg"><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 
@@ -263,7 +270,19 @@ footer{color:#8290a2}
 <link rel="manifest" href="/manifest.webmanifest?v=1"><meta name="theme-color" content="#07152f">
 </head>
 
+
 <body>
+<div id="ailatUnlockGate" role="dialog" aria-modal="true" aria-label="Unlock AILAT DATA SUB">
+ <div class="unlock-panel">
+  <div style="font-weight:800;letter-spacing:1px;color:#f3d98e">AILAT DATA SUB</div>
+  <h2 style="color:#fff;margin:18px 0 6px">Welcome back</h2>
+  <p class="unlock-hint">Taɓa alamar yatsa domin buɗe account ɗinka.</p>
+  <button type="button" class="unlock-fingerprint" id="ailatFingerprintButton" aria-label="Use fingerprint">◎</button>
+  <p id="ailatUnlockMessage" class="unlock-hint">Ko ka taɓa allon domin amfani da email da password.</p>
+  <button type="button" id="ailatPasswordFallback">Use Email &amp; Password</button>
+ </div>
+</div>
+
 
 <header>
  <div class="topbar">
@@ -685,6 +704,48 @@ async function enforceFirstTransactionPin(user){
  });
 }
 
+
+async function optionalBiometricGate(user){
+ const gate=document.getElementById("ailatUnlockGate");
+ const message=document.getElementById("ailatUnlockMessage");
+ const fingerprint=document.getElementById("ailatFingerprintButton");
+ const fallback=document.getElementById("ailatPasswordFallback");
+ const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+ const call=async(method="GET",body=null)=>{
+  const token=await user.getIdToken(true);
+  const response=await fetch(endpoint,{method,headers:{"Authorization":"Bearer "+token,...(body?{"Content-Type":"application/json"}:{})},...(body?{body:JSON.stringify(body)}:{})});
+  const data=await response.json().catch(()=>({success:false,error:"Security service response was invalid."}));
+  if(!response.ok||!data.success)throw new Error(data.error||"Biometric service unavailable.");
+  return data;
+ };
+ const toBytes=value=>{const x=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(x+"=".repeat((4-x.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
+ const options=o=>({...o,challenge:toBytes(o.challenge),allowCredentials:(o.allowCredentials||[]).map(c=>({...c,id:toBytes(c.id)}))});
+ const b64=b=>{const a=new Uint8Array(b);let x="";for(const n of a)x+=String.fromCharCode(n);return btoa(x).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};
+ const serialize=c=>({id:c.id,rawId:b64(c.rawId),type:c.type,authenticatorAttachment:c.authenticatorAttachment,clientExtensionResults:c.getClientExtensionResults(),response:{clientDataJSON:b64(c.response.clientDataJSON),authenticatorData:b64(c.response.authenticatorData),signature:b64(c.response.signature),userHandle:c.response.userHandle?b64(c.response.userHandle):null}});
+ let hasPasskey=false;
+ try{const saved=await call();hasPasskey=!!saved.passkeys?.length;}catch(e){console.warn("Optional passkey lookup:",e);}
+ if(!hasPasskey)return;
+ gate.style.display="flex";
+ let settled=false;
+ const continueToDashboard=()=>{if(settled)return;settled=true;gate.style.display="none";};
+ const usePassword=async()=>{if(settled)return;settled=true;try{await signOut(auth);}finally{window.location.replace("login.html");}};
+ fallback.addEventListener("click",usePassword,{once:true});
+ gate.addEventListener("click",e=>{if(e.target===gate)usePassword();});
+ fingerprint.addEventListener("click",async()=>{
+  if(settled)return;
+  fingerprint.disabled=true;message.textContent="Ana tabbatar da yatsanka...";
+  try{
+   if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials?.get)throw new Error("Na'urar ba ta goyon bayan fingerprint a wannan browser. Yi amfani da email da password.");
+   const begin=await call("POST",{action:"start_authentication"});
+   const credential=await navigator.credentials.get({publicKey:options(begin.options)});
+   if(!credential)throw new Error("Ba a kammala tabbatar da yatsa ba.");
+   const verified=await call("POST",{action:"finish_authentication",response:serialize(credential)});
+   if(!verified.verified)throw new Error("Ba a tabbatar da na'urar ba.");
+   continueToDashboard();
+  }catch(e){message.textContent=(e.message||"Fingerprint bai yi aiki ba.")+" Ka iya amfani da email da password.";fingerprint.disabled=false;}
+ });
+}
+
 onAuthStateChanged(auth,async(user)=>{
  if(!user){
   window.location.href = "login.html";
@@ -703,7 +764,8 @@ onAuthStateChanged(auth,async(user)=>{
    return;
   }
 
-  // Device verification is performed once on the login page; do not prompt twice here.
+  // Offer optional fingerprint unlock for an already signed-in account; password fallback remains available.
+  await optionalBiometricGate(user);
 
   await enforceFirstTransactionPin(user);
 

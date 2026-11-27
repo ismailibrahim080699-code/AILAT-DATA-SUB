@@ -149,6 +149,11 @@ a{
 #ailatBiometricPrompt .bio-icon{width:96px;height:96px;margin:20px auto;border:2px solid #e2b84f;border-radius:50%;display:grid;place-items:center;color:#f3d98e;font-size:48px}
 #ailatBiometricPrompt p{color:#e7edf6;line-height:1.5;font-size:13px}
 #ailatBiometricPrompt .bio-cancel{width:100%;padding:13px;border:1px solid #e2b84f;border-radius:10px;background:#ffffff12;color:#fff;font-weight:700}
+#ailatBioEmailAssist{display:none;margin-top:14px;text-align:left}
+#ailatBioEmailAssist input{width:100%;padding:13px;border:1px solid #d8c58d;border-radius:9px;font-size:15px;color:#14263f;background:#fff}
+#ailatBioEmailAssist button{width:100%;padding:13px;margin-top:9px;border:0;border-radius:10px;background:#f3d98e;color:#07152f;font-weight:800}
+#ailatBioEmailAssist small{display:block;color:#e7edf6;line-height:1.45;margin-bottom:9px}
+
 
 </style>
 <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg">
@@ -172,7 +177,7 @@ a{
  <path d="M82 53c-1 12 2 22 7 30"/>
  <path d="M34 57c0 12-2 21-6 29"/>
 </svg>
-</div><p id="ailatBioMessage">Use your saved AILAT DATA SUB passkey to sign in securely.</p><button type="button" class="bio-cancel" id="ailatBioStart" style="background:linear-gradient(135deg,#e2c36f,#b8944e);color:#07152f;margin:10px 0">Continue with fingerprint</button><button type="button" class="bio-cancel" id="ailatBioCancel">Use Email &amp; Password</button></div></div>
+</div><p id="ailatBioMessage">Use your saved AILAT DATA SUB passkey to sign in securely.</p><button type="button" class="bio-cancel" id="ailatBioStart" style="background:linear-gradient(135deg,#e2c36f,#b8944e);color:#07152f;margin:10px 0">Continue with fingerprint</button><button type="button" class="bio-cancel" id="ailatBioCancel">Use Email &amp; Password</button><div id="ailatBioEmailAssist"><small>No passkey was found automatically. Enter your account email to find your already registered device.</small><input type="email" id="ailatBioEmail" autocomplete="username" placeholder="Your account email"><button type="button" id="ailatBioFind">Find my saved passkey</button></div></div></div>
 
 <div class="container">
 
@@ -257,6 +262,10 @@ const biometricPrompt=document.getElementById("ailatBiometricPrompt");
 const biometricMessage=document.getElementById("ailatBioMessage");
 const biometricStart=document.getElementById("ailatBioStart");
 const biometricCancel=document.getElementById("ailatBioCancel");
+const biometricEmailAssist=document.getElementById("ailatBioEmailAssist");
+const biometricEmail=document.getElementById("ailatBioEmail");
+const biometricFind=document.getElementById("ailatBioFind");
+
 let loginSubmitted=false;
 form.style.display="none";
 biometricPrompt.style.display="flex";
@@ -293,8 +302,37 @@ biometricStart.addEventListener("click",async()=>{
   window.location.replace("dashboard.html");
  }catch(error){
   console.error("Fingerprint-first login:",error);
-  biometricMessage.textContent=(error.message||"Fingerprint sign-in failed.")+" You can use your email and password instead.";
+  biometricMessage.textContent=(error.message||"Fingerprint sign-in could not find the saved device.")+" You can also look up your existing passkey using your account email.";
+  biometricEmailAssist.style.display="block";
   biometricStart.disabled=false;biometricStart.textContent="Try fingerprint again";
+ }
+});
+biometricFind.addEventListener("click",async()=>{
+ const email=biometricEmail.value.trim();
+ if(!email){biometricMessage.textContent="Enter the email address used for your AILAT DATA SUB account.";biometricEmail.focus();return;}
+ biometricFind.disabled=true;biometricFind.textContent="Finding saved device...";
+ try{
+  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys";
+  const call=async body=>{
+   const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+   const data=await response.json().catch(()=>({success:false,error:"Invalid security response"}));
+   if(!response.ok||!data.success)throw new Error(data.error||"Could not find the saved device.");
+   return data;
+  };
+  const begin=await call({action:"start_passkey_login_with_email",email});
+  biometricMessage.textContent="Choose your saved AILAT DATA SUB passkey and verify with your phone's fingerprint.";
+  const credential=await navigator.credentials.get({publicKey:requestOptions(begin.options)});
+  if(!credential)throw new Error("Saved-device verification was cancelled.");
+  const finish=await call({action:"finish_passkey_login_with_email",challenge_id:begin.challenge_id,response:authenticationJSON(credential)});
+  if(!finish.custom_token)throw new Error("Secure sign-in could not be completed.");
+  const signed=await signInWithCustomToken(auth,finish.custom_token);
+  await signed.user.reload();
+  if(!signed.user.emailVerified){await signOut(auth);throw new Error("Verify your email before signing in.");}
+  window.location.replace("dashboard.html");
+ }catch(error){
+  console.error("Saved passkey lookup:",error);
+  biometricMessage.textContent=error.message||"Could not verify the saved device. Use email and password.";
+  biometricFind.disabled=false;biometricFind.textContent="Find my saved passkey";
  }
 });
 form.addEventListener("submit",async event=>{

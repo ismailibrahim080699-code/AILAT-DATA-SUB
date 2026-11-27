@@ -74,3 +74,6 @@ footer{color:#8792a1}
 .services .service:nth-child(14) .icon{background:#e5f2ff!important;color:#2678a7!important}
 .services .service:nth-child(15) .icon{background:#edf5e8!important;color:#57933e!important}
 @media(max-width:380px){.services .service .icon{width:38px!important;height:38px!important;min-width:38px!important}.services .service .icon svg{width:21px!important;height:21px!important}}
+
+/* Official AILAT connected-network identity: navy, electric blue and gold */
+:root{--ailat-navy:#07152f;--ailat-navy-2:#102d52;--ailat-navy-3:#1765a8;--ailat-gold:#e2b84f;--ailat-gold-deep:#b88426;--ailat-gold-soft:#fff6df}

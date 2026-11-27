@@ -677,7 +677,7 @@ async function enforceFirstTransactionPin(user){
  const save=document.getElementById("saveFirstTransactionPin"),error=document.getElementById("firstPinError");
  const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
  const call=async(method="GET",body=null)=>{
-  const token=await user.getIdToken(true);
+  const token=await user.getIdToken();
   const response=await fetch(endpoint,{method,headers:{"Authorization":"Bearer "+token,...(body?{"Content-Type":"application/json"}:{})},...(body?{body:JSON.stringify(body)}:{})});
   const data=await response.json().catch(()=>({success:false,error:"Invalid security response"}));
   if(!response.ok||!data.success)throw new Error(data.error||"Transaction PIN service is unavailable.");
@@ -744,13 +744,10 @@ onAuthStateChanged(auth,async(user)=>{
   checkAdminSupportAccess(user);
   setInterval(()=>{if(auth.currentUser)checkAdminSupportAccess(auth.currentUser);},30000);
 
-  try{
-   await loadWalletFromBackend(user);
-  }catch(error){
-   console.error(error);
-  }
-
+  // Show the authenticated dashboard as soon as account/security checks finish.
+  // Wallet data loads in the background so a slow network request cannot hold the whole page.
   document.documentElement.classList.remove("ailat-auth-pending");
+  loadWalletFromBackend(user).catch(error=>console.error(error));
  }catch(error){
   console.error("Dashboard authentication/setup error:",error);
   try{await signOut(auth);}catch(signOutError){console.error(signOutError);}

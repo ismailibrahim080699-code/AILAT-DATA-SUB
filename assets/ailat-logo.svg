@@ -1,3 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6e5ae"/><stop offset=".55" stop-color="#d7bd82"/><stop offset="1" stop-color="#b8944e"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1d3b5b"/><stop offset="1" stop-color="#14263f"/></linearGradient></defs>
-<rect width="800" height="260" rx="30" fill="url(#b)"/><circle cx="125" cy="130" r="105" fill="none" stroke="url(#g)" stroke-width="7"/><circle cx="125" cy="130" r="82" fill="none" stroke="#2787c9" stroke-width="2" opacity=".65"/><path d="M55 175 L125 45 L195 175 M83 125 H167" stroke="url(#g)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M58 178 Q120 205 198 110" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round"/><path d="M75 78 Q125 25 175 78 M58 92 Q125 12 192 92" stroke="#49a6ed" stroke-width="5" fill="none" stroke-linecap="round"/><text x="250" y="115" font-family="Arial,sans-serif" font-size="66" font-weight="900" fill="url(#g)" letter-spacing="2">AILAT DATA</text><rect x="250" y="132" width="260" height="48" rx="24" fill="url(#g)"/><text x="380" y="166" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#14263f" letter-spacing="8">SUB</text><text x="250" y="216" font-family="Arial,sans-serif" font-size="24" font-weight="600" fill="#e8dfc9">Your Trusted Digital Partner</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260" role="img" aria-labelledby="title desc">
+<title id="title">AILAT DATA SUB</title>
+<desc id="desc">AILAT DATA SUB purple and gold brand logo with a white letter A and gold swoosh.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5410a8"/><stop offset="1" stop-color="#21004f"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a3"/><stop offset=".45" stop-color="#ffd02f"/><stop offset="1" stop-color="#c77b00"/></linearGradient>
+</defs>
+<rect width="800" height="260" rx="30" fill="url(#bg)"/>
+<circle cx="130" cy="130" r="111" fill="none" stroke="#f3eaff" stroke-width="4"/>
+<path d="M48 170 98 55 Q108 32 130 32 Q152 32 162 55 L212 170 H174 L130 78 86 170Z" fill="#fff"/>
+<path d="M42 169 Q86 146 122 128 Q169 105 218 82 Q190 111 151 134 Q101 163 55 185Z" fill="url(#gold)" stroke="#b97500" stroke-width="1.4"/>
+<path d="M48 166 Q111 137 207 89" fill="none" stroke="#fff1a8" stroke-width="2.2" opacity=".8"/>
+<text x="285" y="119" font-family="Arial,Helvetica,sans-serif" font-size="67" font-weight="900" fill="#fff" letter-spacing="1.5">AILAT DATA</text>
+<text x="289" y="178" font-family="Arial,Helvetica,sans-serif" font-size="43" font-weight="900" fill="url(#gold)" letter-spacing="11">SUB</text>
+<text x="290" y="219" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="600" fill="#e8dcff">Your Trusted Digital Partner</text>
+</svg>

@@ -101,12 +101,93 @@ main>.card .section-toggle{min-height:82px!important;padding:13px 15px!important
 .section-toggle-main .sub{font-size:12px!important}
 .twofa-note{margin-left:80px}
 }
+
+/* AILAT DATA SUB — premium security centre */
+body{background:#f5f3ff!important;color:#24134d!important}
+.security-header{
+ height:auto!important;min-height:150px!important;padding:24px 20px 28px!important;
+ background:linear-gradient(135deg,#241044 0%,#4c1d95 55%,#6d35c5 100%)!important;
+ color:#fff!important;border-radius:0 0 28px 28px!important;
+ display:grid!important;grid-template-columns:42px minmax(0,1fr) 42px!important;
+ align-items:center!important;gap:10px!important;
+ box-shadow:0 10px 28px rgba(53,16,111,.16)
+}
+.security-back{background:#ffffff18!important;color:#fff!important;border:1px solid #ffffff25!important;box-shadow:none!important}
+.security-heading{text-align:center;min-width:0}
+.security-header h1{color:#fff!important;font-size:23px!important;font-weight:800!important;letter-spacing:-.45px}
+.security-header p{display:block!important;color:#e8dcff!important;font-size:11px!important;line-height:1.5!important;margin:7px 0 0!important;opacity:1!important}
+.header-spacer{width:40px;height:40px}
+main{max-width:620px!important;padding:20px 16px 38px!important}
+main>.card{
+ background:#fff!important;border:1px solid #eee8fb!important;border-radius:21px!important;
+ margin:0 0 14px!important;overflow:hidden!important;
+ box-shadow:0 5px 18px rgba(48,24,87,.055)!important
+}
+main>.card .section-toggle{min-height:91px!important;padding:16px 17px!important}
+.section-toggle-main{gap:14px!important}
+.symbol{
+ width:52px!important;height:52px!important;flex:0 0 52px!important;
+ border-radius:17px!important;background:#f1eaff!important;color:#6533ad!important;
+ display:grid!important;place-items:center!important
+}
+.symbol svg{width:25px!important;height:25px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.section-toggle-main h2{font-size:15px!important;font-weight:750!important;color:#28164b!important;letter-spacing:-.2px!important;margin:0 0 5px!important}
+.section-toggle-main .sub{font-size:11px!important;color:#827895!important;line-height:1.45!important}
+.section-chevron{font-size:23px!important;color:#8c7da4!important}
+.section-toggle[aria-expanded="true"] .section-chevron{color:#5b21b6!important}
+.section-panel{padding:18px!important;background:#fff!important;border-top:1px solid #f0ebf7!important}
+#pinStatus{display:inline-flex!important;margin:0 17px 14px!important;padding:8px 11px!important;border-radius:30px!important;background:#f2edff!important;color:#5b21b6!important;font-size:11px!important;font-weight:750!important}
+.pin-intro{background:linear-gradient(135deg,#f5f0ff,#faf8ff)!important;border:1px solid #e9defb!important;border-radius:16px!important}
+.pin-intro-icon{background:#e8ddff!important;color:#5b21b6!important;border-radius:13px!important}
+.pin-intro strong,.pin-step-copy strong{color:#2b174e!important}
+.pin-intro p,.pin-step-copy span{color:#7c718e!important}
+.pin-step-icon{background:#faf8ff!important;border-color:#e9defb!important;color:#693ab2!important}
+.pin-step:not(:last-child):after{background:#e9defb!important}
+.pin-form-title{color:#321d59!important}
+.pin-digit{height:57px!important;border:1px solid #e2d9f0!important;border-radius:14px!important;background:#fcfbff!important;color:#28164b!important}
+.pin-digit:focus{outline:0!important;border-color:#7c3aed!important;box-shadow:0 0 0 3px #7c3aed20!important}
+.field{border:1px solid #e5ddef!important;border-radius:13px!important;background:#fcfbff!important;color:#28164b!important}
+.field:focus{outline:0!important;border-color:#7c3aed!important;box-shadow:0 0 0 3px #7c3aed18!important}
+.action{min-height:47px!important;border-radius:13px!important;background:linear-gradient(135deg,#4c1d95,#7c3aed)!important;box-shadow:0 6px 14px rgba(91,33,182,.15)!important}
+.action.secondary{background:#f1eaff!important;color:#5b21b6!important;box-shadow:none!important}
+.note{background:#f7f3ff!important;border:1px solid #eee6fb!important;color:#786b8d!important;border-radius:14px!important}
+.message{font-size:12px!important;line-height:1.6!important}
+#deviceCheck{font-size:12px!important;color:#776b8b!important;line-height:1.65!important}
+#bioStatus{display:inline-flex!important;padding:8px 11px!important;border-radius:30px!important;background:#edf8f1!important;color:#24764a!important;font-size:11px!important;font-weight:750!important;margin:0 0 10px!important}
+#registerBiometricBtn{margin-top:16px!important}
+#passkeyList .row{padding:14px 0!important;border-bottom:1px solid #f0ebf7!important}
+#passkeyList .row strong{color:#2b174e!important;font-size:12px!important}
+#passkeyList .row .sub{color:#8a7f99!important;margin-top:4px!important}
+#passkeyList .row .action.secondary{font-size:11px!important}
+.reset-symbol{background:#eef2ff!important;color:#5367b4!important}
+.biometric-symbol{background:#e9f7ef!important;color:#21834d!important}
+.overview-heading{display:flex!important;align-items:center!important;gap:13px!important;margin:17px 17px 7px!important}
+.overview-heading .symbol{background:#fff4df!important;color:#b7791f!important}
+.overview-heading h2{font-size:15px!important;font-weight:800!important;color:#28164b!important;margin:0 0 4px!important}
+.overview-heading .sub{font-size:11px!important;color:#8b8098!important}
+.security-overview .row{margin:0 17px!important;padding:14px 0!important;border-bottom:1px solid #f0ebf7!important;align-items:flex-start!important}
+.security-overview .row:last-child{border-bottom:0!important}
+.security-overview .row strong{font-size:12px!important;color:#38265b!important;flex:0 0 43%!important}
+.security-overview .row span{font-size:11px!important;line-height:1.5!important;color:#7c718e!important;max-width:55%!important}
+.back{border-radius:14px!important;min-height:48px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+footer{color:#9b8eae!important;padding:12px 15px 26px!important}
+@media(max-width:420px){
+ .security-header{min-height:140px!important;padding:20px 14px 24px!important}
+ main{padding:16px 12px 32px!important}
+ main>.card .section-toggle{min-height:84px!important;padding:13px 14px!important}
+ .symbol{width:47px!important;height:47px!important;flex-basis:47px!important;border-radius:15px!important}
+ .section-toggle-main h2{font-size:14px!important}
+ .section-toggle-main .sub{font-size:10.5px!important}
+ .section-panel{padding:15px!important}
+ .security-overview .row{margin:0 14px!important}
+}
+
 </style><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 <link rel="stylesheet" href="assets/ailat-theme.css?v=3">
   <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg?v=2">
 </head>
 <body>
-<header class="security-header"><a class="security-back" href="settings.html" aria-label="Back to settings">‹</a><h1>Security</h1><span class="header-spacer" aria-hidden="true"></span></header>
+<header class="security-header"><a class="security-back" href="settings.html" aria-label="Back to settings">‹</a><div class="security-heading"><h1>Security</h1><p>Protect your account, PIN and transactions</p></div><span class="header-spacer" aria-hidden="true"></span></header>
 <main>
 <section class="card">
 <button class="section-toggle" type="button" aria-expanded="false" aria-controls="pinPanel" id="pinSectionToggle"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8"/></svg></span><span><h2>Change Transaction PIN</h2><span class="sub">Update your transaction PIN</span></span></span><span class="section-chevron">⌄</span></button>
@@ -136,7 +217,7 @@ main>.card .section-toggle{min-height:82px!important;padding:13px 15px!important
 <div class="note">Never share your PIN with anyone. Five incorrect attempts temporarily lock PIN verification for 15 minutes. PIN setup here does not authorize purchases, wallet transfers, or payments.</div>
 </section>
 <section class="card">
-<button class="section-toggle" type="button" aria-expanded="false" aria-controls="resetPanel" id="resetSectionToggle"><span class="section-toggle-main"><span class="symbol">🔄</span><span><h2>Reset Transaction PIN</h2><span class="sub">Reset your transaction PIN</span></span></span><span class="section-chevron">⌄</span></button>
+<button class="section-toggle" type="button" aria-expanded="false" aria-controls="resetPanel" id="resetSectionToggle"><span class="section-toggle-main"><span class="symbol reset-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M19 12a7 7 0 1 1-2-5l3 5"/></svg></span><span><h2>Reset Transaction PIN</h2><span class="sub">Reset your transaction PIN</span></span></span><span class="section-chevron">⌄</span></button>
 <div class="section-panel" id="resetPanel" hidden>
 <div id="resetBox" hidden style="margin-top:14px"><p class="sub">Confirm your account password to reset your PIN securely.</p>
 <input class="field" id="resetEmail" type="email" autocomplete="username" placeholder="Account email" aria-label="Account email">
@@ -146,18 +227,18 @@ main>.card .section-toggle{min-height:82px!important;padding:13px 15px!important
 </div>
 </section>
 <section class="card" id="passwordSection"><button class="section-toggle" type="button" aria-expanded="false" aria-controls="passwordPanel" id="passwordSectionToggle"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5"/><path d="m11.5 11.5 8-8 2 2-2 2 1.5 1.5-3 3-1.5-1.5-2 2"/></svg></span><span><h2>Change Password</h2><span class="sub">Update your account password</span></span></span><span class="section-chevron">›</span></button><div class="section-panel" id="passwordPanel" hidden><p class="sub">Confirm your current password, then choose a new password.</p><input class="field" id="passwordEmail" type="email" autocomplete="username" placeholder="Account email" aria-label="Account email"><div class="password-box"><input class="field" id="currentPassword" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div><div class="password-box"><input class="field" id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 6 characters)" aria-label="New password"></div><div class="password-box"><input class="field" id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="Confirm new password" aria-label="Confirm new password"></div><button class="action" id="changePasswordBtn" type="button">Update Password</button><p class="message" id="passwordMessage" role="status" aria-live="polite"></p></div></section><section class="card">
-<button class="section-toggle" type="button" aria-expanded="false" aria-controls="bioPanel" id="bioSectionToggle"><span class="section-toggle-main"><span class="symbol">🔐</span><span><h2>Face ID / Touch ID</h2><span class="sub">Enable fingerprint or face unlock on this device</span></span></span><span class="section-chevron">⌄</span></button>
+<button class="section-toggle" type="button" aria-expanded="false" aria-controls="bioPanel" id="bioSectionToggle"><span class="section-toggle-main"><span class="symbol biometric-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H5a2 2 0 0 0-2 2v2m14-4h2a2 2 0 0 1 2 2v2M3 17v2a2 2 0 0 0 2 2h2m14-4v2a2 2 0 0 1-2 2h-2"/><path d="M8 11a4 4 0 0 1 8 0v2m-8 0v1a4 4 0 0 0 8 0v-1m-4-5v1"/></svg></span><span><h2>Fingerprint &amp; Face ID</h2><span class="sub">Register and manage secure access on this device</span></span></span><span class="section-chevron">⌄</span></button>
 <div class="section-panel" id="bioPanel" hidden>
 <div class="status" id="bioStatus">Checking device support…</div>
 <p id="deviceCheck">Register this phone using its built-in fingerprint, face unlock, or device screen lock.</p>
-<button class="action" id="registerBiometricBtn" type="button" disabled>Register this device</button>
-<button class="action secondary" id="testBiometricBtn" type="button" disabled>Test fingerprint / device unlock</button>
+<button class="action" id="registerBiometricBtn" type="button" disabled>Register Fingerprint / Device</button>
+<button class="action secondary" id="testBiometricBtn" type="button" disabled>Verify Fingerprint / Device</button>
 <div id="passkeyList" style="margin-top:12px"></div>
 <p class="message" id="bioMessage" role="status" aria-live="polite"></p>
 <div class="note">Your fingerprint or face template must remain on your device. AILAT DATA SUB must never collect biometric images or templates. Biometric templates stay on your device; AILAT DATA SUB stores only a cryptographic passkey.</div>
 </div>
 </section>
-<section class="card twofa-card"><div class="section-toggle twofa-row" aria-label="Login two-factor authentication"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="M12 11v5m0-9h.01"/></svg></span><span><h2>Activate Login 2FA</h2><span class="sub">Extra verification when signing in</span></span></span><span class="switch-wrap"><input type="checkbox" disabled aria-label="Login two-factor authentication unavailable"><span class="switch-track"></span></span></div><p class="twofa-note">Login 2FA is not connected yet. This option will become available after secure sign-in verification is implemented.</p></section><section class="card"><h2>Security controls</h2>
+<section class="card twofa-card"><div class="section-toggle twofa-row" aria-label="Login two-factor authentication"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="M12 11v5m0-9h.01"/></svg></span><span><h2>Activate Login 2FA</h2><span class="sub">Extra verification when signing in</span></span></span><span class="switch-wrap"><input type="checkbox" disabled aria-label="Login two-factor authentication unavailable"><span class="switch-track"></span></span></div><p class="twofa-note">Login 2FA is not connected yet. This option will become available after secure sign-in verification is implemented.</p></section><section class="card security-overview"><div class="overview-heading"><span class="symbol overview-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><h2>Security overview</h2><p class="sub">Your account protection status</p></span></div>
 <div class="row"><strong>4-digit PIN</strong><span id="pinControl">Checking…</span></div>
 <div class="row"><strong>Failed-attempt lock</strong><span>5 attempts / 15 minutes</span></div>
 <div class="row"><strong>Fingerprint passkey</strong><span id="passkeyControl">Checking…</span></div>

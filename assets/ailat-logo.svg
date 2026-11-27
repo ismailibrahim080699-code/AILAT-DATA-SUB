@@ -1,1 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 190" role="img" aria-labelledby="t d"><title id="t">AILAT DATA SUB</title><desc id="d">Gold shield emblem and AILAT DATA SUB wordmark</desc><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0bd"/><stop offset=".5" stop-color="#d7ad55"/><stop offset="1" stop-color="#9d7028"/></linearGradient></defs><g transform="translate(12 10)"><path d="M82 5 151 43v83l-69 42-69-42V43L82 5Z" fill="#132f4d" stroke="url(#g)" stroke-width="7"/><path d="m40 116 42-78 42 78M56 88h52" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="82" cy="132" r="5" fill="#f7e7b5"/></g><g font-family="Arial,Helvetica,sans-serif"><text x="190" y="91" font-size="64" font-weight="800" letter-spacing="2" fill="#17334f">AILAT DATA</text><text x="194" y="143" font-size="32" font-weight="700" letter-spacing="13" fill="#c49a45">SUB</text><path d="M190 157h495" stroke="#c49a45" stroke-width="3" opacity=".8"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" role="img" aria-labelledby="title desc">
+<title id="title">AILAT DATA SUB</title><desc id="desc">Connected digital globe, upward growth arrow and AILAT DATA SUB wordmark in navy, electric blue and gold.</desc>
+<defs>
+ <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07152f"/><stop offset="1" stop-color="#102d52"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b7"/><stop offset=".48" stop-color="#e2b84f"/><stop offset="1" stop-color="#a87520"/></linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00d5ff"/><stop offset="1" stop-color="#1765e8"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="900" height="420" rx="42" fill="url(#navy)"/>
+<g transform="translate(450 145)">
+ <circle r="112" fill="#09234a" stroke="url(#gold)" stroke-width="7"/>
+ <ellipse rx="112" ry="48" fill="none" stroke="#168bff" stroke-width="2" opacity=".7"/>
+ <ellipse rx="53" ry="112" fill="none" stroke="#168bff" stroke-width="2" opacity=".7"/>
+ <path d="M-95 -42 85 45M-105 30 90 -52M-58 -95 55 96" stroke="#168bff" stroke-width="2" opacity=".6"/>
+ <g fill="#37dfff" filter="url(#glow)"><circle cx="-95" cy="-42" r="6"/><circle cx="85" cy="45" r="6"/><circle cx="-105" cy="30" r="6"/><circle cx="90" cy="-52" r="6"/><circle cx="-58" cy="-95" r="6"/><circle cx="55" cy="96" r="6"/></g>
+ <path d="M-65 64 -8 -62 48 64M-44 19H27" fill="none" stroke="url(#gold)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M-78 47Q5 3 54 -24T110 -91" fill="none" stroke="url(#blue)" stroke-width="12" stroke-linecap="round"/>
+ <path d="m78 -87 38 -9 -9 39" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<text x="450" y="320" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="76" font-weight="900" letter-spacing="3" fill="url(#gold)">AILAT DATA</text>
+<text x="450" y="380" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="43" font-weight="800" letter-spacing="18" fill="#29bfff">SUB</text>
+</svg>

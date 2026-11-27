@@ -20,8 +20,8 @@ header:after{content:"";position:absolute;width:180px;height:180px;left:-100px;b
 .topbar{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
 .profile-button{width:48px;height:48px;border:1px solid #ffffff70;border-radius:15px;background:#ffffff18;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;padding:0;flex-shrink:0;backdrop-filter:blur(12px)}
 .profile-button img,.menu-avatar img{width:100%;height:100%;object-fit:cover;display:none}
-.brand{font-size:20px;font-weight:900;letter-spacing:1.3px}
-.brand small{display:block;font-size:9px;font-weight:650;letter-spacing:2.4px;margin-top:5px;opacity:.72}
+.brand-logo{display:block;width:205px;max-width:calc(100vw - 115px);height:auto;object-fit:contain}
+
 .header-welcome{position:relative;z-index:1;margin-top:30px}
 .header-welcome h2{font-size:clamp(23px,4vw,31px);margin:0 0 7px;font-weight:850;letter-spacing:-.8px}
 .header-welcome p{font-size:12px;margin:0;color:#e6d9f8;letter-spacing:.2px}
@@ -77,7 +77,7 @@ footer{text-align:center;color:#91899e;font-size:10px;padding:27px 10px 32px;lin
 .logout svg{width:18px;height:18px}
 @media(min-width:560px){.services{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.service{min-height:135px;padding:19px}.container{padding-left:24px;padding-right:24px}.wallet{padding:28px}}
 @media(min-width:850px){body{background:linear-gradient(180deg,#24113f 0,#32165a 275px,var(--bg) 275px)}header{padding-top:28px;padding-bottom:38px}.container{padding-top:0}.services{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.service{min-height:145px}.wallet{padding:30px 34px}.header-welcome{margin-top:35px}}
-@media(max-width:380px){.services{gap:9px}.service{min-height:116px;padding:14px 9px}.service p{font-size:11px}.brand{font-size:18px}.wallet{padding:19px}.balance{font-size:29px}}
+@media(max-width:380px){.services{gap:9px}.service{min-height:116px;padding:14px 9px}.service p{font-size:11px}.brand-logo{width:175px;max-width:calc(100vw - 105px)}.wallet{padding:19px}.balance{font-size:29px}}
 @media(prefers-reduced-motion:reduce){.service,.account-menu{transition:none}}
 
 /* AILAT DATA — BilalSada-inspired app dashboard refresh */
@@ -86,8 +86,8 @@ header{background:#fff;color:#25163e;padding:17px 18px 22px;box-shadow:0 2px 18p
 header:before,header:after{display:none}
 .topbar{gap:12px}
 .profile-button{width:45px;height:45px;border-radius:15px;background:#f1eaff;border:1px solid #e8ddfa;color:#5a2aa5;backdrop-filter:none}
-.brand{font-size:18px;letter-spacing:.5px;color:#281541}
-.brand small{font-size:9px;letter-spacing:1.8px;color:#8d819e;opacity:1}
+.brand-logo{width:205px;max-width:calc(100vw - 115px)}
+
 .header-welcome{margin-top:22px}
 .header-welcome h2{font-size:22px;color:#24143c;letter-spacing:-.5px}
 .header-welcome p{color:#92879f;font-size:12px}
@@ -133,7 +133,7 @@ body{background:linear-gradient(180deg,#24103f 0,#3b1768 275px,#f7f5fb 275px);fo
 header{background:transparent;color:#fff;padding:calc(23px + env(safe-area-inset-top)) 20px 35px;border:0;box-shadow:none}
 header:before{display:block;width:330px;height:330px;right:-110px;top:-210px;border-color:#ffffff20;box-shadow:0 0 0 38px #ffffff09,0 0 0 82px #ffffff05}
 .profile-button{width:47px;height:47px;border:1px solid #ffffff48;background:linear-gradient(145deg,#ffffff24,#ffffff0b);border-radius:16px;color:#fff;box-shadow:0 7px 20px #170b2d24}
-.brand{font-size:19px;letter-spacing:1px;color:#fff}.brand small{color:#e5d8f7;opacity:.8}
+.brand-logo{width:205px;max-width:calc(100vw - 115px)}
 .header-welcome{margin-top:28px}.header-welcome h2{font-size:clamp(23px,4vw,30px);color:#fff}.header-welcome p{color:#e0d2f2}
 .container{padding:0 18px 35px}
 .wallet{margin-top:-2px;padding:23px 21px 19px;border:1px solid #ffffff24;border-radius:24px;background:linear-gradient(135deg,#351254 0%,#51208f 53%,#6d35bb 100%);color:#fff;box-shadow:0 18px 42px #29104430,inset 0 1px 0 #ffffff18}
@@ -207,7 +207,7 @@ header{color:#fff}
 header:before{border-color:#d7bd8250;box-shadow:0 0 0 40px #d7bd8210,0 0 0 86px #ffffff06}
 header:after{border-color:#d7bd8230}
 .profile-button{background:linear-gradient(145deg,#ffffff22,#ffffff08);border:1px solid #d7bd8270;color:#f2dfb3;box-shadow:0 7px 20px #07142635}
-.brand{color:#fff}.brand small{color:#d8c69f}
+.brand-logo{width:205px;max-width:calc(100vw - 115px)}
 .header-welcome h2{color:#fff}.header-welcome p{color:#c5d0df}
 .wallet{background:linear-gradient(125deg,#14263f 0%,#1c3b5e 58%,#285276 100%);color:#fff;border:1px solid #d9c28a55;box-shadow:0 18px 42px #0c1d3238,inset 0 1px 0 #ffffff18}
 .wallet:after{background:#d9c28a0c;border-color:#e3d2a055;box-shadow:0 0 0 28px #d9c28a0b,0 0 0 60px #ffffff04}
@@ -269,10 +269,7 @@ footer{color:#8290a2}
    <img id="topPhoto" alt="Profile">
   </button>
 
-  <div class="brand">
-   AILAT DATA SUB
-   <small>SMART DIGITAL SERVICES</small>
-  </div>
+  <img class="brand-logo" src="assets/ailat-logo.svg" alt="AILAT DATA SUB — Your Trusted Digital Partner">
  </div>
 
  <div class="header-welcome">

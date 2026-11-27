@@ -648,6 +648,39 @@ async function loadWalletFromBackend(user){
  }
 }
 
+async function enforceFirstTransactionPin(user){
+ const gate=document.getElementById("firstTransactionPinGate");
+ const first=document.getElementById("firstPinOne"),second=document.getElementById("firstPinTwo");
+ const save=document.getElementById("saveFirstTransactionPin"),error=document.getElementById("firstPinError");
+ const endpoint="https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-security";
+ const call=async(method="GET",body=null)=>{
+  const token=await user.getIdToken(true);
+  const response=await fetch(endpoint,{method,headers:{"Authorization":"Bearer "+token,...(body?{"Content-Type":"application/json"}:{})},...(body?{body:JSON.stringify(body)}:{})});
+  const data=await response.json().catch(()=>({success:false,error:"Invalid security response"}));
+  if(!response.ok||!data.success)throw new Error(data.error||"Transaction PIN service is unavailable.");
+  return data;
+ };
+ const status=await call();
+ if(status.pin_set)return true;
+ gate.style.display="flex";
+ first.focus();
+ const clean=field=>{field.value=field.value.replace(/[^0-9]/g,"").slice(0,4);};
+ first.addEventListener("input",()=>clean(first));
+ second.addEventListener("input",()=>clean(second));
+ return await new Promise(resolve=>{
+  save.addEventListener("click",async()=>{
+   clean(first);clean(second);
+   if(!/^\\d{4}$/.test(first.value)||!/^\\d{4}$/.test(second.value)){error.textContent="Please enter exactly 4 digits in both fields.";return;}
+   if(first.value!==second.value){error.textContent="The two PIN entries do not match.";second.value="";second.focus();return;}
+   save.disabled=true;save.textContent="Saving securely…";error.textContent="";
+   try{
+    await call("POST",{action:"setup",pin:first.value});
+    first.value="";second.value="";gate.style.display="none";resolve(true);
+   }catch(e){error.textContent=e.message;save.disabled=false;save.textContent="Create Transaction PIN";}
+  },{once:false});
+ });
+}
+
 onAuthStateChanged(auth,async(user)=>{
  if(!user){
   window.location.href = "login.html";
@@ -665,6 +698,8 @@ onAuthStateChanged(auth,async(user)=>{
    window.location.href = "login.html";
    return;
   }
+
+  await enforceFirstTransactionPin(user);
 
   const userRef = doc(db,"users",user.uid);
   const userSnap = await getDoc(userRef);
@@ -835,5 +870,30 @@ document.getElementById("removePhoto").addEventListener("click",function(){
 </script>
 <script src="assets/ailat-popups.js?v=1"></script>
 <script src="/assets/ailat-pwa.js?v=1"></script>
+
+<style>
+#firstTransactionPinGate{position:fixed;inset:0;z-index:99999;background:rgba(4,13,31,.88);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+#firstTransactionPinGate .pin-card{width:min(100%,420px);background:#fff;border-radius:24px;padding:26px 22px;box-shadow:0 24px 80px #0006;color:#10213e}
+#firstTransactionPinGate h2{margin:0 0 8px;font-size:23px;color:#10213e}
+#firstTransactionPinGate p{color:#61708a;line-height:1.55;margin:0 0 18px;font-size:14px}
+#firstTransactionPinGate label{display:block;font-weight:700;font-size:13px;margin:14px 0 7px}
+#firstTransactionPinGate input{width:100%;height:52px;border:1px solid #cbd5e1;border-radius:12px;padding:0 16px;font-size:22px;letter-spacing:10px;text-align:center;box-sizing:border-box}
+#firstTransactionPinGate button{width:100%;border:0;border-radius:12px;padding:15px;background:linear-gradient(110deg,#0d3b70,#1676dc);color:white;font-weight:800;font-size:15px;margin-top:18px}
+#firstTransactionPinGate button:disabled{opacity:.6}
+#firstTransactionPinGate .pin-error{min-height:20px;color:#b42318;font-size:13px;margin-top:10px}
+</style>
+<div id="firstTransactionPinGate" role="dialog" aria-modal="true" aria-labelledby="firstPinTitle">
+ <div class="pin-card">
+  <h2 id="firstPinTitle">Create your 4-digit Transaction PIN</h2>
+  <p>Set your personal PIN to protect withdrawals and other sensitive transactions. Enter it twice to confirm. Keep it secret.</p>
+  <label for="firstPinOne">Create 4-digit PIN</label>
+  <input id="firstPinOne" type="password" inputmode="numeric" autocomplete="new-password" maxlength="4" pattern="[0-9]{4}" aria-label="Create 4-digit transaction PIN">
+  <label for="firstPinTwo">Confirm 4-digit PIN</label>
+  <input id="firstPinTwo" type="password" inputmode="numeric" autocomplete="new-password" maxlength="4" pattern="[0-9]{4}" aria-label="Confirm 4-digit transaction PIN">
+  <div id="firstPinError" class="pin-error" role="alert"></div>
+  <button id="saveFirstTransactionPin" type="button">Create Transaction PIN</button>
+ </div>
+</div>
+
 </body>
 </html>

@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="ailat-auth-pending">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,8 @@
 <title>AILAT DATA SUB | Dashboard</title>
 
 <style>
+html.ailat-auth-pending body{visibility:hidden!important}
+
 *{box-sizing:border-box}
 :root{--ink:#17112d;--muted:#827b94;--purple:#5122a5;--violet:#7c3aed;--line:#ece7f4;--paper:#fff;--bg:#f6f4fa;--gold:#d6ad62}
 html{background:var(--bg);scroll-behavior:smooth}
@@ -754,8 +756,11 @@ onAuthStateChanged(auth,async(user)=>{
    console.error(error);
   }
 
+  document.documentElement.classList.remove("ailat-auth-pending");
  }catch(error){
-  console.error("Dashboard error:",error);
+  console.error("Dashboard authentication/setup error:",error);
+  try{await signOut(auth);}catch(signOutError){console.error(signOutError);}
+  window.location.replace("login.html?reason=session_check");
  }
 });
 

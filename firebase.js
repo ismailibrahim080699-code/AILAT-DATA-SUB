@@ -15,7 +15,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-storage.js";
 
 import {
-  getAuth,
+  initializeAuth,
+  browserSessionPersistence,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
@@ -23,7 +24,10 @@ import {
 const app = initializeApp(firebaseConfig);
 
 const storage = getStorage(app);
-const auth = getAuth(app);
+// Keep authentication only for the current app/browser session.
+// Navigating between AILAT pages keeps the session; closing the app session
+// clears it so the next launch must authenticate again.
+const auth = initializeAuth(app, { persistence: browserSessionPersistence });
 
 // Kare shafukan da ke bukatar login da verified email
 function protectPage() {

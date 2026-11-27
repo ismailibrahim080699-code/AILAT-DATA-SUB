@@ -148,7 +148,7 @@ a{
 <link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 
 <link rel="stylesheet" href="assets/ailat-theme.css?v=4">
-</head>
+<link rel="manifest" href="/manifest.webmanifest?v=1">\n<meta name="theme-color" content="#07152f">\n</head>
 
 <body>
 
@@ -209,168 +209,66 @@ Don't have an account?
 </div>
 
 <script type="module">
-
 import { app } from "./firebase.js";
-
-import {
- getAuth,
- signInWithEmailAndPassword,
- sendEmailVerification,
- signOut
-} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-
-const auth = getAuth(app);
-
-const form = document.getElementById("loginForm");
-const button = document.getElementById("loginBtn");
-const passwordInput = document.getElementById("password");
-const togglePassword = document.getElementById("togglePassword");
-const resendBtn = document.getElementById("resendBtn");
-const formMessage=document.getElementById("formMessage");
+import { getAuth, signInWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const auth=getAuth(app);
+const form=document.getElementById("loginForm"),button=document.getElementById("loginBtn"),passwordInput=document.getElementById("password"),togglePassword=document.getElementById("togglePassword"),resendBtn=document.getElementById("resendBtn"),formMessage=document.getElementById("formMessage");
 function showLoginMessage(message,type="error"){formMessage.textContent=message;formMessage.className="form-message show "+type;}
-
-
-
-// SHOW AND HIDE PASSWORD
-
-togglePassword.addEventListener("click", function(){
-
- if(passwordInput.type === "password"){
-
-  passwordInput.type = "text";
-  togglePassword.textContent = "🙈";
-  togglePassword.setAttribute("aria-label","Hide password");
-  togglePassword.setAttribute("aria-pressed","true");
-
- }else{
-
-  passwordInput.type = "password";
-  togglePassword.textContent = "👁️";
-  togglePassword.setAttribute("aria-label","Show password");
-  togglePassword.setAttribute("aria-pressed","false");
-
- }
-
-});
-
-// LOGIN
-
-form.addEventListener("submit", async function(event){
-
- event.preventDefault();
- formMessage.className="form-message";formMessage.textContent="";
-
- const email = document.getElementById("email").value.trim();
- const password = passwordInput.value;
-
- button.disabled = true;
- button.textContent = "Checking Account...";
- resendBtn.style.display = "none";
-
- try {
-
-  const result = await signInWithEmailAndPassword(
-   auth,
-   email,
-   password
-  );
-
-  const user = result.user;
-
-  if(!user.emailVerified){
-
-   try {
-    await sendEmailVerification(user);
-    alert(
-     "Your email is not verified yet. A verification link has been sent to your email. Please check your inbox or spam folder."
-    );
-    resendBtn.style.display = "block";
-   } finally {
-    // Never leave an unverified account signed in if email delivery fails.
-    await signOut(auth);
-   }
-
+togglePassword.addEventListener("click",()=>{const show=passwordInput.type==="password";passwordInput.type=show?"text":"password";togglePassword.textContent=show?"🙈":"👁️";togglePassword.setAttribute("aria-label",show?"Hide password":"Show password");togglePassword.setAttribute("aria-pressed",String(show));});
+function fromB64url(value){const s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");const raw=atob(s+"=".repeat((4-s.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));}
+function requestOptions(o){return {...o,challenge:fromB64url(o.challenge),allowCredentials:(o.allowCredentials||[]).map(x=>({...x,id:fromB64url(x.id)}))};}
+function authenticationJSON(c){const b64=b=>{const a=new Uint8Array(b);let s="";for(const x of a)s+=String.fromCharCode(x);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");};return {id:c.id,rawId:b64(c.rawId),type:c.type,authenticatorAttachment:c.authenticatorAttachment,clientExtensionResults:c.getClientExtensionResults(),response:{clientDataJSON:b64(c.response.clientDataJSON),authenticatorData:b64(c.response.authenticatorData),signature:b64(c.response.signature),userHandle:c.response.userHandle?b64(c.response.userHandle):null}};}
+async function passkeyRequest(user,method="GET",body=null){const token=await user.getIdToken(true);const response=await fetch("https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-transaction-passkeys",{method,headers:{"Authorization":"Bearer "+token,...(body?{"Content-Type":"application/json"}:{})},...(body?{body:JSON.stringify(body)}:{})});const data=await response.json().catch(()=>({success:false,error:"Invalid security response"}));if(!response.ok||!data.success)throw new Error(data.error||"Device security check failed.");return data;}
+async function verifyRegisteredDevice(user){
+ const saved=await passkeyRequest(user);
+ if(!saved.passkeys?.length)return false;
+ if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials?.get)throw new Error("This browser cannot verify your registered device. Open AILAT DATA SUB in Chrome on your phone.");
+ const begin=await passkeyRequest(user,"POST",{action:"start_authentication"});
+ const credential=await navigator.credentials.get({publicKey:requestOptions(begin.options)});
+ if(!credential)throw new Error("Fingerprint verification was cancelled.");
+ const verified=await passkeyRequest(user,"POST",{action:"finish_authentication",response:authenticationJSON(credential)});
+ if(!verified.verified)throw new Error("Fingerprint verification was not successful.");
+ return true;
+}
+form.addEventListener("submit",async event=>{
+ event.preventDefault();formMessage.className="form-message";formMessage.textContent="";
+ const email=document.getElementById("email").value.trim(),password=passwordInput.value;
+ button.disabled=true;button.textContent="Checking Account...";resendBtn.style.display="none";
+ let signedInUser=null;
+ try{
+  const result=await signInWithEmailAndPassword(auth,email,password);signedInUser=result.user;
+  await signedInUser.reload();
+  if(!signedInUser.emailVerified){
+   try{await sendEmailVerification(signedInUser);showLoginMessage("Your email is not verified. A verification link has been sent. Check your inbox or spam folder.");resendBtn.style.display="block";}
+   finally{await signOut(auth);signedInUser=null;}
    return;
   }
-
-  window.location.href = "dashboard.html";
-
- } catch(error) {
-
-  console.error(error);
-
-  if(error.code === "auth/invalid-credential"){
-   showLoginMessage("Incorrect email or password.");
-  }else if(error.code === "auth/invalid-email"){
-   showLoginMessage("Invalid email address.");
-  }else if(error.code === "auth/too-many-requests"){
-   showLoginMessage("Too many attempts. Please try again later.");
-  }else if(error.code === "auth/network-request-failed"){
-   showLoginMessage("Network connection failed. Check your internet and try again.");
-  }else if(error.code === "auth/user-disabled"){
-   showLoginMessage("This account is disabled. Please contact support.");
-  }else{
-   // Keep raw Firebase details out of the customer-facing message.
-   showLoginMessage("Login could not be completed. Please check your details and try again.");
-  }
-
- } finally {
-
-  button.disabled = false;
-  button.textContent = "Login";
-
- }
-
-});
-
-// RESEND VERIFICATION EMAIL
-
-resendBtn.addEventListener("click", async function(){
-
- const email = document.getElementById("email").value.trim();
- const password = passwordInput.value;
-
- if(!email||!password){
-  showLoginMessage("Enter your email and password to resend the verification email.");
-  return;
- }
-
- resendBtn.disabled = true;
- resendBtn.textContent = "Sending...";
-
- try{
-  // Sign in afresh so the verification request uses a current authenticated session.
-  const result = await signInWithEmailAndPassword(auth,email,password);
-  const user = result.user;
-  await user.reload();
-
-  if(user.emailVerified){
-   await signOut(auth);
-   showLoginMessage("Email already verified. You can now login.","success");
-   resendBtn.style.display = "none";
-  }else{
-   await sendEmailVerification(user);
-   await signOut(auth);
-   showLoginMessage("Verification email sent successfully. Please check your inbox or spam folder.","success");
-  }
+  button.textContent="Verifying this device...";
+  const usedPasskey=await verifyRegisteredDevice(signedInUser);
+  if(usedPasskey)showLoginMessage("Fingerprint verified. Welcome back!","success");
+  window.location.href="dashboard.html";
  }catch(error){
-  console.error("Resend verification failed:",error);
-  if(error.code==="auth/invalid-credential"){
-   showLoginMessage("Incorrect email or password. Please check them and try again.");
-  }else if(error.code==="auth/too-many-requests"){
-   showLoginMessage("Too many attempts. Please wait before trying again.");
-  }else{
-   showLoginMessage("Could not resend verification email. Please try again.");
-  }
- }finally{
-  resendBtn.disabled = false;
-  resendBtn.textContent = "Resend Verification Email";
- }
-
+  console.error("AILAT login/device verification:",error);
+  if(signedInUser){try{await signOut(auth);}catch(signOutError){console.error(signOutError);}}
+  if(error.name==="NotAllowedError"||error.name==="AbortError")showLoginMessage("Fingerprint was cancelled or timed out. Please try logging in again.");
+  else if(error.code==="auth/invalid-credential")showLoginMessage("Incorrect email or password.");
+  else if(error.code==="auth/invalid-email")showLoginMessage("Invalid email address.");
+  else if(error.code==="auth/too-many-requests")showLoginMessage("Too many attempts. Please try again later.");
+  else if(error.code==="auth/network-request-failed")showLoginMessage("Network connection failed. Check your internet and try again.");
+  else if(error.code==="auth/user-disabled")showLoginMessage("This account is disabled. Please contact support.");
+  else showLoginMessage(error.message||"Login could not be completed. Please try again.");
+ }finally{button.disabled=false;button.textContent="Login";}
 });
-
+resendBtn.addEventListener("click",async()=>{
+ const email=document.getElementById("email").value.trim(),password=passwordInput.value;
+ if(!email||!password){showLoginMessage("Enter your email and password to resend the verification email.");return;}
+ resendBtn.disabled=true;resendBtn.textContent="Sending...";
+ try{const result=await signInWithEmailAndPassword(auth,email,password);await result.user.reload();if(result.user.emailVerified){await signOut(auth);showLoginMessage("Email already verified. You can now login.","success");resendBtn.style.display="none";}else{await sendEmailVerification(result.user);await signOut(auth);showLoginMessage("Verification email sent successfully. Check your inbox or spam folder.","success");}}
+ catch(error){try{if(auth.currentUser)await signOut(auth);}catch(_){}showLoginMessage(error.code==="auth/invalid-credential"?"Incorrect email or password.":"Could not resend verification email. Please try again.");}
+ finally{resendBtn.disabled=false;resendBtn.textContent="Resend Verification Email";}
+});
 </script>
 
 <script src="assets/ailat-popups.js?v=1"></script>
-</body>
+<script src="/assets/ailat-pwa.js?v=1"></script>\n</body>
 </html>

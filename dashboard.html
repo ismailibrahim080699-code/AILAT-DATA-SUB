@@ -480,6 +480,36 @@ import {
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+ 
+// AILAT_BACKGROUND_LOCK_V1: require login again after app is in background for 5 seconds.
+const AILAT_LOCK_KEY = "ailat_app_backgrounded_at";
+let ailatBackgroundTimer = null;
+let ailatSigningOutForLock = false;
+function ailatForceLogin(){
+ if(ailatSigningOutForLock)return;
+ ailatSigningOutForLock=true;
+ try{localStorage.removeItem(AILAT_LOCK_KEY);}catch(_){}
+ signOut(auth).finally(()=>{window.location.replace("login.html?reason=app_lock");});
+}
+function ailatCheckBackgroundLock(){
+ let hiddenAt=0;
+ try{hiddenAt=Number(localStorage.getItem(AILAT_LOCK_KEY)||0);}catch(_){}
+ if(hiddenAt && Date.now()-hiddenAt>=5000){ailatForceLogin();return true;}
+ if(hiddenAt){try{localStorage.removeItem(AILAT_LOCK_KEY);}catch(_){}}
+ return false;
+}
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="hidden"){
+  try{localStorage.setItem(AILAT_LOCK_KEY,String(Date.now()));}catch(_){}
+  if(ailatBackgroundTimer)clearTimeout(ailatBackgroundTimer);
+  ailatBackgroundTimer=setTimeout(()=>{if(document.visibilityState==="hidden")ailatForceLogin();},5000);
+ }else{
+  if(ailatBackgroundTimer){clearTimeout(ailatBackgroundTimer);ailatBackgroundTimer=null;}
+  ailatCheckBackgroundLock();
+ }
+});
+window.addEventListener("pageshow",()=>{ailatCheckBackgroundLock();});
+
 
 const BACKEND_URL =
  "https://bdogulpsybiggpgipdbt.supabase.co/functions/v1/ailat-backend";

@@ -173,3 +173,41 @@ footer{color:var(--ailat-muted)!important}
 .verify:disabled{background:#edf0f4!important;color:#64748b!important;border:1px solid #e0e5ec!important;opacity:1!important}
 .check-order{background:#fff6df!important;color:#5d471c!important;border:1px solid #e5d3a8!important}
 .bundle-empty{background:#f7f9fc!important;color:#536277!important;border-color:#d9e0e9!important}
+
+/* FINAL CONTRAST SYSTEM: white text only on dark surfaces */
+.bundle-card{
+ background:linear-gradient(145deg,#07152f,#102d52)!important;
+ border:1px solid #24496f!important;
+ color:#fff!important;
+}
+.bundle-card .bundle-data,
+.bundle-card strong.bundle-data,
+.bundle-card .bundle-validity,
+.bundle-card .bundle-price,
+.bundle-card .bundle-select{
+ color:#fff!important;
+}
+.bundle-card .bundle-tag{
+ background:#24496f!important;color:#ffe6a1!important;
+}
+.bundle-card.selected{
+ background:linear-gradient(145deg,#173b5d,#0b2441)!important;
+ border:2px solid #e2b84f!important;
+ box-shadow:0 0 0 2px #e2b84f22,0 5px 14px #07152f24!important;
+}
+.bundle-card.selected .bundle-data,
+.bundle-card.selected .bundle-validity,
+.bundle-card.selected .bundle-price,
+.bundle-card.selected .bundle-select{color:#fff!important}
+.bundle-card.selected .bundle-tag{background:#e2b84f!important;color:#10243d!important}
+.purchase-types .type-option{
+ background:#102d52!important;border:1px solid #24496f!important;color:#fff!important;
+}
+.purchase-types .type-option strong,
+.purchase-types .type-option span{color:#fff!important}
+.purchase-types .type-option.active{
+ background:#e2b84f!important;border:2px solid #b88426!important;color:#10243d!important;
+}
+.purchase-types .type-option.active strong,
+.purchase-types .type-option.active span{color:#10243d!important}
+.bundle-empty{background:#f3f6fb!important;color:#536277!important;border-color:#d9e0e9!important}

@@ -261,7 +261,7 @@ let loginSubmitted=false;
 form.style.display="none";
 biometricPrompt.style.display="flex";
 document.body.style.overflow="hidden";
-if(auth.currentUser?.email){biometricEmail.value=auth.currentUser.email;}
+// No email field is required for discoverable passkey-first sign-in.
 async function biometricFallback(){
  biometricPrompt.style.display="none";
  document.body.style.overflow="";

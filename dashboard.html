@@ -790,16 +790,7 @@ onAuthStateChanged(auth,async(user)=>{
    return;
   }
 
-  // If this account has a registered device passkey, verify it on app launch.
-  if(!ailatInitialBiometricDone){
-   ailatInitialBiometricDone=true;
-   const registered=await ailatPasskeyCall(user);
-   if(registered.passkeys?.length){
-    ailatShowLock();
-    await ailatUnlockWithPasskey();
-    if(ailatLocked) return;
-   }
-  }
+  // Device verification is performed once on the login page; do not prompt twice here.
 
   await enforceFirstTransactionPin(user);
 

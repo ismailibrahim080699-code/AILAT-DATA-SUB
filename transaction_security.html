@@ -182,6 +182,105 @@ footer{color:#9b8eae!important;padding:12px 15px 26px!important}
  .security-overview .row{margin:0 14px!important}
 }
 
+
+/* Clean mobile-wallet Security Centre layout */
+body{background:#f5f6fa!important;color:#202b3c!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important}
+.security-header{
+ min-height:74px!important;height:auto!important;padding:12px 17px!important;
+ display:grid!important;grid-template-columns:40px 1fr 40px!important;gap:10px!important;
+ align-items:center!important;background:#fff!important;color:#202b3c!important;
+ border-radius:0!important;box-shadow:0 1px 0 #e9edf2!important
+}
+.security-back{width:38px!important;height:38px!important;background:#f3f5f8!important;
+ color:#303b4d!important;border:0!important;border-radius:12px!important;box-shadow:none!important;
+ font-size:27px!important}
+.security-heading{text-align:left!important}
+.security-header h1{font-size:19px!important;font-weight:750!important;letter-spacing:-.35px!important;
+ text-align:left!important;color:#202b3c!important}
+.security-header p{display:block!important;margin:3px 0 0!important;font-size:11px!important;
+ color:#8791a0!important;line-height:1.4!important}
+.header-spacer{width:38px!important}
+main{max-width:620px!important;margin:0 auto!important;padding:18px 16px 34px!important}
+.security-group-label{padding:14px 3px 8px!important;color:#8993a2!important;
+ font-size:10px!important;font-weight:800!important;letter-spacing:1.05px!important}
+main>.card{
+ background:#fff!important;border:0!important;border-radius:15px!important;
+ margin:0 0 8px!important;padding:0!important;overflow:hidden!important;
+ box-shadow:0 1px 3px rgba(28,42,62,.035)!important
+}
+main>.card .section-toggle{min-height:72px!important;padding:12px 14px!important}
+.section-toggle-main{gap:12px!important}
+.symbol{width:40px!important;height:40px!important;flex:0 0 40px!important;
+ border-radius:12px!important;background:#f1edff!important;color:#6341a5!important}
+.symbol svg{width:21px!important;height:21px!important;fill:none!important;stroke:currentColor!important;
+ stroke-width:1.85!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.section-toggle-main h2{font-size:13px!important;font-weight:700!important;letter-spacing:0!important;
+ color:#253247!important;margin:0 0 4px!important}
+.section-toggle-main .sub{font-size:11px!important;color:#8a94a3!important;line-height:1.4!important}
+.section-chevron{width:24px!important;height:24px!important;display:grid!important;place-items:center!important;
+ background:#f5f6f8!important;border-radius:50%!important;color:#8a94a3!important;font-size:17px!important}
+.section-toggle[aria-expanded="true"] .section-chevron{background:#f0ebff!important;color:#6341a5!important}
+.section-panel{margin:0!important;padding:15px 14px 17px!important;background:#fff!important;
+ border-top:1px solid #eef0f4!important}
+#pinStatus{display:inline-flex!important;margin:0 14px 12px!important;padding:6px 9px!important;
+ border-radius:20px!important;background:#f0f8f3!important;color:#25804c!important;
+ font-size:10px!important;font-weight:700!important}
+#pinMessage{padding:0 14px!important}
+.pin-intro{padding:12px!important;border-radius:12px!important;background:#f7f8fb!important;
+ border:1px solid #edf0f4!important}
+.pin-intro-icon{width:36px!important;height:36px!important;flex-basis:36px!important;
+ border-radius:10px!important;background:#eee9ff!important;color:#6341a5!important}
+.pin-intro strong,.pin-step-copy strong{font-size:12px!important;color:#2b374a!important}
+.pin-intro p,.pin-step-copy span{font-size:11px!important;color:#788394!important}
+.pin-step-icon{width:31px!important;height:31px!important;flex-basis:31px!important;
+ border-radius:9px!important;background:#f7f5ff!important;border-color:#eee9ff!important;color:#6341a5!important}
+.pin-step:not(:last-child):after{left:15px!important;background:#e9eaf0!important}
+.pin-form-title{font-size:12px!important;color:#2c394d!important}
+.field{min-height:46px!important;border:1px solid #e4e8ef!important;border-radius:10px!important;
+ background:#fff!important;font-size:14px!important;color:#253247!important}
+.pin-digit{height:52px!important;border:1px solid #dfe4ec!important;border-radius:10px!important;
+ background:#fafbfc!important;color:#253247!important;font-size:22px!important}
+.pin-digit:focus,.field:focus{outline:0!important;border-color:#7152b5!important;
+ box-shadow:0 0 0 3px rgba(113,82,181,.1)!important}
+.action{min-height:45px!important;border-radius:10px!important;background:#5b3aa4!important;
+ box-shadow:none!important;font-size:12px!important}
+.action.secondary{background:#f0edfa!important;color:#5b3aa4!important}
+.note{padding:11px!important;border-radius:10px!important;background:#f7f8fa!important;
+ border:1px solid #edf0f4!important;color:#788394!important;font-size:11px!important}
+#bioStatus{display:inline-flex!important;margin:0 0 10px!important;padding:6px 9px!important;
+ border-radius:20px!important;background:#f0f8f3!important;color:#25804c!important;font-size:10px!important;font-weight:700!important}
+#deviceCheck{font-size:11px!important;color:#788394!important;line-height:1.55!important}
+#passkeyList{border-top:1px solid #eef0f4!important}
+#passkeyList .row{padding:12px 0!important;border-bottom:1px solid #eef0f4!important}
+#passkeyList .row strong{font-size:11px!important;color:#2c394d!important}
+#passkeyList .row span{font-size:10px!important;color:#8791a0!important}
+.twofa-card{padding:0!important}
+.twofa-note{margin:0 14px 14px 66px!important;color:#8993a2!important;font-size:10px!important;line-height:1.5!important}
+.switch-wrap{width:44px!important;height:25px!important;flex-basis:44px!important}
+.switch-track:before{width:19px!important;height:19px!important}
+.overview-heading{display:flex!important;align-items:center!important;gap:11px!important;
+ margin:13px 14px 3px!important}
+.overview-heading .symbol{background:#f0f8f3!important;color:#25804c!important}
+.overview-heading h2{font-size:13px!important;font-weight:750!important;color:#253247!important;margin:0 0 3px!important}
+.overview-heading .sub{font-size:10px!important;color:#8993a2!important}
+.security-overview .row{margin:0 14px!important;padding:12px 0!important;
+ border-bottom:1px solid #eef0f4!important;align-items:flex-start!important}
+.security-overview .row:last-child{border-bottom:0!important}
+.security-overview .row strong{font-size:11px!important;color:#3c485a!important;flex:0 0 43%!important}
+.security-overview .row span{font-size:10px!important;color:#8791a0!important;max-width:55%!important;line-height:1.5!important}
+.back{min-height:45px!important;border-radius:10px!important;font-size:12px!important}
+footer{color:#a0a8b4!important;font-size:10px!important}
+@media(max-width:420px){
+ main{padding:14px 12px 30px!important}
+ .security-header{padding:11px 13px!important}
+ main>.card .section-toggle{min-height:68px!important;padding:11px 12px!important}
+ .symbol{width:37px!important;height:37px!important;flex-basis:37px!important;border-radius:11px!important}
+ .section-toggle-main h2{font-size:12.5px!important}
+ .section-toggle-main .sub{font-size:10px!important}
+ .section-panel{padding:13px 12px 15px!important}
+ .security-overview .row{margin:0 12px!important}
+}
+
 </style><link rel="stylesheet" href="assets/ailat-popups.css?v=1">
 <link rel="stylesheet" href="assets/ailat-theme.css?v=3">
   <link rel="icon" type="image/svg+xml" href="assets/ailat-mark.svg?v=2">
@@ -189,6 +288,7 @@ footer{color:#9b8eae!important;padding:12px 15px 26px!important}
 <body>
 <header class="security-header"><a class="security-back" href="settings.html" aria-label="Back to settings">‹</a><div class="security-heading"><h1>Security</h1><p>Protect your account, PIN and transactions</p></div><span class="header-spacer" aria-hidden="true"></span></header>
 <main>
+<div class="security-group-label">TRANSACTION SECURITY</div>
 <section class="card">
 <button class="section-toggle" type="button" aria-expanded="false" aria-controls="pinPanel" id="pinSectionToggle"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h8"/></svg></span><span><h2>Change Transaction PIN</h2><span class="sub">Update your transaction PIN</span></span></span><span class="section-chevron">⌄</span></button>
 <div class="status" id="pinStatus">Checking PIN status…</div>
@@ -226,7 +326,7 @@ footer{color:#9b8eae!important;padding:12px 15px 26px!important}
 <button class="action" id="resetBtn" type="button">Verify account &amp; Reset PIN</button></div>
 </div>
 </section>
-<section class="card" id="passwordSection"><button class="section-toggle" type="button" aria-expanded="false" aria-controls="passwordPanel" id="passwordSectionToggle"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5"/><path d="m11.5 11.5 8-8 2 2-2 2 1.5 1.5-3 3-1.5-1.5-2 2"/></svg></span><span><h2>Change Password</h2><span class="sub">Update your account password</span></span></span><span class="section-chevron">›</span></button><div class="section-panel" id="passwordPanel" hidden><p class="sub">Confirm your current password, then choose a new password.</p><input class="field" id="passwordEmail" type="email" autocomplete="username" placeholder="Account email" aria-label="Account email"><div class="password-box"><input class="field" id="currentPassword" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div><div class="password-box"><input class="field" id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 6 characters)" aria-label="New password"></div><div class="password-box"><input class="field" id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="Confirm new password" aria-label="Confirm new password"></div><button class="action" id="changePasswordBtn" type="button">Update Password</button><p class="message" id="passwordMessage" role="status" aria-live="polite"></p></div></section><section class="card">
+<div class="security-group-label">ACCOUNT ACCESS</div><section class="card" id="passwordSection"><button class="section-toggle" type="button" aria-expanded="false" aria-controls="passwordPanel" id="passwordSectionToggle"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5"/><path d="m11.5 11.5 8-8 2 2-2 2 1.5 1.5-3 3-1.5-1.5-2 2"/></svg></span><span><h2>Change Password</h2><span class="sub">Update your account password</span></span></span><span class="section-chevron">›</span></button><div class="section-panel" id="passwordPanel" hidden><p class="sub">Confirm your current password, then choose a new password.</p><input class="field" id="passwordEmail" type="email" autocomplete="username" placeholder="Account email" aria-label="Account email"><div class="password-box"><input class="field" id="currentPassword" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div><div class="password-box"><input class="field" id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 6 characters)" aria-label="New password"></div><div class="password-box"><input class="field" id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="Confirm new password" aria-label="Confirm new password"></div><button class="action" id="changePasswordBtn" type="button">Update Password</button><p class="message" id="passwordMessage" role="status" aria-live="polite"></p></div></section><div class="security-group-label">DEVICE SECURITY</div><section class="card">
 <button class="section-toggle" type="button" aria-expanded="false" aria-controls="bioPanel" id="bioSectionToggle"><span class="section-toggle-main"><span class="symbol biometric-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H5a2 2 0 0 0-2 2v2m14-4h2a2 2 0 0 1 2 2v2M3 17v2a2 2 0 0 0 2 2h2m14-4v2a2 2 0 0 1-2 2h-2"/><path d="M8 11a4 4 0 0 1 8 0v2m-8 0v1a4 4 0 0 0 8 0v-1m-4-5v1"/></svg></span><span><h2>Fingerprint &amp; Face ID</h2><span class="sub">Register and manage secure access on this device</span></span></span><span class="section-chevron">⌄</span></button>
 <div class="section-panel" id="bioPanel" hidden>
 <div class="status" id="bioStatus">Checking device support…</div>
@@ -238,7 +338,7 @@ footer{color:#9b8eae!important;padding:12px 15px 26px!important}
 <div class="note">Your fingerprint or face template must remain on your device. AILAT DATA SUB must never collect biometric images or templates. Biometric templates stay on your device; AILAT DATA SUB stores only a cryptographic passkey.</div>
 </div>
 </section>
-<section class="card twofa-card"><div class="section-toggle twofa-row" aria-label="Login two-factor authentication"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="M12 11v5m0-9h.01"/></svg></span><span><h2>Activate Login 2FA</h2><span class="sub">Extra verification when signing in</span></span></span><span class="switch-wrap"><input type="checkbox" disabled aria-label="Login two-factor authentication unavailable"><span class="switch-track"></span></span></div><p class="twofa-note">Login 2FA is not connected yet. This option will become available after secure sign-in verification is implemented.</p></section><section class="card security-overview"><div class="overview-heading"><span class="symbol overview-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><h2>Security overview</h2><p class="sub">Your account protection status</p></span></div>
+<div class="security-group-label">SIGN-IN PROTECTION</div><section class="card twofa-card"><div class="section-toggle twofa-row" aria-label="Login two-factor authentication"><span class="section-toggle-main"><span class="symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="M12 11v5m0-9h.01"/></svg></span><span><h2>Activate Login 2FA</h2><span class="sub">Extra verification when signing in</span></span></span><span class="switch-wrap"><input type="checkbox" disabled aria-label="Login two-factor authentication unavailable"><span class="switch-track"></span></span></div><p class="twofa-note">Login 2FA is not connected yet. This option will become available after secure sign-in verification is implemented.</p></section><div class="security-group-label">SECURITY STATUS</div><section class="card security-overview"><div class="overview-heading"><span class="symbol overview-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><h2>Security overview</h2><p class="sub">Your account protection status</p></span></div>
 <div class="row"><strong>4-digit PIN</strong><span id="pinControl">Checking…</span></div>
 <div class="row"><strong>Failed-attempt lock</strong><span>5 attempts / 15 minutes</span></div>
 <div class="row"><strong>Fingerprint passkey</strong><span id="passkeyControl">Checking…</span></div>
@@ -256,9 +356,6 @@ const $=id=>document.getElementById(id);
 function setupAccordion(buttonId,panelId){$(buttonId).addEventListener("click",()=>{const panel=$(panelId),open=panel.hidden;panel.hidden=!open;$(buttonId).setAttribute("aria-expanded",String(open));});}
 setupAccordion("pinSectionToggle","pinPanel");
 setupAccordion("bioSectionToggle","bioPanel");
-// Open PIN details on arrival so the user immediately sees the controls.
-$("pinPanel").hidden=false;
-$("pinSectionToggle").setAttribute("aria-expanded","true");
 
 let currentUser=null;
 function say(message,ok=false){$("pinMessage").textContent=message;$("pinMessage").style.color=ok?"#16734a":"#b42318";}

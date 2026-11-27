@@ -242,8 +242,9 @@ async function verifyRegisteredDevice(user){
 }
 
 let biometricPromptHandled=false;
+let loginSubmitted=false;
 onAuthStateChanged(auth,async user=>{
- if(biometricPromptHandled||!user)return;
+ if(loginSubmitted||biometricPromptHandled||!user)return;
  biometricPromptHandled=true;
  try{
   await user.reload();
@@ -278,7 +279,7 @@ onAuthStateChanged(auth,async user=>{
 });
 
 form.addEventListener("submit",async event=>{
- event.preventDefault();formMessage.className="form-message";formMessage.textContent="";
+ event.preventDefault();loginSubmitted=true;formMessage.className="form-message";formMessage.textContent="";
  const email=document.getElementById("email").value.trim(),password=passwordInput.value;
  button.disabled=true;button.textContent="Checking Account...";resendBtn.style.display="none";
  let signedInUser=null;

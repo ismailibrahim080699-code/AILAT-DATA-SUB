@@ -930,5 +930,30 @@ document.getElementById("removePhoto").addEventListener("click",function(){
  </div>
 </div>
 
+
+<style id="ailat-dashboard-service-contrast">
+/* Stronger contrast for dashboard service tiles */
+.services .service{
+  background:linear-gradient(145deg,#172b45 0%,#213f60 100%)!important;
+  border:1px solid #b99a5b!important;
+  color:#fff!important;
+  box-shadow:0 6px 16px #10243b24,inset 0 1px 0 #ffffff18!important;
+}
+.services .service:before{opacity:1!important}
+.services .service .icon,
+.services .service:nth-child(3n+2) .icon,
+.services .service:nth-child(3n) .icon{
+  background:linear-gradient(145deg,#f1dfb2,#d4b875)!important;
+  color:#172b45!important;
+  box-shadow:0 3px 9px #07142655,inset 0 1px 0 #fff8!important;
+}
+.services .service .icon svg{color:#172b45!important;stroke:#172b45!important}
+.services .service p{color:#fff!important;font-weight:850!important;text-shadow:0 1px 2px #07142655}
+.services .service p small{color:#e8d8b0!important;font-weight:650!important}
+.services .service:active{filter:brightness(1.12)}
+.services-toggle{background:linear-gradient(135deg,#1b3451,#284b6c)!important;border:1px solid #b99a5b!important;color:#fff!important}
+.services-toggle svg{color:#f1dfb2!important}
+</style>
+
 </body>
 </html>

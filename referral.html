@@ -230,7 +230,7 @@ onAuthStateChanged(auth,async(user)=>{
    }
   }
   codeElement.textContent=referralCode;
-  referralLink="https://ismailibrahim080699-code.github.io/Ailat-data/register.html?ref="+encodeURIComponent(referralCode);
+  referralLink="https://ailatdatasub.com.ng/register.html?ref="+encodeURIComponent(referralCode);
   linkElement.textContent=referralLink;
   const referralsQuery=query(collection(db,"referrals"),where("ownerUid","==",user.uid));
   const referralsSnapshot=await getDocs(referralsQuery);
